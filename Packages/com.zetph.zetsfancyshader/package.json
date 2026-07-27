@@ -1,7 +1,7 @@
 {
   "name": "com.zetph.zetsfancyshader",
   "displayName": "ZetsFancyShader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "unity": "2022.3",
   "description": "PC-only AudioLink-reactive toon + PBR shader for VRChat avatars, with emission FX, geometry break, glitch, interior mapping, subsurface scattering, LTCGI area lights, and VRC Light Volumes. Ships its own material inspector, locking, and map packer - no ThryEditor required. AudioLink is optional; reactive features idle until an AudioLink object is present in the world.",
   "author": {

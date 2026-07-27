@@ -21,7 +21,7 @@ Shader "Zetph/ZetsFancyEyeShader"
         [Normal] [Group(base)] _BumpMap ("Normal Map", 2D) = "bump" {}
         [Group(base)] _BumpScale ("Normal Strength", Range(0, 2)) = 1
         [Enum(Toon Ramp, 0, Realistic PBR, 1)] [Group(lighting)] _LightingModel ("Lighting Model", Float) = 0
-        [Toggle] [Group(lighting)] _EyeWrapLight ("Wrapped Eye Lighting", Float) = 1
+        [Toggle] [Group(lighting)] _EyeWrapLight ("Wrapped Eye Lighting", Float) = 0
         [Group(lighting)] _MaxBrightness ("Max Light Brightness", Range(0, 5)) = 1.0
         [Group(lighting)] _MinBrightness ("Min Light Brightness", Range(0, 1)) = 0.0
         [Group(lighting)] _ReceiveShadows ("Receive Casted Shadows", Range(0, 1)) = 1.0
