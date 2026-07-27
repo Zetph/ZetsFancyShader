@@ -1,76 +1,97 @@
-# VPM Package Template
+# ZetsFancyShader — off ThryEditor
 
-Starter for making Packages, including automation for building and publishing them.
+Migrated shaders, the companion JSON, the inspector that reads them, and the codemod that
+produced it all.
 
-Once you're all set up, you'll be able to push changes to this repository and have .zip and .unitypackage versions automatically generated, and a listing made which works in the VPM for delivering updates for this package. If you want to make a listing with a variety of packages, check out our [template-package-listing](https://github.com/vrchat-community/template-package-listing) repo.
+```
+Editor/ZetMaterialInspector.cs      the ShaderGUI
+Editor/ZetUIData.cs                 JSON model, loader, ShowIf evaluator
+migrated/ZetsFancyShader.shader     rewritten Properties block
+migrated/ZetsFancyShaderUI.json     group labels, info text, 613 tooltips
+migrated/ZetsFancyEyeShader.shader
+migrated/ZetsFancyEyeShaderUI.json
+tools/migrate_shader.py             re-runnable codemod
+```
 
-## ▶ Getting Started
+## Conventions
 
-* Press [![Use This Template](https://user-images.githubusercontent.com/737888/185467681-e5fdb099-d99f-454b-8d9e-0760e5a6e588.png)](https://github.com/vrchat-community/template-package/generate)
-to start a new GitHub project based on this template.
-  * Choose a fitting repository name and description.
-  * Set the visibility to 'Public'. You can also choose 'Private' and change it later.
-  * You don't need to select 'Include all branches.'
-* Clone this repository locally using Git.
-  * If you're unfamiliar with Git and GitHub, [visit GitHub's documentation](https://docs.github.com/en/get-started/quickstart/git-and-github-learning-resources) to learn more.
-* Add the folder to Unity Hub and open it as a Unity Project.
-* After opening the project, wait while the VPM resolver is downloaded and added to your project.
-  * This gives you access to the VPM Package Maker and Package Resolver tools.
+| Was | Is |
+|---|---|
+| `m_start_x` … `m_end_x`, bare `m_x` | `[Group(engine/stencil)]` on each property |
+| `--{tooltip:...}` | `tooltips` array in the companion JSON |
+| `--{condition_show:{type:AND,...}}` | `[ShowIf(_Foo && _Bar==3)]` |
+| `--{reference_property:_X}` | `[GroupToggle(engine/prox)]` on `_X` itself |
+| `[ZetInfoBox] info_x ("prose")` | `info` field on the group in JSON |
+| `[ThryShaderOptimizerLockButton]` | `[ZetLockButton]` |
+| `shader_is_using_thry_editor` | deleted |
+| `GeometryShader_Enabled`, `Tessellation_Enabled` | deleted — ThryEditor optimizer hints, never referenced in your HLSL |
 
-## 🚇 Migrating Assets Package
-Full details at [Converting Assets to a VPM Package](https://vcc.docs.vrchat.com/guides/convert-unitypackage)
+The JSON must sit beside its shader and be named `<ShaderFileName>UI.json`. A missing file
+logs a warning and falls back to an unlabelled but functional inspector.
 
-## ✏️ Working on Your Package
+## Results
 
-* Delete the "Packages/com.vrchat.demo-template" directory or reuse it for your own package.
-  * If you reuse the package, don't forget to rename it and add generated meta files to your repository!
-* Update the `.gitignore` file in the "Packages" directory to include your package.
-  * For example, change `!com.vrchat.demo-template` to `!com.username.package-name`.
-  * `.gitignore` files normally *exclude* the contents of your "Packages" directory. This `.gitignore` in this template show how to *include* the demo package. You can easily change this out for your own package name.
-* Open the Unity project and work on your package's files in your favorite code editor.
-* When you're ready, commit and push your changes.
-* Once you've set up the automation as described below, you can easily publish new versions.
+|  | Before | After |
+|---|---|---|
+| Properties-block lines | 960 | 705 |
+| Median line length | 170 | 115 |
+| p90 line length | 259 | 146 |
+| Longest line | 584 | 195 |
+| Dummy marker properties | 252 | 0 |
 
-## 🤖 Setting up the Automation
+252 fewer serialised floats on every material. Both shaders migrated with zero warnings;
+brace balance verified.
 
-Create a repository variable with the name and value described below.
-For details on how to create repository variables, see [Creating Configuration Variables for a Repository](https://docs.github.com/en/actions/learn-github-actions/variables#creating-configuration-variables-for-a-repository).
-Make sure you are creating a **repository variable**, and not a **repository secret**.
+## Install
 
-* `PACKAGE_NAME`: the name of your package, like `com.vrchat.demo-template`.
+1. Copy `migrated/*` over your shader folder.
+2. Copy `Editor/*.cs` in beside your existing drawers.
+3. **Delete `ZetInfoBoxDrawer.cs`** — all 52 info boxes are JSON now, the drawer has no
+   callers.
+4. `ZetMapPackerDrawer` and `ZetRenderModeDrawer` are unchanged and still work; they are
+   plain `MaterialPropertyDrawer`s, which `MaterialEditor.ShaderProperty` dispatches to.
+5. Gut `ZetDependencyChecker` — the `ThryPresent()` probe and its modal are obsolete. Its
+   original premise (bundling ThryEditor would collide with Poiyomi's copy) is exactly the
+   problem a namespaced in-house inspector dissolves.
 
-Finally, go to the "Settings" page for your repo, then choose "Pages", and look for the heading "Build and deployment". Change the "Source" dropdown from "Deploy from a branch" to "GitHub Actions".
+`ZetRenderModeDrawer` is in the global namespace while the inspector is namespaced. C#
+resolves that outward without help; if you later namespace the drawers, update the
+`ReapplyRenderMode` call site.
 
-That's it!
-Some other notes:
-* We highly recommend you keep the existing folder structure of this template.
-  * The root of the project should be a Unity project.
-  * Your packages should be in the "Packages" directory.
-  * If you deviate from this folder structure, you'll need to update the paths that assume your package is in the "Packages" directory on lines 24, 38, 41 and 57.
-* If you want to store and generate your web files in a folder other than "Website" in the root, you can change the `listPublicDirectory` item [here in build-listing.yml](.github/workflows/build-listing.yml#L17).
+## Re-running the codemod
 
-## 🎉 Publishing a Release
+```
+python3 tools/migrate_shader.py Foo.shader --dry-run
+python3 tools/migrate_shader.py Foo.shader --out-shader Foo.new.shader --out-json FooUI.json
+```
 
-You can make a release by running the [Build Release](.github/workflows/release.yml) action. The version specified in your `package.json` file will be used to define the version of the release.
+It reports unhandled metadata keys and unbalanced markers rather than silently dropping
+them, so it stays useful if you revise the conventions later.
 
-## 📃 Rebuilding the Listing
+## Still outstanding
 
-Whenever you make a change to a release - manually publishing it, or manually creating, editing or deleting a release, the [Build Repo Listing](.github/workflows/build-listing.yml) action will make a new index of all the releases available, and publish them as a website hosted fore free on [GitHub Pages](https://pages.github.com/). This listing can be used by the VPM to keep your package up to date, and the generated index page can serve as a simple landing page with info for your package. The URL for your package will be in the format `https://username.github.io/repo-name`.
+**Locking.** `[ZetLockButton]` renders disabled with a warning. The six `//ifex` blocks are
+untouched and inert to Unity — they are comments until something acts on them:
 
-## 🏠 Customizing the Landing Page (Optional)
+| Line | Condition | Strips |
+|---|---|---|
+| 835 | `_LTCGI==0` | LTCGI include |
+| 843 | `_LightVolumes==0` | Light Volumes include |
+| 903, 1733, ~2600, ~3350 | `_RefractEnable==0` | GrabPass + refraction |
+| ~2900 | `_OutlineStdEnable==0` | Outline pass |
 
-The action which rebuilds the listing also publishes a landing page. The source for this page is in `Website/index.html`. The automation system uses [Scriban](https://github.com/scriban/scriban) to fill in the objects like `{{ this }}` with information from the latest release's manifest, so it will stay up-to-date with the name, id and description that you provide there. You are welcome to modify this page however you want - just use the existing `{{ template.objects }}` to fill in that info wherever you like. The entire contents of your "Website" folder are published to your GitHub Page each time.
+All are `_Prop==0` guarding a region to delete — no value inlining, no macro expansion. A
+minimum viable locker reads the source, evaluates those six conditions against the material,
+deletes the regions, writes a generated `Hidden/Locked/...` shader and reassigns, storing the
+original path in a material override tag so unlocking can restore it.
 
-## 💻 Technical Stuff
+**`vpmDependencies` is still `{}`** while the shader hard-includes `at.pimaker.ltcgi` and
+`red.sim.lightvolumes`. Unlocked materials in a project without those packages fail to
+compile. Unchanged by this migration, and still the most likely thing to break for a new
+user.
 
-You are welcome to make your own changes to the automation process to make it fit your needs, and you can create Pull Requests if you have some changes you think we should adopt. Here's some more info on the included automation:
+**Package identity** still disagrees across `package.json` (`com.zetph.…`), the asmdef
+assembly name (`dev.zetph.…`), and the asmdef filename.
 
-### Build Release Action
-[release.yml](/.github/workflows/release.yml)
-
-This is a composite action combining a variety of existing GitHub Actions and some shell commands to create both a .zip of your Package and a .unitypackage. It creates a release which is named for the `version` in the `package.json` file found in your target Package, and publishes the zip, the unitypackage and the package.json file to this release.
-
-### Build Repo Listing
-[build-listing.yml](.github/workflows/build-listing.yml)
-
-This is a composite action which builds a vpm-compatible [Repo Listing](https://vcc.docs.vrchat.com/vpm/repos) based on the releases you've created. In order to find all your releases and combine them into a listing, it checks out [another repository](https://github.com/vrchat-community/package-list-action) which has a [Nuke](https://nuke.build/) project which includes the VPM core lib to have access to its types and methods. This project will be expanded to include more functionality in the future - for now, the action just calls its `BuildRepoListing` target.
+**Header comments** in both shaders still credit ThryEditor and describe its optimizer. Once
+locking is yours, those lines and the MIT attribution can go.
