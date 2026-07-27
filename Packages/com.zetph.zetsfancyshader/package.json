@@ -1,0 +1,30 @@
+{
+  "name": "com.zetph.zetsfancyshader",
+  "displayName": "ZetsFancyShader",
+  "version": "0.2.0",
+  "unity": "2022.3",
+  "description": "PC-only AudioLink-reactive toon + PBR shader for VRChat avatars, with emission FX, geometry break, glitch, interior mapping, subsurface scattering, LTCGI area lights, and VRC Light Volumes. Ships its own material inspector, locking, and map packer - no ThryEditor required. AudioLink is optional; reactive features idle until an AudioLink object is present in the world.",
+  "author": {
+    "name": "Zetph",
+    "email": "zetpherious+ZFS@gmail.com",
+    "url": "https://discord.gg/T2he8aAkyr"
+  },
+  "license": "MIT",
+  "keywords": [
+    "vrchat",
+    "shader",
+    "audiolink",
+    "toon",
+    "pbr",
+    "avatar",
+    "ltcgi",
+    "lightvolumes"
+  ],
+  "vpmDependencies": {
+    "at.pimaker.ltcgi": ">=1.0.0",
+    "red.sim.lightvolumes": ">=2.1.3"
+  },
+  "legacyFolders": {
+    "Assets\\Zetph\\ZetsFancyShader": ""
+  }
+}

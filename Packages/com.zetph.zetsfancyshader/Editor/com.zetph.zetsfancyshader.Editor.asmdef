@@ -1,5 +1,6 @@
 {
-    "name": "VRChatPackageTemplate.Editor",
+    "name": "dev.zetph.zetsfancyshader.Editor",
+    "rootNamespace": "",
     "references": [],
     "includePlatforms": [
         "Editor"

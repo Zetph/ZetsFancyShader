@@ -1,0 +1,134 @@
+{
+  "title": "ZetsFancyEyeShader",
+  "version": "v0.2.0-alpha",
+  "groups": [
+    {
+      "path": "base",
+      "label": "Base & Color",
+      "info": "",
+      "toggle": "",
+      "showIf": []
+    },
+    {
+      "path": "lighting",
+      "label": "Lighting & Shadows",
+      "info": "",
+      "toggle": "",
+      "showIf": []
+    },
+    {
+      "path": "lighting_toon",
+      "label": "Toon Shading",
+      "info": "",
+      "toggle": "",
+      "showIf": [
+        "_LightingModel=0"
+      ]
+    },
+    {
+      "path": "reflspec",
+      "label": "Reflections & Specular",
+      "info": "",
+      "toggle": "",
+      "showIf": []
+    },
+    {
+      "path": "reflspec_refl",
+      "label": "Environment Reflections",
+      "info": "",
+      "toggle": "_UseEnvReflections",
+      "showIf": []
+    },
+    {
+      "path": "reflspec_aniso",
+      "label": "Anisotropic Highlights",
+      "info": "",
+      "toggle": "_AnisoEnable",
+      "showIf": []
+    },
+    {
+      "path": "reflspec_stylespec",
+      "label": "Stylized Specular (Anime Glints)",
+      "info": "",
+      "toggle": "_StyleSpecEnable",
+      "showIf": []
+    },
+    {
+      "path": "reflspec_parallax",
+      "label": "Parallax Heightmapping",
+      "info": "",
+      "toggle": "_ParallaxEnable",
+      "showIf": []
+    },
+    {
+      "path": "reflspec_wetness",
+      "label": "Wetness / Tearline",
+      "info": "",
+      "toggle": "_WetnessEnable",
+      "showIf": []
+    },
+    {
+      "path": "reflspec_emission",
+      "label": "Emission (Glow)",
+      "info": "",
+      "toggle": "_EmissionEnable",
+      "showIf": []
+    },
+    {
+      "path": "ltcgi",
+      "label": "LTCGI",
+      "info": "",
+      "toggle": "_LTCGI",
+      "showIf": []
+    },
+    {
+      "path": "lightvolumes",
+      "label": "VRC Light Volumes",
+      "info": "",
+      "toggle": "_LightVolumes",
+      "showIf": []
+    }
+  ],
+  "tooltips": [
+    {
+      "name": "_EyeWrapLight",
+      "text": "Uses half-lambert (wrapped) diffuse so the eye still catches light even if the eyeball mesh has inverted or inward-facing normals - the usual cause of an eye that renders black while the face beside it is lit. Leave on unless your eye normals are known-correct and you want a harder terminator."
+    },
+    {
+      "name": "_PackMode",
+      "text": "How to read the Packed Map. ZFS Packed uses R=Metallic, G=AO, B=Smoothness. Unity MetallicSmoothness (the format most prepacked eye maps ship in) uses R=Metallic and Alpha=Smoothness, with no AO channel - pick this if your eyes render black with a prepacked map."
+    },
+    {
+      "name": "_PackedMap",
+      "text": "Metallic/AO/Smoothness. See Packed Map Format above for channel layout. Unassigned defaults to white; if that blacks out the eye, your map is Unity MetallicSmoothness format - switch the format above."
+    },
+    {
+      "name": "_SpecStrength",
+      "text": "Brightness of the direct specular highlight in Realistic PBR mode. Gives a plain eye a catchlight with no extra toggles. Ignored in Toon mode."
+    },
+    {
+      "name": "_ReflFlipX",
+      "text": "Mirror the reflected environment left-right. Off is correct for a standard eye mesh; enable only if a world's probe reads mirrored horizontally."
+    },
+    {
+      "name": "_ReflFlipY",
+      "text": "Mirror the reflected environment up-down. ON by default: a convex eye samples the cubemap Y-inverted, so this puts the sky up and the ground down. Turn off only to see the raw sample."
+    },
+    {
+      "name": "_StyleSpecUseLight",
+      "text": "Multiply the glint by the scene light colour, so it dims in dark rooms instead of glowing white. Turn off only for a stylised glint that ignores world lighting."
+    },
+    {
+      "name": "_LightVolumes",
+      "text": "Requires VRC Light Volumes 2.1.3+, installed via VCC alongside the shader."
+    },
+    {
+      "name": "_LVPointShading",
+      "text": "How strongly Point Light Volumes are shaped by the surface normal. Only used when VRC Light Volumes 3.x or newer is installed - on 2.x the shader calls an overload that has no shading and this does nothing. 0 disables per-surface shading, 1 is the standard smooth gradient, higher is sharper. Leave at 1 unless you want a harder falloff: LV 3.x's own default when the argument is omitted is 3, which is what makes lighting snap between areas."
+    }
+  ],
+  "lockCritical": [
+    "_LTCGI",
+    "_LightVolumes"
+  ]
+}

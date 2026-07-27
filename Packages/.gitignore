@@ -1,5 +1,8 @@
-/*/
-!com.vrchat.core.*
-
-# Change this to match your new package name
-!com.vrchat.demo-template 
+# Packages/ holds VPM-installed dependencies as real folders - the VRChat SDK,
+# LTCGI, Light Volumes. None of those belong in this repo. Exclude everything,
+# then re-include only what we author or what the project needs to resolve.
+/*
+!.gitignore
+!manifest.json
+!packages-lock.json
+!com.zetph.zetsfancyshader/

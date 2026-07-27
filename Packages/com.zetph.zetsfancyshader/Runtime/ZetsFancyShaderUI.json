@@ -1,0 +1,3260 @@
+{
+ "title": "ZetsFancyShader",
+ "version": "v0.2.0-alpha",
+ "groups": [
+  {
+   "path": "engine",
+   "label": "Global / Engine",
+   "info": "Core render settings for the whole material: culling, stencil masking, proximity fade, and ColorChord. Most avatars can leave these at default.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "engine_stencil",
+   "label": "Stencil & Sorting",
+   "info": "Stencil masking, used to hide the body under clothing or order overlapping transparent parts. Leave at default unless you are setting up a clothing mask.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "engine_renderstate",
+   "label": "Advanced Render State",
+   "info": "Raw render state. These are power-user overrides - wrong values can make the material invisible or z-fight. Leave at defaults unless you know why you are changing them.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "engine_prox",
+   "label": "Camera Proximity Fade",
+   "info": "Fades the avatar out as the viewer's camera gets close, so you do not block their view. Tune the near and far distances.",
+   "toggle": "_ProximityFade",
+   "showIf": []
+  },
+  {
+   "path": "engine_alenv",
+   "label": "AudioLink Response",
+   "info": "Smooths how every AudioLink effect reacts: a fast punch on the beat with a tunable tail, so reactions feel musical instead of twitchy. Affects break, glitch, speaker, emission, rim, and the rest.",
+   "toggle": "_ALEnvEnable",
+   "showIf": []
+  },
+  {
+   "path": "engine_cc",
+   "label": "AudioLink ColorChord",
+   "info": "Drives emission colour from AudioLink ColorChord, so your glow shifts hue with the music's notes instead of a fixed colour.",
+   "toggle": "_UseColorChord",
+   "showIf": []
+  },
+  {
+   "path": "engine_vertal",
+   "label": "AudioLink Vertex FX",
+   "info": "Moves, rotates, and scales geometry with the music. Translation and scale lerp between Min and Max by band intensity. Speed and Accumulate modes use AudioLink Chronotensity, so motion glides and never snaps back when the music changes. Mask where it applies. Shadows and the standard outline follow the motion.",
+   "toggle": "_VertALEnable",
+   "showIf": []
+  },
+  {
+   "path": "engine_vertal_valtrans",
+   "label": "Local Translation",
+   "info": "",
+   "toggle": "_VertALTransEnable",
+   "showIf": [
+    "_VertALEnable"
+   ]
+  },
+  {
+   "path": "engine_vertal_valwtrans",
+   "label": "World Translation",
+   "info": "",
+   "toggle": "_VertALWTransEnable",
+   "showIf": [
+    "_VertALEnable"
+   ]
+  },
+  {
+   "path": "engine_vertal_valrot",
+   "label": "Rotation",
+   "info": "",
+   "toggle": "_VertALRotEnable",
+   "showIf": [
+    "_VertALEnable"
+   ]
+  },
+  {
+   "path": "engine_vertal_valspin",
+   "label": "Rotation Speed (Spin)",
+   "info": "",
+   "toggle": "_VertALRotSpdEnable",
+   "showIf": [
+    "_VertALEnable"
+   ]
+  },
+  {
+   "path": "engine_vertal_valscale",
+   "label": "Scale",
+   "info": "",
+   "toggle": "_VertALScaleEnable",
+   "showIf": [
+    "_VertALEnable"
+   ]
+  },
+  {
+   "path": "engine_vertal_valuv",
+   "label": "UV Scroll",
+   "info": "",
+   "toggle": "_VertALUVEnable",
+   "showIf": [
+    "_VertALEnable"
+   ]
+  },
+  {
+   "path": "base",
+   "label": "Base & Color",
+   "info": "Your albedo texture, normal map, and colour tweaks (saturation, brightness, gamma, hue). The base look before lighting and effects.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "base_decals",
+   "label": "Decals",
+   "info": "Up to four image decals layered over the base colour, for tattoos, logos, or markings. Each has its own placement, blend, tint, and optional glow. Use textures with transparent edges so they sit cleanly.",
+   "toggle": "_DecalsEnable",
+   "showIf": []
+  },
+  {
+   "path": "base_decals_decal0",
+   "label": "Decal 0",
+   "info": "",
+   "toggle": "_Decal0Enable",
+   "showIf": []
+  },
+  {
+   "path": "base_decals_decal1",
+   "label": "Decal 1",
+   "info": "",
+   "toggle": "_Decal1Enable",
+   "showIf": []
+  },
+  {
+   "path": "base_decals_decal2",
+   "label": "Decal 2",
+   "info": "",
+   "toggle": "_Decal2Enable",
+   "showIf": []
+  },
+  {
+   "path": "base_decals_decal3",
+   "label": "Decal 3",
+   "info": "",
+   "toggle": "_Decal3Enable",
+   "showIf": []
+  },
+  {
+   "path": "base_uvtd",
+   "label": "UV Tile Discard",
+   "info": "Hides mesh parts by their UV tile in a 4x4 grid: UV outfit pieces into separate tiles, then toggle each with a single animated float - no extra materials or bones. Vertex-level, so hidden parts cost nothing and cast no shadows. Each mesh island must sit fully inside one tile; a triangle spanning two tiles disappears with the discarded one. Tile (0,0) is the standard 0-1 UV square.",
+   "toggle": "_UVTileDiscardEnable",
+   "showIf": []
+  },
+  {
+   "path": "base_detail",
+   "label": "Detail Maps",
+   "info": "High-tiling micro detail layered over the base: a detail albedo (grey = no change) and a detail normal for skin pores, fabric weave, or brushed metal that holds up at conversational distance. Masked, so skin detail stays off clothes. Pairs well with Subsurface Scattering.",
+   "toggle": "_DetailEnable",
+   "showIf": []
+  },
+  {
+   "path": "lighting",
+   "label": "Lighting & Shadows",
+   "info": "How the surface reacts to light: toon or realistic shading, shadow strength, and ambient fill.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "lighting_sss",
+   "label": "Subsurface Scattering",
+   "info": "Soft under-skin light in two parts: a warm tinted band where light rolls into shadow, and light bleeding through thin areas like ears and fingers when lit from behind. Works with both lighting models. Mask it to skin only for the most realistic result.",
+   "toggle": "_SSSEnable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_sss_sssterm",
+   "label": "Terminator Scatter",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_SSSEnable"
+   ]
+  },
+  {
+   "path": "lighting_sss_ssstrans",
+   "label": "Transmission (Backlight)",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_SSSEnable"
+   ]
+  },
+  {
+   "path": "lighting_sss_sssworld",
+   "label": "World Lighting",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_SSSEnable"
+   ]
+  },
+  {
+   "path": "lighting_reflspec",
+   "label": "Reflections & Specular",
+   "info": "Metallic reflections, smoothness, anisotropic highlights, and clear coat. Reads the packed PBR map (R metallic, G AO, B smoothness).",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "lighting_reflspec_aniso",
+   "label": "Anisotropic Highlights",
+   "info": "Stretched specular highlights that follow the surface grain, the look you get on brushed metal, hair, or silk.",
+   "toggle": "_AnisoEnable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_reflspec_stylespec",
+   "label": "Stylized Specular (Toon)",
+   "info": "Anime style stepped specular highlights that stack on top of the normal specular. Each layer is one sharp highlight: Size sets how big it is, Feather how soft the edge, Strength how bright. Turn the base specular down if you want only this look.",
+   "toggle": "_StyleSpecEnable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_reflspec_spec2",
+   "label": "2nd Specular / Clear Coat",
+   "info": "A second, sharper specular layer over the base, for a wet or lacquered clear coat shine.",
+   "toggle": "_Spec2Enable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_matcaps",
+   "label": "MatCaps",
+   "info": "Up to five fake lighting overlays from a sphere image. Great for metal, glass, or stylised rims without real lights.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "lighting_matcaps_mc0",
+   "label": "MatCap Base",
+   "info": "A MatCap fakes lighting from a sphere image. Pick a matcap texture, choose how it blends, and mask where it shows. Great for metal, glass, or rim light with no real lights.",
+   "toggle": "_MatcapEnable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_matcaps_mc1",
+   "label": "MatCap 1",
+   "info": "Another MatCap layer that stacks on top of the others. Same controls as MatCap Base.",
+   "toggle": "_Matcap1Enable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_matcaps_mc2",
+   "label": "MatCap 2",
+   "info": "Another MatCap layer that stacks on top of the others. Same controls as MatCap Base.",
+   "toggle": "_Matcap2Enable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_matcaps_mc3",
+   "label": "MatCap 3",
+   "info": "Another MatCap layer that stacks on top of the others. Same controls as MatCap Base.",
+   "toggle": "_Matcap3Enable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_matcaps_mc4",
+   "label": "MatCap 4",
+   "info": "Another MatCap layer that stacks on top of the others. Same controls as MatCap Base.",
+   "toggle": "_Matcap4Enable",
+   "showIf": []
+  },
+  {
+   "path": "emission",
+   "label": "Emission",
+   "info": "Up to four independent glow layers, each maskable and AudioLink reactive. Most neon and glow lives here.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "emission_em0",
+   "label": "Emission 0",
+   "info": "One emission layer: a mask, HDR colour and intensity, hue shift, and an audio mode. The bars below add AudioLink reactivity, light based dimming, blinking, and an infinity mirror.",
+   "toggle": "_Em0Enable",
+   "showIf": []
+  },
+  {
+   "path": "emission_em0_em0al",
+   "label": "AudioLink Settings",
+   "info": "Makes this emission layer react to AudioLink. Pick a frequency band from bass to treble and how much it boosts brightness, plus optional extra bands and volume response.",
+   "toggle": "_Em0ALEnable",
+   "showIf": []
+  },
+  {
+   "path": "emission_em0_em0al_em0aladj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_Em0ALEnable"
+   ]
+  },
+  {
+   "path": "emission_em0_em0lb",
+   "label": "Light Based",
+   "info": "Dims or brightens this emission based on how lit the surface is, so the glow can fade in shadow or only show in the dark. Set the lighting range and the min and max multipliers.",
+   "toggle": "_Em0LightBased",
+   "showIf": []
+  },
+  {
+   "path": "emission_em0_em0blink",
+   "label": "Blinking",
+   "info": "Pulses this emission on and off over time. Set the speed and how dim it goes at the bottom of each blink.",
+   "toggle": "_Em0Blink",
+   "showIf": []
+  },
+  {
+   "path": "emission_em0_em0scan",
+   "label": "Scan / Sweep",
+   "info": "A bright band that sweeps across this emission, vertically or horizontally, like a scanner. The same band travels, it does not reveal a bigger pattern underneath. Add Pixelation and Glitch Flicker for a chunky 32-bit look. Outside-Band Glow sets how much the rest of the mask still glows.",
+   "toggle": "_Em0Scan",
+   "showIf": []
+  },
+  {
+   "path": "emission_em0_em0mir",
+   "label": "Infinity Mirror",
+   "info": "Creates a recursive tunnel of repeating layers behind the surface, like an infinity mirror, using a background texture and parallax depth.",
+   "toggle": "_Em0Mirror",
+   "showIf": []
+  },
+  {
+   "path": "emission_em1",
+   "label": "Emission 1",
+   "info": "Another independent emission layer with the same controls as Emission 0. Stacks with the others.",
+   "toggle": "_Em1Enable",
+   "showIf": []
+  },
+  {
+   "path": "emission_em1_em1al",
+   "label": "AudioLink Settings",
+   "info": "",
+   "toggle": "_Em1ALEnable",
+   "showIf": []
+  },
+  {
+   "path": "emission_em1_em1al_em1aladj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_Em1ALEnable"
+   ]
+  },
+  {
+   "path": "emission_em1_em1lb",
+   "label": "Light Based",
+   "info": "",
+   "toggle": "_Em1LightBased",
+   "showIf": []
+  },
+  {
+   "path": "emission_em1_em1blink",
+   "label": "Blinking",
+   "info": "",
+   "toggle": "_Em1Blink",
+   "showIf": []
+  },
+  {
+   "path": "emission_em1_em1scan",
+   "label": "Scan / Sweep",
+   "info": "",
+   "toggle": "_Em1Scan",
+   "showIf": []
+  },
+  {
+   "path": "emission_em1_em1mir",
+   "label": "Infinity Mirror",
+   "info": "",
+   "toggle": "_Em1Mirror",
+   "showIf": []
+  },
+  {
+   "path": "emission_em2",
+   "label": "Emission 2",
+   "info": "Another independent emission layer with the same controls as Emission 0. Stacks with the others.",
+   "toggle": "_Em2Enable",
+   "showIf": []
+  },
+  {
+   "path": "emission_em2_em2al",
+   "label": "AudioLink Settings",
+   "info": "",
+   "toggle": "_Em2ALEnable",
+   "showIf": []
+  },
+  {
+   "path": "emission_em2_em2al_em2aladj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_Em2ALEnable"
+   ]
+  },
+  {
+   "path": "emission_em2_em2lb",
+   "label": "Light Based",
+   "info": "",
+   "toggle": "_Em2LightBased",
+   "showIf": []
+  },
+  {
+   "path": "emission_em2_em2blink",
+   "label": "Blinking",
+   "info": "",
+   "toggle": "_Em2Blink",
+   "showIf": []
+  },
+  {
+   "path": "emission_em2_em2scan",
+   "label": "Scan / Sweep",
+   "info": "",
+   "toggle": "_Em2Scan",
+   "showIf": []
+  },
+  {
+   "path": "emission_em2_em2mir",
+   "label": "Infinity Mirror",
+   "info": "",
+   "toggle": "_Em2Mirror",
+   "showIf": []
+  },
+  {
+   "path": "emission_em3",
+   "label": "Emission 3",
+   "info": "Another independent emission layer with the same controls as Emission 0. Stacks with the others.",
+   "toggle": "_Em3Enable",
+   "showIf": []
+  },
+  {
+   "path": "emission_em3_em3al",
+   "label": "AudioLink Settings",
+   "info": "",
+   "toggle": "_Em3ALEnable",
+   "showIf": []
+  },
+  {
+   "path": "emission_em3_em3al_em3aladj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_Em3ALEnable"
+   ]
+  },
+  {
+   "path": "emission_em3_em3lb",
+   "label": "Light Based",
+   "info": "",
+   "toggle": "_Em3LightBased",
+   "showIf": []
+  },
+  {
+   "path": "emission_em3_em3blink",
+   "label": "Blinking",
+   "info": "",
+   "toggle": "_Em3Blink",
+   "showIf": []
+  },
+  {
+   "path": "emission_em3_em3scan",
+   "label": "Scan / Sweep",
+   "info": "",
+   "toggle": "_Em3Scan",
+   "showIf": []
+  },
+  {
+   "path": "emission_em3_em3mir",
+   "label": "Infinity Mirror",
+   "info": "",
+   "toggle": "_Em3Mirror",
+   "showIf": []
+  },
+  {
+   "path": "specialfx",
+   "label": "Special FX",
+   "info": "Optional stylised and reactive effects. Each is off by default and toggled on its own bar below.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_room",
+   "label": "Interior Mapping (3D Room)",
+   "info": "Shows a believable 3D room behind the surface, like a window into an impossible space. Uses a room cubemap with real perspective, so it shifts correctly as you move around it. Great for chest panels, eyes, or portals.",
+   "toggle": "_RoomEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_room_roommotion",
+   "label": "Motion (Spin and Slide)",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RoomEnable"
+   ]
+  },
+  {
+   "path": "specialfx_room_roomglass",
+   "label": "Glass and Edge",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RoomEnable"
+   ]
+  },
+  {
+   "path": "specialfx_room_roomatmo",
+   "label": "Depth Atmosphere",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RoomEnable"
+   ]
+  },
+  {
+   "path": "specialfx_room_roomal",
+   "label": "AudioLink",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RoomEnable"
+   ]
+  },
+  {
+   "path": "specialfx_refract",
+   "label": "Refraction (Glass / Heat Haze)",
+   "info": "Bends whatever is rendered behind the surface, for glass, cloaks, or energy fields, with an optional chromatic split. It uses a GrabPass that is automatically stripped when this section is locked off, so it costs nothing unless you use it. Do not mark Enable Refraction as animated, or the strip cannot happen and the cost stays.",
+   "toggle": "_RefractEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_refract_refractshimmer",
+   "label": "Shimmer (Heat Haze)",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RefractEnable"
+   ]
+  },
+  {
+   "path": "specialfx_refract_refractal",
+   "label": "AudioLink",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RefractEnable"
+   ]
+  },
+  {
+   "path": "specialfx_screen",
+   "label": "Screen Display (Live Audio)",
+   "info": "Turns a masked area into a live screen driven by the actual audio: an oscilloscope of the real waveform, or EQ bars per frequency band. Optional grid, LCD subpixels, scanlines, and a crash screen. Needs AudioLink for the live signal.",
+   "toggle": "_ScreenEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_screen_scrbackdrop",
+   "label": "Backdrop and Art",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_ScreenEnable"
+   ]
+  },
+  {
+   "path": "specialfx_screen_scrgrid",
+   "label": "Grid",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_ScreenEnable"
+   ]
+  },
+  {
+   "path": "specialfx_screen_scrlcd",
+   "label": "LCD and Scanlines",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_ScreenEnable"
+   ]
+  },
+  {
+   "path": "specialfx_screen_scrbsod",
+   "label": "Crash Screen",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_ScreenEnable"
+   ]
+  },
+  {
+   "path": "specialfx_rim",
+   "label": "Fresnel Rim (Edge Glow)",
+   "info": "A glow around the silhouette edges facing away from the camera, for a neon or holographic look.",
+   "toggle": "_RimEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_rim_rimadv",
+   "label": "Rim Settings",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RimEnable"
+   ]
+  },
+  {
+   "path": "specialfx_speaker",
+   "label": "Speaker Ripple",
+   "info": "AudioLink driven ripples that pulse across the surface like a speaker cone reacting to bass.",
+   "toggle": "_SpeakerEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_speaker_spkadv",
+   "label": "Ripple Settings",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_SpeakerEnable"
+   ]
+  },
+  {
+   "path": "specialfx_eq",
+   "label": "EQ Visualizer",
+   "info": "Maps AudioLink frequency bands onto the surface as a moving equaliser pattern.",
+   "toggle": "_EQEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_irid",
+   "label": "Iridescence",
+   "info": "A view dependent colour shift (oil slick / soap bubble) layered over the surface.",
+   "toggle": "_IridEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_irid_iridadv",
+   "label": "Iridescence Settings",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_IridEnable"
+   ]
+  },
+  {
+   "path": "specialfx_dissolve",
+   "label": "Dissolve",
+   "info": "Burns the mesh away along a noise edge with a glowing burn line. Good for spawn in and despawn moments.",
+   "toggle": "_DissolveEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_dissolve_dissadv",
+   "label": "Dissolve Settings",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_DissolveEnable"
+   ]
+  },
+  {
+   "path": "specialfx_outline",
+   "label": "Glitch Outline",
+   "info": "A stylised, flickering outline that jitters and breaks up, reactive to AudioLink.",
+   "toggle": "_OutlineEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_outline_outadv",
+   "label": "Outline Settings",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_OutlineEnable"
+   ]
+  },
+  {
+   "path": "specialfx_outlinestd",
+   "label": "Outline (Inverted Hull)",
+   "info": "The classic toon / anime outline: a back-facing shell extruded around the mesh in a flat colour. Pick a colour and width, mask where it shows, optionally tint it by the texture or let it react to light. World width is a fixed thickness in metres (thins with distance); Screen width stays a constant on-screen thickness at any distance.",
+   "toggle": "_OutlineStdEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_stars",
+   "label": "Constellation / Nebula",
+   "info": "A starfield and nebula rendered into masked areas, like a window into space.",
+   "toggle": "_StarEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_stars_staradv",
+   "label": "Star Settings",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_StarEnable"
+   ]
+  },
+  {
+   "path": "specialfx_stars_nebula",
+   "label": "Nebula",
+   "info": "A volumetric nebula that adds real depth inside the constellation areas. PC only and noticeably heavier.",
+   "toggle": "",
+   "showIf": [
+    "_StarEnable"
+   ]
+  },
+  {
+   "path": "specialfx_break",
+   "label": "Geometry Break",
+   "info": "Shatters or floats the mesh into pieces, driven by an audio beat or a slow drift, with glow and fade options.",
+   "toggle": "_BreakEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_break_breakadv",
+   "label": "Break Settings",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_BreakEnable"
+   ]
+  },
+  {
+   "path": "specialfx_glitter",
+   "label": "Glitter / Sparkle",
+   "info": "Procedural sparkle flakes scattered over the surface that twinkle and glint as you move. Tune density, size, viewable angle, and speed, mask where they show, and optionally react to AudioLink or be lit by the world.",
+   "toggle": "_GlitterEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_glitch",
+   "label": "Mesh Glitch",
+   "info": "Randomly displaces chunks of the mesh for a datamosh or digital glitch effect.",
+   "toggle": "_GlitchEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_glitch_glitchadv",
+   "label": "Glitch Settings",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_GlitchEnable"
+   ]
+  },
+  {
+   "path": "specialfx_height",
+   "label": "Height & Parallax",
+   "info": "Adds fake surface depth from a height map, so detail appears to sit below the surface as you move.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "ltcgi",
+   "label": "LTCGI",
+   "info": "Enables LTCGI area light support, so the avatar picks up coloured light from LTCGI world screens and emitters.",
+   "toggle": "_LTCGI",
+   "showIf": []
+  },
+  {
+   "path": "lightvolumes",
+   "label": "VRC Light Volumes",
+   "info": "Support for VRC Light Volumes, the voxel-based light probe replacement modern worlds use. The avatar picks up per-pixel baked lighting and moving point, spot, and area Light Volume lights - far more detailed than Unity's blended probes. Falls back to normal probes automatically in worlds without it. Requires the free VRC Light Volumes package (red.sim.lightvolumes), version 2.1.3 or newer - installed automatically alongside the shader via VCC.",
+   "toggle": "_LightVolumes",
+   "showIf": []
+  },
+  {
+   "path": "debug",
+   "label": "Debug Views",
+   "info": "Renders one isolated term instead of the finished surface - albedo, normals, AO, ambient, and so on. Use it to find which input is wrong when a material looks black or blown out, rather than guessing from the composited result. Set it back to Off before locking: it drives an //ifex, so Off strips the whole feature from the locked shader, and anything else ships the debug view to everyone who sees you.",
+   "toggle": "",
+   "showIf": []
+  }
+ ],
+ "tooltips": [
+  {
+   "name": "_CullMode",
+   "text": "Which faces to draw. Back is normal and cheapest. Off draws both sides for flat cards or fins."
+  },
+  {
+   "name": "_StencilRef",
+   "text": "The value this material writes or compares against. Keep it low, 1 to 3."
+  },
+  {
+   "name": "_StencilComp",
+   "text": "How the stencil test passes. Always means no masking. NotEqual is the usual reader setting."
+  },
+  {
+   "name": "_StencilPass",
+   "text": "What to write when the test passes. Replace stamps the reference (writer). Keep writes nothing."
+  },
+  {
+   "name": "_StencilFail",
+   "text": "What to write when the stencil test fails. Usually Keep."
+  },
+  {
+   "name": "_StencilZFail",
+   "text": "What to write when the depth test fails. Usually Keep."
+  },
+  {
+   "name": "_StencilReadMask",
+   "text": "Bits considered when comparing. Leave at 255 unless layering multiple masks."
+  },
+  {
+   "name": "_StencilWriteMask",
+   "text": "Bits allowed to be written. Leave at 255 unless layering multiple masks."
+  },
+  {
+   "name": "_ZTest",
+   "text": "How the material tests against the depth buffer. LessEqual is standard. Always draws through everything (see-through-wall look)."
+  },
+  {
+   "name": "_ZWriteOverride",
+   "text": "Whether opaque geometry writes depth. On is correct for opaque; transparency modes manage this automatically, so leave at On unless hand-tuning."
+  },
+  {
+   "name": "_ColorMask",
+   "text": "Which colour channels this material writes. RGBA is normal. None writes depth only (invisible but still occludes). Advanced use only."
+  },
+  {
+   "name": "_OffsetFactor",
+   "text": "Slope-scaled depth bias. Negative pulls the surface toward the camera to beat z-fighting on coplanar decals."
+  },
+  {
+   "name": "_OffsetUnits",
+   "text": "Constant depth bias. Pairs with Offset Factor. 0 is off."
+  },
+  {
+   "name": "_ProxMin",
+   "text": "Distance at which the avatar starts fading as a camera approaches."
+  },
+  {
+   "name": "_ProxMax",
+   "text": "Distance at which the avatar is fully faded. Must be larger than the start."
+  },
+  {
+   "name": "_ALEnvRelease",
+   "text": "How long reactions take to fall after a beat. Low is snappy and percussive, high holds and glides. Attack is always fast."
+  },
+  {
+   "name": "_VertALMask",
+   "text": "Limits the motion to white areas. Sampled per vertex, so it needs reasonable vertex density to read a detailed mask."
+  },
+  {
+   "name": "_VertALTransMin",
+   "text": "Offset in object space when the band is silent."
+  },
+  {
+   "name": "_VertALTransMax",
+   "text": "Offset in object space when the band is at full intensity."
+  },
+  {
+   "name": "_VertALWTransMin",
+   "text": "World-aligned offset when the band is silent. Stays world-up etc. no matter how the avatar is rotated."
+  },
+  {
+   "name": "_VertALWTransMax",
+   "text": "World-aligned offset at full band intensity."
+  },
+  {
+   "name": "_VertALRot",
+   "text": "Rotation per axis around the object pivot. In Intensity mode this is the angle at full band. In Accumulate modes it is degrees per audio-second (keeps turning, faster when the band is active)."
+  },
+  {
+   "name": "_VertALRotModeX",
+   "text": "Intensity rotates by band level and returns. Accumulate keeps turning while the band is active (Chronotensity, no snap-back). Accumulate When Quiet turns when the band is silent. Ping Pong bounces between 0 and full."
+  },
+  {
+   "name": "_VertALRotSpd",
+   "text": "Continuous spin per axis. Rate scales with band intensity via Chronotensity, so it speeds up on the beat and coasts smoothly instead of jittering."
+  },
+  {
+   "name": "_VertALScaleMin",
+   "text": "Object-pivot scale when the band is silent. 1,1,1 is unchanged."
+  },
+  {
+   "name": "_VertALScaleMax",
+   "text": "Scale at full band intensity."
+  },
+  {
+   "name": "_VertALUVMode",
+   "text": "Offset shifts the UV by band level and returns. Scroll keeps scrolling, faster when the band is active (Chronotensity)."
+  },
+  {
+   "name": "_VertALUVSpeed",
+   "text": "Offset mode: max UV shift at full band. Scroll mode: UV per audio-second."
+  },
+  {
+   "name": "_MainTex",
+   "text": "Your main colour texture, the albedo."
+  },
+  {
+   "name": "_BumpMap",
+   "text": "Tangent space normal map for surface detail."
+  },
+  {
+   "name": "_BumpScale",
+   "text": "How strong the normal map reads. 1 is normal, 0 is flat."
+  },
+  {
+   "name": "_AlphaMode",
+   "text": "Opaque is solid (alpha ignored). Cutout uses albedo alpha for hard-edged transparency like hair and lashes, with anti-aliased alpha-to-coverage edges. Transparent is true alpha blending for glass, ghosts, and fades. Switching this auto-sets blending, depth write, and render queue."
+  },
+  {
+   "name": "_Cutoff",
+   "text": "Albedo alpha below this is cut away. Around 0.5 is typical."
+  },
+  {
+   "name": "_AlphaSourceEnable",
+   "text": "Off uses the albedo texture's own alpha for transparency. On reads opacity from the dedicated map below instead, handy when your alpha lives in its own file or in a colour channel rather than the albedo alpha."
+  },
+  {
+   "name": "_AlphaTex",
+   "text": "Dedicated opacity texture. White is opaque, black is clear. Choose which channel holds the opacity below. Shares the albedo's tiling and offset."
+  },
+  {
+   "name": "_AlphaChannel",
+   "text": "Which channel of the map holds the opacity. A standalone grey opacity map is usually Red; an albedo+transparency export keeps it in Alpha."
+  },
+  {
+   "name": "_Saturation",
+   "text": "Boosts or mutes all colours. 1 leaves them unchanged."
+  },
+  {
+   "name": "_Brightness",
+   "text": "Multiplies overall brightness. 1 is unchanged."
+  },
+  {
+   "name": "_Gamma",
+   "text": "Adjusts midtone contrast. 1 is unchanged."
+  },
+  {
+   "name": "_BaseHueShift",
+   "text": "Rotates every hue by a fixed amount."
+  },
+  {
+   "name": "_BaseHueShiftAL",
+   "text": "Extra hue rotation driven by AudioLink."
+  },
+  {
+   "name": "_BaseHueBand",
+   "text": "Which AudioLink band drives the hue shift."
+  },
+  {
+   "name": "_Decal0Tex",
+   "text": "The decal image. Its alpha is the cutout. Place and size it with the Position and Size sliders below."
+  },
+  {
+   "name": "_Decal0Color",
+   "text": "Multiplies the decal colour and alpha."
+  },
+  {
+   "name": "_Decal0Opacity",
+   "text": "Overall decal opacity, 0 to 1. This is a plain slider (not a keyword), so it animates from an avatar menu - use it to fade a decal like blush in and out. 0 is invisible, 1 is full."
+  },
+  {
+   "name": "_Decal0PosX",
+   "text": "Left-right placement across the UV. 0.5 is centre."
+  },
+  {
+   "name": "_Decal0PosY",
+   "text": "Up-down placement across the UV. 0.5 is centre."
+  },
+  {
+   "name": "_Decal0Scale",
+   "text": "How large the decal is in UV space. Smaller is a tighter patch."
+  },
+  {
+   "name": "_Decal0Rotation",
+   "text": "Spins the decal in place, in degrees."
+  },
+  {
+   "name": "_Decal0Blend",
+   "text": "Normal lays it on top. Add and Screen brighten. Multiply darkens."
+  },
+  {
+   "name": "_Decal0Emit",
+   "text": "Makes the decal glow. 0 is a normal lit decal, higher adds bloom."
+  },
+  {
+   "name": "_Decal0Overlay",
+   "text": "Draws this decal as a flat overlay on top of the interior room, screen, and lighting, instead of painting it onto the lit surface. Use this to layer logos or art over a room window."
+  },
+  {
+   "name": "_Decal0Flipbook",
+   "text": "Treats the texture as a grid sprite sheet and plays the cells in sequence over time, like a GIF."
+  },
+  {
+   "name": "_Decal0FlipCols",
+   "text": "Number of columns in the sprite sheet."
+  },
+  {
+   "name": "_Decal0FlipRows",
+   "text": "Number of rows in the sprite sheet."
+  },
+  {
+   "name": "_Decal0FlipFPS",
+   "text": "How many frames play per second."
+  },
+  {
+   "name": "_Decal1Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Tint alpha for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Decal1Tex",
+   "text": "The decal image. Its alpha is the cutout. Place and size it with the Position and Size sliders below."
+  },
+  {
+   "name": "_Decal1Color",
+   "text": "Multiplies the decal colour and alpha."
+  },
+  {
+   "name": "_Decal1Opacity",
+   "text": "Overall decal opacity, 0 to 1. This is a plain slider (not a keyword), so it animates from an avatar menu - use it to fade a decal like blush in and out. 0 is invisible, 1 is full."
+  },
+  {
+   "name": "_Decal1PosX",
+   "text": "Left-right placement across the UV. 0.5 is centre."
+  },
+  {
+   "name": "_Decal1PosY",
+   "text": "Up-down placement across the UV. 0.5 is centre."
+  },
+  {
+   "name": "_Decal1Scale",
+   "text": "How large the decal is in UV space. Smaller is a tighter patch."
+  },
+  {
+   "name": "_Decal1Rotation",
+   "text": "Spins the decal in place, in degrees."
+  },
+  {
+   "name": "_Decal1Blend",
+   "text": "Normal lays it on top. Add and Screen brighten. Multiply darkens."
+  },
+  {
+   "name": "_Decal1Emit",
+   "text": "Makes the decal glow. 0 is a normal lit decal, higher adds bloom."
+  },
+  {
+   "name": "_Decal1Overlay",
+   "text": "Draws this decal as a flat overlay on top of the interior room, screen, and lighting, instead of painting it onto the lit surface. Use this to layer logos or art over a room window."
+  },
+  {
+   "name": "_Decal1Flipbook",
+   "text": "Treats the texture as a grid sprite sheet and plays the cells in sequence over time, like a GIF."
+  },
+  {
+   "name": "_Decal1FlipCols",
+   "text": "Number of columns in the sprite sheet."
+  },
+  {
+   "name": "_Decal1FlipRows",
+   "text": "Number of rows in the sprite sheet."
+  },
+  {
+   "name": "_Decal1FlipFPS",
+   "text": "How many frames play per second."
+  },
+  {
+   "name": "_Decal2Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Tint alpha for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Decal2Tex",
+   "text": "The decal image. Its alpha is the cutout. Place and size it with the Position and Size sliders below."
+  },
+  {
+   "name": "_Decal2Color",
+   "text": "Multiplies the decal colour and alpha."
+  },
+  {
+   "name": "_Decal2Opacity",
+   "text": "Overall decal opacity, 0 to 1. This is a plain slider (not a keyword), so it animates from an avatar menu - use it to fade a decal like blush in and out. 0 is invisible, 1 is full."
+  },
+  {
+   "name": "_Decal2PosX",
+   "text": "Left-right placement across the UV. 0.5 is centre."
+  },
+  {
+   "name": "_Decal2PosY",
+   "text": "Up-down placement across the UV. 0.5 is centre."
+  },
+  {
+   "name": "_Decal2Scale",
+   "text": "How large the decal is in UV space. Smaller is a tighter patch."
+  },
+  {
+   "name": "_Decal2Rotation",
+   "text": "Spins the decal in place, in degrees."
+  },
+  {
+   "name": "_Decal2Blend",
+   "text": "Normal lays it on top. Add and Screen brighten. Multiply darkens."
+  },
+  {
+   "name": "_Decal2Emit",
+   "text": "Makes the decal glow. 0 is a normal lit decal, higher adds bloom."
+  },
+  {
+   "name": "_Decal2Overlay",
+   "text": "Draws this decal as a flat overlay on top of the interior room, screen, and lighting, instead of painting it onto the lit surface. Use this to layer logos or art over a room window."
+  },
+  {
+   "name": "_Decal2Flipbook",
+   "text": "Treats the texture as a grid sprite sheet and plays the cells in sequence over time, like a GIF."
+  },
+  {
+   "name": "_Decal2FlipCols",
+   "text": "Number of columns in the sprite sheet."
+  },
+  {
+   "name": "_Decal2FlipRows",
+   "text": "Number of rows in the sprite sheet."
+  },
+  {
+   "name": "_Decal2FlipFPS",
+   "text": "How many frames play per second."
+  },
+  {
+   "name": "_Decal3Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Tint alpha for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Decal3Tex",
+   "text": "The decal image. Its alpha is the cutout. Place and size it with the Position and Size sliders below."
+  },
+  {
+   "name": "_Decal3Color",
+   "text": "Multiplies the decal colour and alpha."
+  },
+  {
+   "name": "_Decal3Opacity",
+   "text": "Overall decal opacity, 0 to 1. This is a plain slider (not a keyword), so it animates from an avatar menu - use it to fade a decal like blush in and out. 0 is invisible, 1 is full."
+  },
+  {
+   "name": "_Decal3PosX",
+   "text": "Left-right placement across the UV. 0.5 is centre."
+  },
+  {
+   "name": "_Decal3PosY",
+   "text": "Up-down placement across the UV. 0.5 is centre."
+  },
+  {
+   "name": "_Decal3Scale",
+   "text": "How large the decal is in UV space. Smaller is a tighter patch."
+  },
+  {
+   "name": "_Decal3Rotation",
+   "text": "Spins the decal in place, in degrees."
+  },
+  {
+   "name": "_Decal3Blend",
+   "text": "Normal lays it on top. Add and Screen brighten. Multiply darkens."
+  },
+  {
+   "name": "_Decal3Emit",
+   "text": "Makes the decal glow. 0 is a normal lit decal, higher adds bloom."
+  },
+  {
+   "name": "_Decal3Overlay",
+   "text": "Draws this decal as a flat overlay on top of the interior room, screen, and lighting, instead of painting it onto the lit surface. Use this to layer logos or art over a room window."
+  },
+  {
+   "name": "_Decal3Flipbook",
+   "text": "Treats the texture as a grid sprite sheet and plays the cells in sequence over time, like a GIF."
+  },
+  {
+   "name": "_Decal3FlipCols",
+   "text": "Number of columns in the sprite sheet."
+  },
+  {
+   "name": "_Decal3FlipRows",
+   "text": "Number of rows in the sprite sheet."
+  },
+  {
+   "name": "_Decal3FlipFPS",
+   "text": "How many frames play per second."
+  },
+  {
+   "name": "_UVTileDiscardChannel",
+   "text": "Which UV set holds the tile layout. UV1 lets UV0 stay purely for texturing."
+  },
+  {
+   "name": "_UVTileRow0_0",
+   "text": "Hide the mesh in UV tile column 0, row 0. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow0_1",
+   "text": "Hide the mesh in UV tile column 1, row 0. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow0_2",
+   "text": "Hide the mesh in UV tile column 2, row 0. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow0_3",
+   "text": "Hide the mesh in UV tile column 3, row 0. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow1_0",
+   "text": "Hide the mesh in UV tile column 0, row 1. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow1_1",
+   "text": "Hide the mesh in UV tile column 1, row 1. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow1_2",
+   "text": "Hide the mesh in UV tile column 2, row 1. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow1_3",
+   "text": "Hide the mesh in UV tile column 3, row 1. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow2_0",
+   "text": "Hide the mesh in UV tile column 0, row 2. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow2_1",
+   "text": "Hide the mesh in UV tile column 1, row 2. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow2_2",
+   "text": "Hide the mesh in UV tile column 2, row 2. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow2_3",
+   "text": "Hide the mesh in UV tile column 3, row 2. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow3_0",
+   "text": "Hide the mesh in UV tile column 0, row 3. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow3_1",
+   "text": "Hide the mesh in UV tile column 1, row 3. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow3_2",
+   "text": "Hide the mesh in UV tile column 2, row 3. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_UVTileRow3_3",
+   "text": "Hide the mesh in UV tile column 3, row 3. Animate this single float for an outfit toggle."
+  },
+  {
+   "name": "_DetailMask",
+   "text": "Where detail applies. White shows detail, black is the plain base."
+  },
+  {
+   "name": "_DetailTiling",
+   "text": "Tiling of the detail maps. Detail typically tiles 4-16x over the base UVs."
+  },
+  {
+   "name": "_DetailAlbedo",
+   "text": "Multiplied at 2x, so mid grey leaves the base unchanged, darker darkens, lighter lightens."
+  },
+  {
+   "name": "_DetailAlbedoStrength",
+   "text": "How strongly the detail albedo blends in."
+  },
+  {
+   "name": "_DetailNormal",
+   "text": "High-frequency normal blended over the base normal (whiteout blend)."
+  },
+  {
+   "name": "_DetailNormalStrength",
+   "text": "Strength of the detail normal. 0 is flat."
+  },
+  {
+   "name": "_LightingModel",
+   "text": "Toon gives flat banded shading. Realistic gives smooth PBR style shading. Cloth uses a soft wrapped diffuse and a fabric sheen halo instead of a hard hotspot - velvet, wool, knits. Metal needs no mode of its own; use Realistic PBR with the metallic map."
+  },
+  {
+   "name": "_ShadowEdge",
+   "text": "Where the toon shadow line sits. Lower puts more surface in shadow."
+  },
+  {
+   "name": "_ShadowSoft",
+   "text": "How soft the toon shadow edge is. 0 is a hard line."
+  },
+  {
+   "name": "_ShadowDither",
+   "text": "Adds a film-grain stipple across the shadow edge. Off by default. Meant to break up banding on a SOFT edge, so raise Shadow Softness alongside it; on a hard edge it just looks grainy."
+  },
+  {
+   "name": "_SpecEdge",
+   "text": "How sharp the toon specular highlight edge is."
+  },
+  {
+   "name": "_ClothWrap",
+   "text": "How far light wraps past the terminator. Fabric scatters light through its fibers, so cloth shades softer than a hard lambert. 0 is standard falloff."
+  },
+  {
+   "name": "_SheenColor",
+   "text": "Colour of the fabric sheen halo at grazing angles. White for silk and satin, a dim tint of the base colour for wool and velvet. Smoothness controls how tight the halo is."
+  },
+  {
+   "name": "_ShadowTint",
+   "text": "Colour multiplied into shadowed areas. Default is neutral grey; tint it cool or warm to taste."
+  },
+  {
+   "name": "_MaxBrightness",
+   "text": "Caps how bright direct light can make the surface."
+  },
+  {
+   "name": "_MinBrightness",
+   "text": "Raises the darkest the surface can get so it never goes fully black."
+  },
+  {
+   "name": "_GrayscaleLighting",
+   "text": "Desaturates both the scene light and the ambient/world colour, keeping only brightness. Good for a neutral look or to kill a coloured-world tint. No effect when the lighting is already white."
+  },
+  {
+   "name": "_ReceiveShadows",
+   "text": "Lets shadows cast by other objects land on this surface."
+  },
+  {
+   "name": "_SSSMask",
+   "text": "Where scattering applies. White scatters, black shades normally. Paint this to skin only."
+  },
+  {
+   "name": "_SSSTintMode",
+   "text": "What tints the scattered light. Custom uses the colour below. From Base Color derives the tint from the albedo, so one material adapts across skin tones automatically. Skin, Foliage, and Marble are ready-made looks."
+  },
+  {
+   "name": "_SSSColor",
+   "text": "Colour of the scattered light. Warm red-orange reads as skin. Avoid fully saturated colours or coloured world lights get filtered to black."
+  },
+  {
+   "name": "_SSSTermWidth",
+   "text": "Width of the warm band where light rolls into shadow. In Toon mode it hugs the Shadow Edge line."
+  },
+  {
+   "name": "_SSSTermStrength",
+   "text": "Brightness of the warm terminator band. 0 turns the band off."
+  },
+  {
+   "name": "_SSSThicknessMap",
+   "text": "Black lets light through (ears, fingers, nose wings); white blocks it. Bake one in Blender or Substance by inverting a through-mesh AO. Left empty, everything transmits and the SSS Mask does the limiting."
+  },
+  {
+   "name": "_SSSTransStrength",
+   "text": "How much light bleeds through from behind. 0 turns transmission off."
+  },
+  {
+   "name": "_SSSTransPower",
+   "text": "Sharpness of the glow around a light seen through the surface. Higher is a tighter hotspot."
+  },
+  {
+   "name": "_SSSTransDistortion",
+   "text": "How much the surface normal bends the transmitted light, adding surface shape to the glow."
+  },
+  {
+   "name": "_SSSAmbient",
+   "text": "Lets a little probe light through thin areas even with no direct light, so ears stay alive in probe-lit worlds. Flat and directionless; the slider below is the directional version."
+  },
+  {
+   "name": "_SSSProbeLight",
+   "text": "Derives the dominant light direction from the world's light probes and runs it through the same focused transmission as a real light. This is how baked suns and club lighting - most VRChat worlds - get natural through-skin glow, and it makes Transmission Focus and Normal Distortion work in worlds with no realtime directional light. 0 is off."
+  },
+  {
+   "name": "_SSSLTCGI",
+   "text": "Lets LTCGI screens and area lights shine through thin parts from behind, like a dancefloor screen glowing through ears. Still uses the Scatter Color, mask, thickness map, and Transmission Strength above; only Focus and Distortion do not apply, since area lights are already spatially shaped. Costs a second full LTCGI evaluation, so leave it off unless the avatar is headed for LTCGI club worlds. Needs the LTCGI System enabled at the bottom of this shader."
+  },
+  {
+   "name": "_SSSLVDepth",
+   "text": "How far behind the surface, in metres, the Light Volume is sampled for transmission. The transmitted colour becomes the light actually present inside the body part, so an LV light tucked behind the ear shows through in that light's colour. Only active in Light Volume worlds with the Light Volumes System enabled."
+  },
+  {
+   "name": "_BakedCubemap",
+   "text": "A cubemap used for reflections in worlds with no reflection probes."
+  },
+  {
+   "name": "_FallbackCubemapStrength",
+   "text": "How much the fallback cubemap fills in when a world is dark."
+  },
+  {
+   "name": "_ForceFallback",
+   "text": "Preview only. Always uses the fallback and ignores the world probe."
+  },
+  {
+   "name": "_ReflStrength",
+   "text": "Scales all reflections. 0 is off, 1 is normal, 2 is punchy. Roughness still blurs them."
+  },
+  {
+   "name": "_PackMode",
+   "text": "How to read the Packed Map. ZFS Packed uses R=Metallic, G=AO, B=Smoothness. Unity MetallicSmoothness (the format most prepacked maps ship in) uses R=Metallic and Alpha=Smoothness with no AO channel - pick this if your surface renders black with a prepacked map."
+  },
+  {
+   "name": "_PackedMap",
+   "text": "One texture holding three maps. Red metallic, green AO, blue smoothness."
+  },
+  {
+   "name": "_InvSmooth",
+   "text": "Turn on if your blue channel is roughness instead of smoothness."
+  },
+  {
+   "name": "_PackedTiling",
+   "text": "Tiling of the packed map across the surface."
+  },
+  {
+   "name": "_PackedOffset",
+   "text": "Shifts the packed map across the surface."
+  },
+  {
+   "name": "_PackedPan",
+   "text": "Scrolls the packed map over time."
+  },
+  {
+   "name": "_PackedStochastic",
+   "text": "Hides obvious tiling repeats by randomising sampling. Slightly costlier."
+  },
+  {
+   "name": "_Metallic",
+   "text": "Scales the map's red channel. With no map assigned this is simply the metalness. At 0 the surface is fully non-metal whatever the map says."
+  },
+  {
+   "name": "_AdvancedRemap",
+   "text": "Adds floor sliders so a map can be remapped into a narrower range instead of scaled. Leave off unless you need it - a floor equal to the slider above pins every pixel to one value and the map stops doing anything."
+  },
+  {
+   "name": "_MetallicMin",
+   "text": "Metalness where the map's red channel is black. Raises a weak map off zero. Equal to Metallic means the map is ignored entirely."
+  },
+  {
+   "name": "_Smoothness",
+   "text": "Scales the map's smoothness channel. With no map assigned this is simply the smoothness."
+  },
+  {
+   "name": "_SmoothnessMin",
+   "text": "Smoothness where the map's channel reads black. Raises a too-rough map. Equal to Smoothness means the map is ignored entirely."
+  },
+  {
+   "name": "_OcclusionStrength",
+   "text": "How strongly the AO channel darkens crevices."
+  },
+  {
+   "name": "_ReflTint",
+   "text": "Colour multiplied into reflections."
+  },
+  {
+   "name": "_SpecTint",
+   "text": "Colour multiplied into the specular highlight."
+  },
+  {
+   "name": "_AnisoColor",
+   "text": "Colour of the anisotropic streak."
+  },
+  {
+   "name": "_AnisoDir",
+   "text": "Which surface axis the streak follows. Only used in Mesh Tangent mode."
+  },
+  {
+   "name": "_AnisoDirMode",
+   "text": "Where the grain direction comes from. Object Space Map ignores UV seams."
+  },
+  {
+   "name": "_AnisoFlowMap",
+   "text": "Used in Tangent Flow mode. RG paints grain direction in tangent space. R = along U, G = along V."
+  },
+  {
+   "name": "_AnisoObjectMap",
+   "text": "Used in Object Space mode. RGB is a 3D grain direction baked in object space. Tangent independent so it ignores UV seams."
+  },
+  {
+   "name": "_AnisoShift",
+   "text": "Slides the highlight along the grain direction."
+  },
+  {
+   "name": "_AnisoPower",
+   "text": "Sharpness of the streak. Higher is tighter."
+  },
+  {
+   "name": "_AnisoStrength",
+   "text": "Brightness of the anisotropic highlight."
+  },
+  {
+   "name": "_AnisoMask",
+   "text": "Limits the effect to white areas. Paint it onto hair or metal only."
+  },
+  {
+   "name": "_StyleSpecTint",
+   "text": "Colour of the stylized highlights."
+  },
+  {
+   "name": "_StyleSpecUseLight",
+   "text": "Multiply the highlight by the scene light colour."
+  },
+  {
+   "name": "_StyleSpecMask",
+   "text": "Limits the stylized highlights to white areas."
+  },
+  {
+   "name": "_SS1Size",
+   "text": "How large this highlight layer spreads."
+  },
+  {
+   "name": "_SS1Feather",
+   "text": "How soft this layer edge is. 0 is a hard anime edge."
+  },
+  {
+   "name": "_SS1Strength",
+   "text": "Brightness of this layer. 0 turns it off."
+  },
+  {
+   "name": "_SS2Size",
+   "text": "How large this highlight layer spreads."
+  },
+  {
+   "name": "_SS2Feather",
+   "text": "How soft this layer edge is. 0 is a hard anime edge."
+  },
+  {
+   "name": "_SS2Strength",
+   "text": "Brightness of this layer. 0 turns it off."
+  },
+  {
+   "name": "_SS3Size",
+   "text": "How large this highlight layer spreads."
+  },
+  {
+   "name": "_SS3Feather",
+   "text": "How soft this layer edge is. 0 is a hard anime edge."
+  },
+  {
+   "name": "_SS3Strength",
+   "text": "Brightness of this layer. 0 turns it off."
+  },
+  {
+   "name": "_Spec2Color",
+   "text": "Tint of the clear coat highlight."
+  },
+  {
+   "name": "_Spec2Smoothness",
+   "text": "How tight the clear coat highlight is."
+  },
+  {
+   "name": "_Spec2Mask",
+   "text": "Limits the clear coat to white areas."
+  },
+  {
+   "name": "_MatcapTex",
+   "text": "A sphere image that fakes lighting and reflections."
+  },
+  {
+   "name": "_MatcapMode",
+   "text": "How it blends. Add for glow, Multiply for shading, Replace to overwrite."
+  },
+  {
+   "name": "_MatcapStrength",
+   "text": "How strongly this matcap shows, 0 to 100."
+  },
+  {
+   "name": "_MatcapMask",
+   "text": "Limits this matcap to white areas."
+  },
+  {
+   "name": "_Matcap1Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Strength for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Matcap1Tex",
+   "text": "A sphere image that fakes lighting and reflections."
+  },
+  {
+   "name": "_Matcap1Mode",
+   "text": "How it blends. Add for glow, Multiply for shading, Replace to overwrite."
+  },
+  {
+   "name": "_Matcap1Strength",
+   "text": "How strongly this matcap shows, 0 to 100."
+  },
+  {
+   "name": "_Matcap1Mask",
+   "text": "Limits this matcap to white areas."
+  },
+  {
+   "name": "_Matcap2Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Strength for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Matcap2Tex",
+   "text": "A sphere image that fakes lighting and reflections."
+  },
+  {
+   "name": "_Matcap2Mode",
+   "text": "How it blends. Add for glow, Multiply for shading, Replace to overwrite."
+  },
+  {
+   "name": "_Matcap2Strength",
+   "text": "How strongly this matcap shows, 0 to 100."
+  },
+  {
+   "name": "_Matcap2Mask",
+   "text": "Limits this matcap to white areas."
+  },
+  {
+   "name": "_Matcap3Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Strength for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Matcap3Tex",
+   "text": "A sphere image that fakes lighting and reflections."
+  },
+  {
+   "name": "_Matcap3Mode",
+   "text": "How it blends. Add for glow, Multiply for shading, Replace to overwrite."
+  },
+  {
+   "name": "_Matcap3Strength",
+   "text": "How strongly this matcap shows, 0 to 100."
+  },
+  {
+   "name": "_Matcap3Mask",
+   "text": "Limits this matcap to white areas."
+  },
+  {
+   "name": "_Matcap4Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Strength for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Matcap4Tex",
+   "text": "A sphere image that fakes lighting and reflections."
+  },
+  {
+   "name": "_Matcap4Mode",
+   "text": "How it blends. Add for glow, Multiply for shading, Replace to overwrite."
+  },
+  {
+   "name": "_Matcap4Strength",
+   "text": "How strongly this matcap shows, 0 to 100."
+  },
+  {
+   "name": "_Matcap4Mask",
+   "text": "Limits this matcap to white areas."
+  },
+  {
+   "name": "_Em0BgTex",
+   "text": "Pattern drawn inside every slot's infinity mirror. Each slot still tints, scales, and pans it independently."
+  },
+  {
+   "name": "_Em0Mask",
+   "text": "Where this layer glows. White glows, black does not."
+  },
+  {
+   "name": "_Em0Color",
+   "text": "Glow colour. Push the HDR intensity up for bloom."
+  },
+  {
+   "name": "_Em0Intensity",
+   "text": "Overall brightness multiplier for this layer."
+  },
+  {
+   "name": "_Em0Hue",
+   "text": "Rotates this layer hue with AudioLink."
+  },
+  {
+   "name": "_Em0Mode",
+   "text": "How the audio drives the glow pattern. Gradient Path makes the audio travel along this slot's Path Gradient map."
+  },
+  {
+   "name": "_Em0PathTex",
+   "text": "Grayscale gradient for this slot's Gradient Path mode. Paint a black-to-white ramp along the route the audio should travel - trim lines, cables, tattoos. Audio enters at black and flows toward white. Import with sRGB off for even flow."
+  },
+  {
+   "name": "_Em0Base",
+   "text": "Baseline glow always on, before audio adds to it."
+  },
+  {
+   "name": "_Em0EdgeGlow",
+   "text": "Adds extra glow along the silhouette edges."
+  },
+  {
+   "name": "_Em0EdgePower",
+   "text": "How tight the edge glow band is."
+  },
+  {
+   "name": "_Em0Band",
+   "text": "Main AudioLink band this layer reacts to."
+  },
+  {
+   "name": "_Em0AL",
+   "text": "How much the chosen band boosts brightness."
+  },
+  {
+   "name": "_Em0PulseScale",
+   "text": "Spacing of the rings in the center out pulse modes."
+  },
+  {
+   "name": "_Em0Center",
+   "text": "UV point the pulse radiates from."
+  },
+  {
+   "name": "_Em0VolBoost",
+   "text": "Also brighten with overall track volume."
+  },
+  {
+   "name": "_Em0VolAmt",
+   "text": "How much overall volume adds brightness."
+  },
+  {
+   "name": "_Em0MultBand",
+   "text": "A band that multiplies this layer brightness."
+  },
+  {
+   "name": "_Em0MultAmt",
+   "text": "Strength of the multiplier band."
+  },
+  {
+   "name": "_Em0AddBand",
+   "text": "A band that adds onto this layer brightness."
+  },
+  {
+   "name": "_Em0AddAmt",
+   "text": "Strength of the additive band."
+  },
+  {
+   "name": "_Em0MinEmiss",
+   "text": "Glow multiplier when the surface is in shadow."
+  },
+  {
+   "name": "_Em0MaxEmiss",
+   "text": "Glow multiplier when the surface is fully lit."
+  },
+  {
+   "name": "_Em0MinLight",
+   "text": "Lighting level treated as fully dark."
+  },
+  {
+   "name": "_Em0MaxLight",
+   "text": "Lighting level treated as fully lit."
+  },
+  {
+   "name": "_Em0BlinkSpeed",
+   "text": "How fast this layer blinks."
+  },
+  {
+   "name": "_Em0BlinkMin",
+   "text": "How dim the bottom of each blink gets. 0 blinks fully off."
+  },
+  {
+   "name": "_Em0ScanDir",
+   "text": "Vertical sweeps up and down. Horizontal sweeps side to side like a scanner."
+  },
+  {
+   "name": "_Em0ScanMode",
+   "text": "Loop jumps back to the start each cycle. Ping Pong bounces back and forth."
+  },
+  {
+   "name": "_Em0ScanSpeed",
+   "text": "How fast the band travels."
+  },
+  {
+   "name": "_Em0ScanWidth",
+   "text": "Thickness of the moving band, in UV."
+  },
+  {
+   "name": "_Em0ScanSoft",
+   "text": "How soft the band edges are. 0 is a hard edge."
+  },
+  {
+   "name": "_Em0ScanFloor",
+   "text": "How much the rest of the mask still glows. 0 shows only the band, 1 disables the sweep."
+  },
+  {
+   "name": "_Em0ScanPixels",
+   "text": "Quantizes the band into chunky blocks for a retro 32-bit look. 0 is smooth."
+  },
+  {
+   "name": "_Em0ScanGlitch",
+   "text": "Randomly flickers pixels in the band on and off for a glitchy look. 0 is steady. Needs a pixel grid, so it falls back to 64 blocks if Pixelation is 0."
+  },
+  {
+   "name": "_Em0Triplanar",
+   "text": "Project the mirror pattern in 3D instead of by UV."
+  },
+  {
+   "name": "_Em0Rotation",
+   "text": "Rotates the mirror pattern."
+  },
+  {
+   "name": "_Em0BgColor",
+   "text": "Tint of the infinity mirror background."
+  },
+  {
+   "name": "_Em0ScaleLock",
+   "text": "Lock the background to a uniform scale using the X value."
+  },
+  {
+   "name": "_Em0BgScale",
+   "text": "Scale of the background pattern."
+  },
+  {
+   "name": "_Em0TileX",
+   "text": "Repeat the background horizontally."
+  },
+  {
+   "name": "_Em0TileY",
+   "text": "Repeat the background vertically."
+  },
+  {
+   "name": "_Em0Pan",
+   "text": "Scrolls the background over time."
+  },
+  {
+   "name": "_Em0Layers",
+   "text": "How many repeating depth layers the mirror draws."
+  },
+  {
+   "name": "_Em0Parallax",
+   "text": "Starting depth of the first mirror layer."
+  },
+  {
+   "name": "_Em0LayerDist",
+   "text": "Gap between each mirror layer."
+  },
+  {
+   "name": "_Em0NearBright",
+   "text": "Brightness of the closest mirror layer."
+  },
+  {
+   "name": "_Em0FarBright",
+   "text": "Brightness of the deepest mirror layer."
+  },
+  {
+   "name": "_Em1Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Emission Intensity for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Em1Mask",
+   "text": "Where this layer glows. White glows, black does not."
+  },
+  {
+   "name": "_Em1Color",
+   "text": "Glow colour. Push the HDR intensity up for bloom."
+  },
+  {
+   "name": "_Em1Intensity",
+   "text": "Overall brightness multiplier for this layer."
+  },
+  {
+   "name": "_Em1Hue",
+   "text": "Rotates this layer hue with AudioLink."
+  },
+  {
+   "name": "_Em1Mode",
+   "text": "How the audio drives the glow pattern. Gradient Path makes the audio travel along this slot's Path Gradient map."
+  },
+  {
+   "name": "_Em1PathTex",
+   "text": "Grayscale gradient for this slot's Gradient Path mode. Paint a black-to-white ramp along the route the audio should travel - trim lines, cables, tattoos. Audio enters at black and flows toward white. Import with sRGB off for even flow."
+  },
+  {
+   "name": "_Em1Base",
+   "text": "Baseline glow always on, before audio adds to it."
+  },
+  {
+   "name": "_Em1EdgeGlow",
+   "text": "Adds extra glow along the silhouette edges."
+  },
+  {
+   "name": "_Em1EdgePower",
+   "text": "How tight the edge glow band is."
+  },
+  {
+   "name": "_Em1Band",
+   "text": "Main AudioLink band this layer reacts to."
+  },
+  {
+   "name": "_Em1AL",
+   "text": "How much the chosen band boosts brightness."
+  },
+  {
+   "name": "_Em1PulseScale",
+   "text": "Spacing of the rings in the center out pulse modes."
+  },
+  {
+   "name": "_Em1Center",
+   "text": "UV point the pulse radiates from."
+  },
+  {
+   "name": "_Em1VolBoost",
+   "text": "Also brighten with overall track volume."
+  },
+  {
+   "name": "_Em1VolAmt",
+   "text": "How much overall volume adds brightness."
+  },
+  {
+   "name": "_Em1MultBand",
+   "text": "A band that multiplies this layer brightness."
+  },
+  {
+   "name": "_Em1MultAmt",
+   "text": "Strength of the multiplier band."
+  },
+  {
+   "name": "_Em1AddBand",
+   "text": "A band that adds onto this layer brightness."
+  },
+  {
+   "name": "_Em1AddAmt",
+   "text": "Strength of the additive band."
+  },
+  {
+   "name": "_Em1MinEmiss",
+   "text": "Glow multiplier when the surface is in shadow."
+  },
+  {
+   "name": "_Em1MaxEmiss",
+   "text": "Glow multiplier when the surface is fully lit."
+  },
+  {
+   "name": "_Em1MinLight",
+   "text": "Lighting level treated as fully dark."
+  },
+  {
+   "name": "_Em1MaxLight",
+   "text": "Lighting level treated as fully lit."
+  },
+  {
+   "name": "_Em1BlinkSpeed",
+   "text": "How fast this layer blinks."
+  },
+  {
+   "name": "_Em1BlinkMin",
+   "text": "How dim the bottom of each blink gets. 0 blinks fully off."
+  },
+  {
+   "name": "_Em1ScanDir",
+   "text": "Vertical sweeps up and down. Horizontal sweeps side to side like a scanner."
+  },
+  {
+   "name": "_Em1ScanMode",
+   "text": "Loop jumps back to the start each cycle. Ping Pong bounces back and forth."
+  },
+  {
+   "name": "_Em1ScanSpeed",
+   "text": "How fast the band travels."
+  },
+  {
+   "name": "_Em1ScanWidth",
+   "text": "Thickness of the moving band, in UV."
+  },
+  {
+   "name": "_Em1ScanSoft",
+   "text": "How soft the band edges are. 0 is a hard edge."
+  },
+  {
+   "name": "_Em1ScanFloor",
+   "text": "How much the rest of the mask still glows. 0 shows only the band, 1 disables the sweep."
+  },
+  {
+   "name": "_Em1ScanPixels",
+   "text": "Quantizes the band into chunky blocks for a retro 32-bit look. 0 is smooth."
+  },
+  {
+   "name": "_Em1ScanGlitch",
+   "text": "Randomly flickers pixels in the band on and off for a glitchy look. 0 is steady. Needs a pixel grid, so it falls back to 64 blocks if Pixelation is 0."
+  },
+  {
+   "name": "_Em1Triplanar",
+   "text": "Project the mirror pattern in 3D instead of by UV."
+  },
+  {
+   "name": "_Em1Rotation",
+   "text": "Rotates the mirror pattern."
+  },
+  {
+   "name": "_Em1BgColor",
+   "text": "Tint of the infinity mirror background."
+  },
+  {
+   "name": "_Em1ScaleLock",
+   "text": "Lock the background to a uniform scale using the X value."
+  },
+  {
+   "name": "_Em1BgScale",
+   "text": "Scale of the background pattern."
+  },
+  {
+   "name": "_Em1TileX",
+   "text": "Repeat the background horizontally."
+  },
+  {
+   "name": "_Em1TileY",
+   "text": "Repeat the background vertically."
+  },
+  {
+   "name": "_Em1Pan",
+   "text": "Scrolls the background over time."
+  },
+  {
+   "name": "_Em1Layers",
+   "text": "How many repeating depth layers the mirror draws."
+  },
+  {
+   "name": "_Em1Parallax",
+   "text": "Starting depth of the first mirror layer."
+  },
+  {
+   "name": "_Em1LayerDist",
+   "text": "Gap between each mirror layer."
+  },
+  {
+   "name": "_Em1NearBright",
+   "text": "Brightness of the closest mirror layer."
+  },
+  {
+   "name": "_Em1FarBright",
+   "text": "Brightness of the deepest mirror layer."
+  },
+  {
+   "name": "_Em2Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Emission Intensity for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Em2Mask",
+   "text": "Where this layer glows. White glows, black does not."
+  },
+  {
+   "name": "_Em2Color",
+   "text": "Glow colour. Push the HDR intensity up for bloom."
+  },
+  {
+   "name": "_Em2Intensity",
+   "text": "Overall brightness multiplier for this layer."
+  },
+  {
+   "name": "_Em2Hue",
+   "text": "Rotates this layer hue with AudioLink."
+  },
+  {
+   "name": "_Em2Mode",
+   "text": "How the audio drives the glow pattern. Gradient Path makes the audio travel along this slot's Path Gradient map."
+  },
+  {
+   "name": "_Em2PathTex",
+   "text": "Grayscale gradient for this slot's Gradient Path mode. Paint a black-to-white ramp along the route the audio should travel - trim lines, cables, tattoos. Audio enters at black and flows toward white. Import with sRGB off for even flow."
+  },
+  {
+   "name": "_Em2Base",
+   "text": "Baseline glow always on, before audio adds to it."
+  },
+  {
+   "name": "_Em2EdgeGlow",
+   "text": "Adds extra glow along the silhouette edges."
+  },
+  {
+   "name": "_Em2EdgePower",
+   "text": "How tight the edge glow band is."
+  },
+  {
+   "name": "_Em2Band",
+   "text": "Main AudioLink band this layer reacts to."
+  },
+  {
+   "name": "_Em2AL",
+   "text": "How much the chosen band boosts brightness."
+  },
+  {
+   "name": "_Em2PulseScale",
+   "text": "Spacing of the rings in the center out pulse modes."
+  },
+  {
+   "name": "_Em2Center",
+   "text": "UV point the pulse radiates from."
+  },
+  {
+   "name": "_Em2VolBoost",
+   "text": "Also brighten with overall track volume."
+  },
+  {
+   "name": "_Em2VolAmt",
+   "text": "How much overall volume adds brightness."
+  },
+  {
+   "name": "_Em2MultBand",
+   "text": "A band that multiplies this layer brightness."
+  },
+  {
+   "name": "_Em2MultAmt",
+   "text": "Strength of the multiplier band."
+  },
+  {
+   "name": "_Em2AddBand",
+   "text": "A band that adds onto this layer brightness."
+  },
+  {
+   "name": "_Em2AddAmt",
+   "text": "Strength of the additive band."
+  },
+  {
+   "name": "_Em2MinEmiss",
+   "text": "Glow multiplier when the surface is in shadow."
+  },
+  {
+   "name": "_Em2MaxEmiss",
+   "text": "Glow multiplier when the surface is fully lit."
+  },
+  {
+   "name": "_Em2MinLight",
+   "text": "Lighting level treated as fully dark."
+  },
+  {
+   "name": "_Em2MaxLight",
+   "text": "Lighting level treated as fully lit."
+  },
+  {
+   "name": "_Em2BlinkSpeed",
+   "text": "How fast this layer blinks."
+  },
+  {
+   "name": "_Em2BlinkMin",
+   "text": "How dim the bottom of each blink gets. 0 blinks fully off."
+  },
+  {
+   "name": "_Em2ScanDir",
+   "text": "Vertical sweeps up and down. Horizontal sweeps side to side like a scanner."
+  },
+  {
+   "name": "_Em2ScanMode",
+   "text": "Loop jumps back to the start each cycle. Ping Pong bounces back and forth."
+  },
+  {
+   "name": "_Em2ScanSpeed",
+   "text": "How fast the band travels."
+  },
+  {
+   "name": "_Em2ScanWidth",
+   "text": "Thickness of the moving band, in UV."
+  },
+  {
+   "name": "_Em2ScanSoft",
+   "text": "How soft the band edges are. 0 is a hard edge."
+  },
+  {
+   "name": "_Em2ScanFloor",
+   "text": "How much the rest of the mask still glows. 0 shows only the band, 1 disables the sweep."
+  },
+  {
+   "name": "_Em2ScanPixels",
+   "text": "Quantizes the band into chunky blocks for a retro 32-bit look. 0 is smooth."
+  },
+  {
+   "name": "_Em2ScanGlitch",
+   "text": "Randomly flickers pixels in the band on and off for a glitchy look. 0 is steady. Needs a pixel grid, so it falls back to 64 blocks if Pixelation is 0."
+  },
+  {
+   "name": "_Em2Triplanar",
+   "text": "Project the mirror pattern in 3D instead of by UV."
+  },
+  {
+   "name": "_Em2Rotation",
+   "text": "Rotates the mirror pattern."
+  },
+  {
+   "name": "_Em2BgColor",
+   "text": "Tint of the infinity mirror background."
+  },
+  {
+   "name": "_Em2ScaleLock",
+   "text": "Lock the background to a uniform scale using the X value."
+  },
+  {
+   "name": "_Em2BgScale",
+   "text": "Scale of the background pattern."
+  },
+  {
+   "name": "_Em2TileX",
+   "text": "Repeat the background horizontally."
+  },
+  {
+   "name": "_Em2TileY",
+   "text": "Repeat the background vertically."
+  },
+  {
+   "name": "_Em2Pan",
+   "text": "Scrolls the background over time."
+  },
+  {
+   "name": "_Em2Layers",
+   "text": "How many repeating depth layers the mirror draws."
+  },
+  {
+   "name": "_Em2Parallax",
+   "text": "Starting depth of the first mirror layer."
+  },
+  {
+   "name": "_Em2LayerDist",
+   "text": "Gap between each mirror layer."
+  },
+  {
+   "name": "_Em2NearBright",
+   "text": "Brightness of the closest mirror layer."
+  },
+  {
+   "name": "_Em2FarBright",
+   "text": "Brightness of the deepest mirror layer."
+  },
+  {
+   "name": "_Em3Enable",
+   "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Emission Intensity for menu toggles rather than this checkbox."
+  },
+  {
+   "name": "_Em3Mask",
+   "text": "Where this layer glows. White glows, black does not."
+  },
+  {
+   "name": "_Em3Color",
+   "text": "Glow colour. Push the HDR intensity up for bloom."
+  },
+  {
+   "name": "_Em3Intensity",
+   "text": "Overall brightness multiplier for this layer."
+  },
+  {
+   "name": "_Em3Hue",
+   "text": "Rotates this layer hue with AudioLink."
+  },
+  {
+   "name": "_Em3Mode",
+   "text": "How the audio drives the glow pattern. Gradient Path makes the audio travel along this slot's Path Gradient map."
+  },
+  {
+   "name": "_Em3PathTex",
+   "text": "Grayscale gradient for this slot's Gradient Path mode. Paint a black-to-white ramp along the route the audio should travel - trim lines, cables, tattoos. Audio enters at black and flows toward white. Import with sRGB off for even flow."
+  },
+  {
+   "name": "_Em3Base",
+   "text": "Baseline glow always on, before audio adds to it."
+  },
+  {
+   "name": "_Em3EdgeGlow",
+   "text": "Adds extra glow along the silhouette edges."
+  },
+  {
+   "name": "_Em3EdgePower",
+   "text": "How tight the edge glow band is."
+  },
+  {
+   "name": "_Em3Band",
+   "text": "Main AudioLink band this layer reacts to."
+  },
+  {
+   "name": "_Em3AL",
+   "text": "How much the chosen band boosts brightness."
+  },
+  {
+   "name": "_Em3PulseScale",
+   "text": "Spacing of the rings in the center out pulse modes."
+  },
+  {
+   "name": "_Em3Center",
+   "text": "UV point the pulse radiates from."
+  },
+  {
+   "name": "_Em3VolBoost",
+   "text": "Also brighten with overall track volume."
+  },
+  {
+   "name": "_Em3VolAmt",
+   "text": "How much overall volume adds brightness."
+  },
+  {
+   "name": "_Em3MultBand",
+   "text": "A band that multiplies this layer brightness."
+  },
+  {
+   "name": "_Em3MultAmt",
+   "text": "Strength of the multiplier band."
+  },
+  {
+   "name": "_Em3AddBand",
+   "text": "A band that adds onto this layer brightness."
+  },
+  {
+   "name": "_Em3AddAmt",
+   "text": "Strength of the additive band."
+  },
+  {
+   "name": "_Em3MinEmiss",
+   "text": "Glow multiplier when the surface is in shadow."
+  },
+  {
+   "name": "_Em3MaxEmiss",
+   "text": "Glow multiplier when the surface is fully lit."
+  },
+  {
+   "name": "_Em3MinLight",
+   "text": "Lighting level treated as fully dark."
+  },
+  {
+   "name": "_Em3MaxLight",
+   "text": "Lighting level treated as fully lit."
+  },
+  {
+   "name": "_Em3BlinkSpeed",
+   "text": "How fast this layer blinks."
+  },
+  {
+   "name": "_Em3BlinkMin",
+   "text": "How dim the bottom of each blink gets. 0 blinks fully off."
+  },
+  {
+   "name": "_Em3ScanDir",
+   "text": "Vertical sweeps up and down. Horizontal sweeps side to side like a scanner."
+  },
+  {
+   "name": "_Em3ScanMode",
+   "text": "Loop jumps back to the start each cycle. Ping Pong bounces back and forth."
+  },
+  {
+   "name": "_Em3ScanSpeed",
+   "text": "How fast the band travels."
+  },
+  {
+   "name": "_Em3ScanWidth",
+   "text": "Thickness of the moving band, in UV."
+  },
+  {
+   "name": "_Em3ScanSoft",
+   "text": "How soft the band edges are. 0 is a hard edge."
+  },
+  {
+   "name": "_Em3ScanFloor",
+   "text": "How much the rest of the mask still glows. 0 shows only the band, 1 disables the sweep."
+  },
+  {
+   "name": "_Em3ScanPixels",
+   "text": "Quantizes the band into chunky blocks for a retro 32-bit look. 0 is smooth."
+  },
+  {
+   "name": "_Em3ScanGlitch",
+   "text": "Randomly flickers pixels in the band on and off for a glitchy look. 0 is steady. Needs a pixel grid, so it falls back to 64 blocks if Pixelation is 0."
+  },
+  {
+   "name": "_Em3Triplanar",
+   "text": "Project the mirror pattern in 3D instead of by UV."
+  },
+  {
+   "name": "_Em3Rotation",
+   "text": "Rotates the mirror pattern."
+  },
+  {
+   "name": "_Em3BgColor",
+   "text": "Tint of the infinity mirror background."
+  },
+  {
+   "name": "_Em3ScaleLock",
+   "text": "Lock the background to a uniform scale using the X value."
+  },
+  {
+   "name": "_Em3BgScale",
+   "text": "Scale of the background pattern."
+  },
+  {
+   "name": "_Em3TileX",
+   "text": "Repeat the background horizontally."
+  },
+  {
+   "name": "_Em3TileY",
+   "text": "Repeat the background vertically."
+  },
+  {
+   "name": "_Em3Pan",
+   "text": "Scrolls the background over time."
+  },
+  {
+   "name": "_Em3Layers",
+   "text": "How many repeating depth layers the mirror draws."
+  },
+  {
+   "name": "_Em3Parallax",
+   "text": "Starting depth of the first mirror layer."
+  },
+  {
+   "name": "_Em3LayerDist",
+   "text": "Gap between each mirror layer."
+  },
+  {
+   "name": "_Em3NearBright",
+   "text": "Brightness of the closest mirror layer."
+  },
+  {
+   "name": "_Em3FarBright",
+   "text": "Brightness of the deepest mirror layer."
+  },
+  {
+   "name": "_RoomCube",
+   "text": "A cubemap of the room interior. Plus Z faces the back wall, plus and minus Y are ceiling and floor."
+  },
+  {
+   "name": "_RoomMask",
+   "text": "Where the window appears. White shows the room, black keeps the normal surface."
+  },
+  {
+   "name": "_RoomColor",
+   "text": "Tints and brightens the room. Push HDR for a glowing interior."
+  },
+  {
+   "name": "_RoomDepth",
+   "text": "How deep the room recedes. Higher looks like a larger, deeper space."
+  },
+  {
+   "name": "_RoomTile",
+   "text": "How many room cells span the mask. 1 is a single room."
+  },
+  {
+   "name": "_RoomScrollX",
+   "text": "Rotates the room view left or right over time, like turning inside the box. Seamless loop. 0 is static."
+  },
+  {
+   "name": "_RoomScrollY",
+   "text": "Rotates the room view up or down over time. Seamless loop. 0 is static."
+  },
+  {
+   "name": "_RoomSlideX",
+   "text": "Slides the whole room sideways over time. Loops by repeating, so it reads cleanest with symmetric or tiling room cubemaps. 0 is static."
+  },
+  {
+   "name": "_RoomSlideY",
+   "text": "Slides the whole room up or down over time. Loops by repeating. 0 is static."
+  },
+  {
+   "name": "_RoomEdge",
+   "text": "Sharpness of the window mask edge. Low is a crisp cut. If the room looks milky or washed out, your mask is not pure white inside; keep this low and it cleans up by forcing the inside fully opaque."
+  },
+  {
+   "name": "_RoomGlassWarp",
+   "text": "Distorts the room view with a gentle rippling glass wobble, like looking through real glass or water. 0 is perfectly clear."
+  },
+  {
+   "name": "_RoomGlassChroma",
+   "text": "Prismatic red and blue split through the glass, strongest where the view bends most. 0 is none."
+  },
+  {
+   "name": "_RoomDepthMode",
+   "text": "None keeps walls even. Fog darkens far walls. Dream Haze dissolves them into a soft glowing mist for a fantasy look."
+  },
+  {
+   "name": "_RoomFade",
+   "text": "How strongly the fog or haze builds with depth."
+  },
+  {
+   "name": "_RoomHazeColor",
+   "text": "Colour the far depths glow with in Dream Haze mode. Push HDR for a brighter mist."
+  },
+  {
+   "name": "_RoomSoften",
+   "text": "Blurs the room with depth for a dreamy, out of focus feel. 0 is crisp. Needs the cubemap to have mipmaps."
+  },
+  {
+   "name": "_RoomALEnable",
+   "text": "Pulse the room brightness with a frequency band."
+  },
+  {
+   "name": "_RoomBand",
+   "text": "Frequency band that drives the room."
+  },
+  {
+   "name": "_RoomAL",
+   "text": "How much the band brightens the room."
+  },
+  {
+   "name": "_RefractMask",
+   "text": "Where the glass shows. White is full refraction, black is the normal surface."
+  },
+  {
+   "name": "_RefractStrength",
+   "text": "How strongly the surface bends what is behind it."
+  },
+  {
+   "name": "_RefractCA",
+   "text": "Splits red and blue for a prismatic glass edge. 0 is none."
+  },
+  {
+   "name": "_RefractTint",
+   "text": "Tints the refracted result. White is clear glass."
+  },
+  {
+   "name": "_RefractBlend",
+   "text": "Blends between the surface and the refracted view. 1 is fully see through."
+  },
+  {
+   "name": "_RefractMap",
+   "text": "A normal or noise map that adds moving shimmer on top of the surface distortion. Leave default for plain glass."
+  },
+  {
+   "name": "_RefractTile",
+   "text": "Tiling of the shimmer map."
+  },
+  {
+   "name": "_RefractScroll",
+   "text": "Scrolls the shimmer map for a flowing heat haze. 0 is static."
+  },
+  {
+   "name": "_RefractALEnable",
+   "text": "Pulse the distortion strength with a frequency band."
+  },
+  {
+   "name": "_RefractBand",
+   "text": "Band that drives the wobble."
+  },
+  {
+   "name": "_RefractAL",
+   "text": "How much the band adds to the distortion."
+  },
+  {
+   "name": "_ScreenMask",
+   "text": "Where the screen shows. White is screen, black is the normal surface."
+  },
+  {
+   "name": "_ScreenMode",
+   "text": "Oscilloscope draws the live waveform. EQ Bars shows four frequency band levels as LED columns."
+  },
+  {
+   "name": "_ScreenLineColor",
+   "text": "Colour of the waveform or bars."
+  },
+  {
+   "name": "_ScreenWaveAmp",
+   "text": "Height of the oscilloscope trace."
+  },
+  {
+   "name": "_ScreenWaveSamples",
+   "text": "How many waveform samples span the screen width."
+  },
+  {
+   "name": "_ScreenLineWidth",
+   "text": "Thickness of the oscilloscope line."
+  },
+  {
+   "name": "_ScreenArt",
+   "text": "A still image drawn behind the wave. Strength below."
+  },
+  {
+   "name": "_ScreenArtStrength",
+   "text": "Brightness of the screen art."
+  },
+  {
+   "name": "_ScreenBackdrop",
+   "text": "Grayscale gradient backdrop, tinted by Background Tint. Use Tiling and Offset to pick an atlas quadrant."
+  },
+  {
+   "name": "_ScreenBGColor",
+   "text": "Colour the backdrop is tinted to."
+  },
+  {
+   "name": "_ScreenGridProc",
+   "text": "Draws the grid analytically with anti aliasing, no moire at any distance. Off uses a grid texture instead."
+  },
+  {
+   "name": "_ScreenGridCells",
+   "text": "How many grid cells span the screen."
+  },
+  {
+   "name": "_ScreenGridLineW",
+   "text": "Thickness of the grid lines."
+  },
+  {
+   "name": "_ScreenGridMinor",
+   "text": "Strength of the finer sub grid."
+  },
+  {
+   "name": "_ScreenGridTex",
+   "text": "Used only when Procedural Grid is off."
+  },
+  {
+   "name": "_ScreenGridColor",
+   "text": "Colour of the grid lines."
+  },
+  {
+   "name": "_ScreenGridStrength",
+   "text": "Overall grid brightness."
+  },
+  {
+   "name": "_ScreenLCDTex",
+   "text": "Tile this high (e.g. 80 by 80). Up close the screen resolves into RGB subpixels."
+  },
+  {
+   "name": "_ScreenLCDStrength",
+   "text": "How strong the subpixel filter is. 0 is off."
+  },
+  {
+   "name": "_ScreenScanline",
+   "text": "Strength of the CRT scanlines."
+  },
+  {
+   "name": "_ScreenScanCount",
+   "text": "How many scanlines down the screen."
+  },
+  {
+   "name": "_ScreenBSOD",
+   "text": "Replaces the screen with the crash image."
+  },
+  {
+   "name": "_ScreenBSODNoAL",
+   "text": "Automatically show the crash image when there is no audio signal."
+  },
+  {
+   "name": "_ScreenBSODTex",
+   "text": "Image shown in crash mode."
+  },
+  {
+   "name": "_RimState",
+   "text": "Rim behaviour mode."
+  },
+  {
+   "name": "_RimColor",
+   "text": "Colour of the edge glow."
+  },
+  {
+   "name": "_RimHueShift",
+   "text": "Shifts the rim hue with AudioLink."
+  },
+  {
+   "name": "_RimWidth",
+   "text": "How far the rim reaches in from the silhouette."
+  },
+  {
+   "name": "_RimSoft",
+   "text": "How soft the rim falloff is."
+  },
+  {
+   "name": "_RimBase",
+   "text": "Rim brightness, always on regardless of audio. Around 0.15 is a soft rim, 1 is normal, 2 is bright. In Audio Reactive mode the audio adds on top of this."
+  },
+  {
+   "name": "_RimBand",
+   "text": "AudioLink band that drives the rim."
+  },
+  {
+   "name": "_RimAL",
+   "text": "How much the band boosts the rim."
+  },
+  {
+   "name": "_SpeakerMask",
+   "text": "Gradient shaping where ripples appear and how strong."
+  },
+  {
+   "name": "_SpeakerMaskBlur",
+   "text": "Softens the gradient so the rings stay round and the starburst spikes on small speakers go away. 0 is sharp."
+  },
+  {
+   "name": "_SpeakerColor",
+   "text": "Colour of the ripple waves."
+  },
+  {
+   "name": "_SpeakerState",
+   "text": "Ripple behaviour mode."
+  },
+  {
+   "name": "_SpeakerHueShift",
+   "text": "Shifts the ripple hue with AudioLink."
+  },
+  {
+   "name": "_SpeakerIntensity",
+   "text": "How far the ripples push forward off the surface."
+  },
+  {
+   "name": "_SpeakerExpansion",
+   "text": "Lifts rings off the surface along the normal as they travel, for a domed pop. 0 keeps them flat on the speaker."
+  },
+  {
+   "name": "_SpeakerRings",
+   "text": "Max rings in flight at once. In Audio Reactive mode this is how many recent beats stay visible; in Always On it is how many clock rings cycle. Max 6."
+  },
+  {
+   "name": "_SpeakerSpeed",
+   "text": "How fast the ripples travel."
+  },
+  {
+   "name": "_SpeakerRingThickness",
+   "text": "Solid width of each ring. Small values give thin crisp rings."
+  },
+  {
+   "name": "_SpeakerRingSoftness",
+   "text": "Feathered fade added to the outer edge. Does not hollow the ring."
+  },
+  {
+   "name": "_SpeakerThreshold",
+   "text": "How hard the band must rise to emit a ring. A ring launches the moment the band crosses this from below, and re-arms once it dips under about 60 percent of it, so one hit emits exactly one ring even through sustained bass. Raise it to pick out only the hardest hits."
+  },
+  {
+   "name": "_SpeakerDirection",
+   "text": "Outward grows rings from the speaker center to the edge. Inward reverses it. Flip this if your rings travel the wrong way."
+  },
+  {
+   "name": "_SpeakerBand",
+   "text": "AudioLink band that triggers the ripples."
+  },
+  {
+   "name": "_EQMask",
+   "text": "Area the equalizer bars draw inside."
+  },
+  {
+   "name": "_EQColor",
+   "text": "Colour of the EQ bars."
+  },
+  {
+   "name": "_EQColumns",
+   "text": "How many frequency bars to show."
+  },
+  {
+   "name": "_EQGain",
+   "text": "Boosts the spectrum into the visible range. The raw DFT is much quieter than the autogained band data, so this defaults well above 1."
+  },
+  {
+   "name": "_EQCurve",
+   "text": "Below 1 lifts quiet frequencies for a log-style EQ look, like a music player. 1 is linear."
+  },
+  {
+   "name": "_IridMask",
+   "text": "Where the iridescence shows."
+  },
+  {
+   "name": "_IridColor1",
+   "text": "One of the three colours cycled in the oil slick shift."
+  },
+  {
+   "name": "_IridColor2",
+   "text": "One of the three colours cycled in the oil slick shift."
+  },
+  {
+   "name": "_IridColor3",
+   "text": "One of the three colours cycled in the oil slick shift."
+  },
+  {
+   "name": "_IridThickness",
+   "text": "Thin film thickness. Changes how fast the colours band."
+  },
+  {
+   "name": "_IridSpeed",
+   "text": "How fast the colours drift on their own."
+  },
+  {
+   "name": "_IridBand",
+   "text": "AudioLink band that drives the colour phase."
+  },
+  {
+   "name": "_IridAL",
+   "text": "How much audio pushes the colour phase."
+  },
+  {
+   "name": "_DissolveColor",
+   "text": "Colour of the glowing burn edge."
+  },
+  {
+   "name": "_DissolveHueShift",
+   "text": "Shifts the burn hue with AudioLink."
+  },
+  {
+   "name": "_DissolveTex",
+   "text": "Noise pattern controlling the burn shape."
+  },
+  {
+   "name": "_DissolveAmount",
+   "text": "How much of the mesh is dissolved. 100 is fully gone."
+  },
+  {
+   "name": "_DissolveAL",
+   "text": "How much audio drives the dissolve amount."
+  },
+  {
+   "name": "_DissolveWidth",
+   "text": "Width of the glowing edge along the burn."
+  },
+  {
+   "name": "_DissolveBand",
+   "text": "AudioLink band that drives the burn."
+  },
+  {
+   "name": "_OutlineMask",
+   "text": "Where the outline is allowed to draw."
+  },
+  {
+   "name": "_OutlineState",
+   "text": "Outline behaviour mode."
+  },
+  {
+   "name": "_OutlineColor",
+   "text": "Colour of the outline."
+  },
+  {
+   "name": "_OutlineHueShift",
+   "text": "Shifts the outline hue with AudioLink."
+  },
+  {
+   "name": "_OutlineFloat",
+   "text": "How far the hologram outline hovers off the mesh."
+  },
+  {
+   "name": "_OutlineRGBSplit",
+   "text": "Amount of chromatic split in the outline."
+  },
+  {
+   "name": "_OutlineSpread",
+   "text": "Thickness of the outline."
+  },
+  {
+   "name": "_OutlineSlices",
+   "text": "How many broken blocks the outline splits into."
+  },
+  {
+   "name": "_OutlineSpeed",
+   "text": "How fast the outline jitters."
+  },
+  {
+   "name": "_OutlineBand",
+   "text": "AudioLink band that drives the outline."
+  },
+  {
+   "name": "_OutlineAL",
+   "text": "Gain on the band before it drives the outline. In Audio Reactive mode the band level sets brightness, jitter, and RGB split all at once, so without boost the effect can never exceed the raw band level. Raise this so beats saturate to the full always-on look; high values act like a gate."
+  },
+  {
+   "name": "_OutlineStdColor",
+   "text": "Flat colour of the outline shell."
+  },
+  {
+   "name": "_OutlineStdWidth",
+   "text": "Thickness of the outline. Read as metres in World mode, or on-screen scale in Screen mode."
+  },
+  {
+   "name": "_OutlineStdWidthMode",
+   "text": "World keeps a fixed thickness in metres, so it thins with distance. Screen keeps a constant on-screen thickness at any distance, the usual anime look."
+  },
+  {
+   "name": "_OutlineStdMask",
+   "text": "Where the outline is allowed to grow. White draws the outline, black removes it. Paint the face white-to-black to thin or drop the outline there."
+  },
+  {
+   "name": "_OutlineStdVColorMask",
+   "text": "Multiplies the outline width by a vertex-colour channel, so you can paint where the outline shows right in Unity with a vertex painter like Polybrush (free, Unity Package Manager). Stacks with the mask texture above. Best for knocking the outline off the face. White vertex = full outline, black = none."
+  },
+  {
+   "name": "_OutlineStdVColorChannel",
+   "text": "Which painted vertex-colour channel to read as the outline mask."
+  },
+  {
+   "name": "_OutlineStdTexTint",
+   "text": "Blends the outline toward the albedo colour. 0 is a flat colour, 1 multiplies the outline by the texture for a coloured ink look."
+  },
+  {
+   "name": "_OutlineStdLit",
+   "text": "On, the outline darkens in shadow and picks up the light colour. Off, it stays a flat colour everywhere."
+  },
+  {
+   "name": "_OutlineStdDistFade",
+   "text": "EXPERIMENTAL. Thins the outline as the viewer moves away, which hides the shell flaps that open up around hard edges like eyes and nostrils at distance. Tune the near/far range below. May interact oddly with very large or non-uniformly scaled avatars."
+  },
+  {
+   "name": "_OutlineStdFadeNear",
+   "text": "Within this camera distance the outline stays full width."
+  },
+  {
+   "name": "_OutlineStdFadeFar",
+   "text": "Beyond this camera distance the outline has thinned to nothing. Should be larger than the near distance."
+  },
+  {
+   "name": "_StarMask",
+   "text": "Where the starfield and nebula show through."
+  },
+  {
+   "name": "_StarBand",
+   "text": "AudioLink band that drives the star and nebula pops."
+  },
+  {
+   "name": "_StarColorMode",
+   "text": "How star colour is chosen."
+  },
+  {
+   "name": "_StarColor",
+   "text": "Base colour of the stars."
+  },
+  {
+   "name": "_StarSaturation",
+   "text": "How saturated the star colours are."
+  },
+  {
+   "name": "_StarAL",
+   "text": "How much audio peaks brighten the stars."
+  },
+  {
+   "name": "_StarLayers",
+   "text": "How many parallax layers of stars."
+  },
+  {
+   "name": "_StarDensity",
+   "text": "How many stars per area."
+  },
+  {
+   "name": "_StarSize",
+   "text": "Size of each star."
+  },
+  {
+   "name": "_StarSoftness",
+   "text": "How soft the star dots are."
+  },
+  {
+   "name": "_StarTwinkle",
+   "text": "How much the stars twinkle."
+  },
+  {
+   "name": "_StarTwinkleSpeed",
+   "text": "How fast they twinkle."
+  },
+  {
+   "name": "_StarSpeed",
+   "text": "Overall drift speed of the field."
+  },
+  {
+   "name": "_StarDrift",
+   "text": "Adds chaotic jitter to the drift."
+  },
+  {
+   "name": "_StarParallax",
+   "text": "Depth separation between star layers."
+  },
+  {
+   "name": "_StarGlassWarp",
+   "text": "Distorts the starfield with a rippling glass wobble, like a window pane over space. 0 is flat. Pairs well with an emissive rim around the mask."
+  },
+  {
+   "name": "_NebulaColorMode",
+   "text": "How the nebula colour is chosen."
+  },
+  {
+   "name": "_StarBgColor",
+   "text": "Base colour of the nebula."
+  },
+  {
+   "name": "_NebulaBright",
+   "text": "Overall brightness of the base nebula haze. Lower it so the AudioLink pop colour stands out more."
+  },
+  {
+   "name": "_NebulaPopColor",
+   "text": "Colour the nebula flashes to on audio peaks."
+  },
+  {
+   "name": "_NebulaAL",
+   "text": "How sensitive the nebula pop is to audio."
+  },
+  {
+   "name": "_RaymarchSteps",
+   "text": "Raymarch quality. Higher looks better but costs more."
+  },
+  {
+   "name": "_RaymarchDensity",
+   "text": "How thick the volumetric fog is."
+  },
+  {
+   "name": "_MaskTex",
+   "text": "White areas break apart. Black areas stay solid."
+  },
+  {
+   "name": "_EmissionColor",
+   "text": "Colour of the glow added by the break."
+  },
+  {
+   "name": "_BreakStyle",
+   "text": "Preset look. Full Energy fills the gap with glow. Glowing Fragments leaves an empty gap."
+  },
+  {
+   "name": "_BreakManual",
+   "text": "Override the preset and hand tune the glow sliders."
+  },
+  {
+   "name": "_BreakGlow",
+   "text": "Glow on the broken surface faces."
+  },
+  {
+   "name": "_BreakCoreGlow",
+   "text": "Glow filling the inner gap between pieces."
+  },
+  {
+   "name": "_BreakFade",
+   "text": "Dissolves the broken pieces to transparent as they separate."
+  },
+  {
+   "name": "_BreakHueShift",
+   "text": "Shifts the break glow hue with AudioLink."
+  },
+  {
+   "name": "_BreakMode",
+   "text": "Splinter Wave gives per-triangle shards: each piece moves independently and the mask is read at full detail. Pixel Grid snaps everything to a coarse cell grid, so pieces inside a cell move together as cubes and the mask is sampled per cell (detail is lost by design). Use Splinter Wave for smooth, mask-accurate breaks."
+  },
+  {
+   "name": "_BreakDrive",
+   "text": "Audio Beat triggers on the music. Slow Float drifts on its own."
+  },
+  {
+   "name": "_FloatSpeed",
+   "text": "How fast the slow float cycle runs."
+  },
+  {
+   "name": "_FloatReach",
+   "text": "How far the float break opens at its peak."
+  },
+  {
+   "name": "_FloatStagger",
+   "text": "How out of sync the pieces are. Low keeps them together."
+  },
+  {
+   "name": "_FloatAudio",
+   "text": "Lets audio nudge the float amount."
+  },
+  {
+   "name": "_Band",
+   "text": "AudioLink band that triggers the break."
+  },
+  {
+   "name": "_Threshold",
+   "text": "How strong the audio must be to trigger a break."
+  },
+  {
+   "name": "_GridSize",
+   "text": "How fine the cubes are in Pixel Grid mode."
+  },
+  {
+   "name": "_Tessellation",
+   "text": "Subdivides the mesh for finer breaks. Costs performance."
+  },
+  {
+   "name": "_TessNear",
+   "text": "Distance within which full tessellation detail is kept."
+  },
+  {
+   "name": "_TessFar",
+   "text": "Distance beyond which tessellation turns off."
+  },
+  {
+   "name": "_WaveBottom",
+   "text": "Where the splinter wave starts, in metres."
+  },
+  {
+   "name": "_WaveTop",
+   "text": "Where the splinter wave ends, in metres."
+  },
+  {
+   "name": "_RiseHeight",
+   "text": "How far pieces rise as they break."
+  },
+  {
+   "name": "_Spread",
+   "text": "How far pieces pop outward."
+  },
+  {
+   "name": "_Jitter",
+   "text": "Random floating drift of the pieces."
+  },
+  {
+   "name": "_Shrink",
+   "text": "How much pieces shrink as they break."
+  },
+  {
+   "name": "_Tumble",
+   "text": "How much pieces spin as they break."
+  },
+  {
+   "name": "_EdgeWidth",
+   "text": "Width of the glowing rim on the broken edges."
+  },
+  {
+   "name": "_EdgeGap",
+   "text": "Pushes pieces apart to open gaps."
+  },
+  {
+   "name": "_HeatGlow",
+   "text": "Glow that builds up just before a break."
+  },
+  {
+   "name": "_CoreTiling",
+   "text": "Tiling of the inner core pattern."
+  },
+  {
+   "name": "_CoreDepth",
+   "text": "Parallax depth of the inner core."
+  },
+  {
+   "name": "_CoreTex",
+   "text": "Pattern shown on the inner faces of broken pieces."
+  },
+  {
+   "name": "_GlitterColor",
+   "text": "Colour of the flakes. Push HDR up for bloom."
+  },
+  {
+   "name": "_GlitterMask",
+   "text": "Where the glitter shows. White shows, black hides."
+  },
+  {
+   "name": "_GlitterDensity",
+   "text": "How many flakes. Higher packs them tighter."
+  },
+  {
+   "name": "_GlitterSize",
+   "text": "How big each flake is."
+  },
+  {
+   "name": "_GlitterBrightness",
+   "text": "Overall sparkle intensity."
+  },
+  {
+   "name": "_GlitterAmount",
+   "text": "How many flakes are lit at once. Higher sparkles more."
+  },
+  {
+   "name": "_GlitterViewRange",
+   "text": "How wide an angle a flake stays visible. Low gives sharp glints that pop in and out, high shows more at once."
+  },
+  {
+   "name": "_GlitterSpeed",
+   "text": "How fast the flakes twinkle."
+  },
+  {
+   "name": "_GlitterFlow",
+   "text": "Scrolls the flake field in a direction over time."
+  },
+  {
+   "name": "_GlitterProjection",
+   "text": "UV follows the texture layout. World Triplanar keeps flake size even and ignores UV seams."
+  },
+  {
+   "name": "_GlitterLit",
+   "text": "On, the sparkle only shows where light hits. Off, it shows everywhere at full brightness."
+  },
+  {
+   "name": "_GlitterALEnable",
+   "text": "Pulse the sparkle with the music."
+  },
+  {
+   "name": "_GlitterBand",
+   "text": "Which frequency band drives the sparkle."
+  },
+  {
+   "name": "_GlitterAL",
+   "text": "How much the band boosts the sparkle."
+  },
+  {
+   "name": "_GlitchMask",
+   "text": "Where the glitch displacement happens."
+  },
+  {
+   "name": "_GlitchBand",
+   "text": "AudioLink band that drives the glitch."
+  },
+  {
+   "name": "_GlitchThreshold",
+   "text": "How strong the audio must be to glitch."
+  },
+  {
+   "name": "_GlitchIntensity",
+   "text": "How far blocks are displaced."
+  },
+  {
+   "name": "_GlitchSlices",
+   "text": "How many blocks the mesh breaks into."
+  },
+  {
+   "name": "_GlitchRGBSplit",
+   "text": "Chromatic split amount on the glitched UVs."
+  },
+  {
+   "name": "_GlitchHue",
+   "text": "Brightness of the neon tint on glitched blocks."
+  },
+  {
+   "name": "_HeightMap",
+   "text": "Shared black and white height map. Feeds both Height-to-Normal and Parallax below. White is high."
+  },
+  {
+   "name": "_HeightStrength",
+   "text": "How deep the height detail reads."
+  },
+  {
+   "name": "_ParallaxMask",
+   "text": "Where parallax is applied."
+  },
+  {
+   "name": "_ParallaxStrength",
+   "text": "How much apparent depth the parallax adds."
+  },
+  {
+   "name": "_ParallaxOffset",
+   "text": "Shifts the zero height level."
+  },
+  {
+   "name": "_ParallaxMipBias",
+   "text": "Biases texture sharpness inside the parallax."
+  },
+  {
+   "name": "_LTCGI",
+   "text": "Enables LTCGI area light support and sets the LTCGI shader keyword. Needs the LTCGI package in the project."
+  },
+  {
+   "name": "_LTCGIStrength",
+   "text": "How strongly LTCGI area lights affect the avatar."
+  },
+  {
+   "name": "_LTCGITintOn",
+   "text": "Multiply LTCGI diffuse and specular by a colour, to warm or cool the light from world screens."
+  },
+  {
+   "name": "_LTCGIDiffuseTint",
+   "text": "Colour multiplied into the LTCGI diffuse contribution."
+  },
+  {
+   "name": "_LTCGISpecularTint",
+   "text": "Colour multiplied into the LTCGI specular contribution."
+  },
+  {
+   "name": "_LTCGIOcclusion",
+   "text": "How strongly baked AO darkens LTCGI. 0 ignores AO (screens light crevices freely), 1 applies it fully."
+  },
+  {
+   "name": "_LightVolumes",
+   "text": "Enables VRC Light Volumes support and sets its shader keyword. Safe to leave on - it falls back to normal light probes in worlds without volumes."
+  },
+  {
+   "name": "_LightVolumesStrength",
+   "text": "Scales the Light Volume ambient and speculars. 1 matches normal probe brightness in fallback."
+  },
+  {
+   "name": "_LightVolumesSpec",
+   "text": "Approximate specular highlights from the volume data, so point and area Light Volume lights put real highlights on the avatar. Adds a little cost."
+  },
+  {
+   "name": "_LVPointShading",
+   "text": "How strongly Point Light Volumes are shaped by the surface normal. Only used when VRC Light Volumes 3.x or newer is installed - on 2.x the shader calls an overload that has no shading and this does nothing. 0 disables per-surface shading, 1 is the standard smooth gradient, higher is sharper. Leave at 1 unless you want a harder falloff: LV 3.x's own default when the argument is omitted is 3, which is what makes lighting snap between areas."
+  }
+ ],
+ "lockCritical": [
+  "_LTCGI",
+  "_LightVolumes",
+  "_RefractEnable",
+  "_OutlineStdEnable",
+  "_DebugView"
+ ]
+}
