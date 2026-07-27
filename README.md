@@ -1,97 +1,73 @@
-# ZetsFancyShader — off ThryEditor
+# ZetsFancyShader
 
-Migrated shaders, the companion JSON, the inspector that reads them, and the codemod that
-produced it all.
+A toon and PBR shader for VRChat avatars that reacts to the world it's standing in — LTCGI area lights, VRC Light Volumes, and AudioLink — with a material inspector built to tell you which input is wrong.
 
-```
-Editor/ZetMaterialInspector.cs      the ShaderGUI
-Editor/ZetUIData.cs                 JSON model, loader, ShowIf evaluator
-migrated/ZetsFancyShader.shader     rewritten Properties block
-migrated/ZetsFancyShaderUI.json     group labels, info text, 613 tooltips
-migrated/ZetsFancyEyeShader.shader
-migrated/ZetsFancyEyeShaderUI.json
-tools/migrate_shader.py             re-runnable codemod
-```
+PC only. Unity 2022.3. MIT.
 
-## Conventions
+**[Install page →](https://zetph.github.io/ZetsFancyShader)**
 
-| Was | Is |
-|---|---|
-| `m_start_x` … `m_end_x`, bare `m_x` | `[Group(engine/stencil)]` on each property |
-| `--{tooltip:...}` | `tooltips` array in the companion JSON |
-| `--{condition_show:{type:AND,...}}` | `[ShowIf(_Foo && _Bar==3)]` |
-| `--{reference_property:_X}` | `[GroupToggle(engine/prox)]` on `_X` itself |
-| `[ZetInfoBox] info_x ("prose")` | `info` field on the group in JSON |
-| `[ThryShaderOptimizerLockButton]` | `[ZetLockButton]` |
-| `shader_is_using_thry_editor` | deleted |
-| `GeometryShader_Enabled`, `Tessellation_Enabled` | deleted — ThryEditor optimizer hints, never referenced in your HLSL |
-
-The JSON must sit beside its shader and be named `<ShaderFileName>UI.json`. A missing file
-logs a warning and falls back to an unlabelled but functional inspector.
-
-## Results
-
-|  | Before | After |
-|---|---|---|
-| Properties-block lines | 960 | 705 |
-| Median line length | 170 | 115 |
-| p90 line length | 259 | 146 |
-| Longest line | 584 | 195 |
-| Dummy marker properties | 252 | 0 |
-
-252 fewer serialised floats on every material. Both shaders migrated with zero warnings;
-brace balance verified.
+---
 
 ## Install
 
-1. Copy `migrated/*` over your shader folder.
-2. Copy `Editor/*.cs` in beside your existing drawers.
-3. **Delete `ZetInfoBoxDrawer.cs`** — all 52 info boxes are JSON now, the drawer has no
-   callers.
-4. `ZetMapPackerDrawer` and `ZetRenderModeDrawer` are unchanged and still work; they are
-   plain `MaterialPropertyDrawer`s, which `MaterialEditor.ShaderProperty` dispatches to.
-5. Gut `ZetDependencyChecker` — the `ThryPresent()` probe and its modal are obsolete. Its
-   original premise (bundling ThryEditor would collide with Poiyomi's copy) is exactly the
-   problem a namespaced in-house inspector dissolves.
+Three repositories, **in this order**. The first two are dependencies; add them before the shader or VCC has nowhere to resolve them from.
 
-`ZetRenderModeDrawer` is in the global namespace while the inspector is namespaced. C#
-resolves that outward without help; if you later namespace the drawers, update the
-`ReapplyRenderMode` call site.
-
-## Re-running the codemod
-
-```
-python3 tools/migrate_shader.py Foo.shader --dry-run
-python3 tools/migrate_shader.py Foo.shader --out-shader Foo.new.shader --out-json FooUI.json
-```
-
-It reports unhandled metadata keys and unbalanced markers rather than silently dropping
-them, so it stays useful if you revise the conventions later.
-
-## Still outstanding
-
-**Locking.** `[ZetLockButton]` renders disabled with a warning. The six `//ifex` blocks are
-untouched and inert to Unity — they are comments until something acts on them:
-
-| Line | Condition | Strips |
+| | Repository | Package |
 |---|---|---|
-| 835 | `_LTCGI==0` | LTCGI include |
-| 843 | `_LightVolumes==0` | Light Volumes include |
-| 903, 1733, ~2600, ~3350 | `_RefractEnable==0` | GrabPass + refraction |
-| ~2900 | `_OutlineStdEnable==0` | Outline pass |
+| 1 | [vpm.pimaker.at](https://vpm.pimaker.at/) | `at.pimaker.ltcgi` |
+| 2 | [redsim.github.io/vpmlisting](https://redsim.github.io/vpmlisting/) | `red.sim.lightvolumes` (2.1.3+) |
+| 3 | [zetph.github.io/ZetsFancyShader](https://zetph.github.io/ZetsFancyShader) | `com.zetph.zetsfancyshader` |
 
-All are `_Prop==0` guarding a region to delete — no value inlining, no macro expansion. A
-minimum viable locker reads the source, evaluates those six conditions against the material,
-deletes the regions, writes a generated `Hidden/Locked/...` shader and reassigns, storing the
-original path in a material override tag so unlocking can restore it.
+Then open your avatar project in VCC and add ZetsFancyShader from the package list. Both dependencies install with it.
 
-**`vpmDependencies` is still `{}`** while the shader hard-includes `at.pimaker.ltcgi` and
-`red.sim.lightvolumes`. Unlocked materials in a project without those packages fail to
-compile. Unchanged by this migration, and still the most likely thing to break for a new
-user.
+Adding the shader on its own will fail to resolve. VCC only searches repositories you have already added, and neither dependency is in VRChat's curated repo.
 
-**Package identity** still disagrees across `package.json` (`com.zetph.…`), the asmdef
-assembly name (`dev.zetph.…`), and the asmdef filename.
+## Features
 
-**Header comments** in both shaders still credit ThryEditor and describe its optimizer. Once
-locking is yours, those lines and the MIT attribution can go.
+**World lighting** — LTCGI area lights and VRC Light Volumes, both with specular. Falls back to Unity light probes in worlds that use neither.
+
+**AudioLink** — emission, geometry break and glitch driven by the music. The sampling layer is embedded, so reactive features idle quietly rather than breaking when no AudioLink object is present.
+
+**Toon and PBR** — ramp shading with metallic, smoothness and AO from a packed map, plus subsurface scattering for skin and thin cloth.
+
+**Effects** — interior mapping, refraction, outlines, matcaps, iridescence, dissolve, and a screen shader for panels and displays.
+
+**Debug views** — render one term on its own (albedo, normals, AO, ambient, reflection, LTCGI) instead of guessing which input turned a material black. Strips out entirely when the material is locked.
+
+**Its own tooling** — material inspector, locking, animated-property tracking, dependency checking and a channel packer. ThryEditor is not required.
+
+**Eye shader** — a companion shader for eyes, sharing the packed-map format and the same lighting paths.
+
+## Two things worth knowing
+
+**Lock before you upload.** Disabled features are stripped at lock time, not at toggle time. An unlocked material compiles every feature it declares, including the refraction GrabPass, so uploading unlocked is both slower and heavier than it needs to be. `ZetLockOnUpload` handles this automatically.
+
+**LTCGI and Light Volumes are required, not optional.** Their `#include`s are only stripped when a material locks, so an unlocked material in a project missing either package fails to compile — pink materials rather than a missing feature. This is why the install order above matters.
+
+## Debug views
+
+If a material looks wrong, switch the Debug View dropdown rather than guessing:
+
+| Symptom | Look at |
+|---|---|
+| Surface renders black | AO, then Ambient |
+| Surface is a mirror | Metallic |
+| Reflections missing | Smoothness, then Reflection |
+| Wrong lighting direction | World Normal |
+| Packed map read wrong | Packed Map RGB |
+
+Set it back to Off before locking. It drives an `//ifex`, so Off removes the feature from the locked shader, and anything else ships the debug view to everyone who sees you.
+
+## Contributing
+
+Issues and pull requests welcome. If you're reporting a rendering problem, the most useful thing you can include is a screenshot of the relevant debug view and the world it happens in — the same material often behaves differently in a Light Volumes world than in one with baked probes.
+
+## Credits
+
+- [LTCGI](https://github.com/PiMaker/ltcgi) by PiMaker
+- [VRC Light Volumes](https://github.com/REDSIM/VRCLightVolumes) by RED_SIM
+- [AudioLink](https://github.com/llealloo/audiolink) by llealloo
+
+## Links
+
+[Releases](https://github.com/Zetph/ZetsFancyShader/releases) · [Discord](https://discord.gg/T2he8aAkyr)
