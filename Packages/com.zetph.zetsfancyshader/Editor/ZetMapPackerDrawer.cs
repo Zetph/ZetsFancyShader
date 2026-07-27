@@ -117,6 +117,19 @@ public class ZetMapPackerDrawer : MaterialPropertyDrawer
         }
     }
 
+    static void WarnIfSourceSmallerThan(Texture2D src, string label, int target)
+    {
+        if (src == null) return;
+        if (src.width >= target && src.height >= target) return;
+
+        Debug.LogWarning(string.Format(
+            "[Map Packer] {0} source '{1}' imports at {2}x{3}, smaller than the {4} " +
+            "output you selected. It will be upscaled - the packed map gets larger " +
+            "without gaining detail. Either raise that texture's Max Size in its " +
+            "import settings, or pack at {2} instead.",
+            label, src.name, src.width, src.height, target));
+    }
+
     static Color[] ReadSource(Texture2D src, int w, int h)
     {
         // If the importer flags this texture as sRGB and the project is Linear
@@ -183,6 +196,13 @@ public class ZetMapPackerDrawer : MaterialPropertyDrawer
         }
         finally { EditorUtility.ClearProgressBar(); }
 
+        // Blit reads sources at their IMPORTED size, not their size on disk. A
+        // 4096 source whose own importer caps at 2048 is read as 2048 and then
+        // upscaled into the output - a bigger file carrying no more detail.
+        WarnIfSourceSmallerThan(st.metallic.source, "Metallic", w);
+        WarnIfSourceSmallerThan(st.ao.source,       "AO",       w);
+        WarnIfSourceSmallerThan(st.rough.source,    "Roughness/Smoothness", w);
+
         var outTex = new Texture2D(w, h, TextureFormat.RGBA32, false, true);
         outTex.SetPixels(outPix); outTex.Apply();
 
@@ -205,6 +225,18 @@ public class ZetMapPackerDrawer : MaterialPropertyDrawer
             imp.mipmapFilter = TextureImporterMipFilter.KaiserFilter;
             imp.textureCompression = TextureImporterCompression.CompressedHQ; // BC7 on PC
             imp.compressionQuality = 100;
+
+            // Without this the importer default of 2048 silently downscales the
+            // file we just wrote, so picking 4096 in the dropdown produced a 4096
+            // PNG on disk and a 2048 texture in the project.
+            imp.maxTextureSize = Mathf.Clamp(Mathf.NextPowerOfTwo(Mathf.Max(w, h)), 32, 16384);
+
+            // Avatars are the main consumer here and packed maps are large, so
+            // streaming is the right default: mips load on demand instead of the
+            // full chain sitting resident. Priority 0 is the neutral value.
+            imp.streamingMipmaps = true;
+            imp.streamingMipmapsPriority = 0;
+
             imp.SaveAndReimport();
         }
 
