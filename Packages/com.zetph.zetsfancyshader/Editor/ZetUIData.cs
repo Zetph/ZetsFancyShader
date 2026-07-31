@@ -19,6 +19,12 @@ namespace Zetph.FancyShader.EditorUI
         public string info;
         public string toggle;
         public string[] showIf;  // "_Foo" or "_Foo=3"; all entries ANDed
+
+        // Integration symbol this group needs (e.g. "ZET_LTCGI"). When set and
+        // the matching package is absent, the group is hidden outright: a toggle
+        // for a feature that physically cannot run is worse than no toggle.
+        // Empty or missing means always shown, so existing JSON is unaffected.
+        public string requires;
     }
 
     [Serializable]

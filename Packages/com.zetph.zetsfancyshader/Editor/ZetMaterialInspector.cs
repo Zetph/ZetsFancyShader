@@ -719,8 +719,16 @@ namespace Zetph.FancyShader.EditorUI
         {
             if (!ZetCondition.EvaluateAll(group.Show, GetFloat)) return;
 
+            // Gated on an optional package. Visible-but-disabled rather than
+            // hidden, same as a switched-off section: a section that vanishes
+            // reads as a missing feature, and the user has no way to learn that
+            // installing a package would bring it back.
+            bool available = group.Def == null
+                          || ZetIntegrationGenerator.IsAvailable(group.Def.requires);
+
             MaterialProperty toggle = FindToggle(group);
-            bool enabled = toggle == null || toggle.hasMixedValue || toggle.floatValue > 0.5f;
+            bool enabled = available &&
+                           (toggle == null || toggle.hasMixedValue || toggle.floatValue > 0.5f);
 
             // On a locked material, anything left at defaults with no toggle on
             // was baked out entirely. Judging by the enable toggle alone missed
@@ -749,6 +757,11 @@ namespace Zetph.FancyShader.EditorUI
                 using (new EditorGUI.DisabledScope(!enabled))
                 {
                     EditorGUI.indentLevel++;
+
+                    // Drawn OUTSIDE the usual info line and before it, because it
+                    // explains why everything below is greyed out.
+                    if (!available)
+                        DrawMissingPackageNote(group.Def.requires);
 
                     if (group.Def != null && !string.IsNullOrEmpty(group.Def.info))
                         DrawInfo(group.Def.info);
@@ -932,6 +945,64 @@ namespace Zetph.FancyShader.EditorUI
                 _infoWidths[indent] = r.width;
 
             EditorGUI.LabelField(r, content, _infoStyle);
+        }
+
+        /// <summary>
+        /// Explains a section greyed out because its package is absent. Rendered
+        /// at full opacity by escaping the enclosing DisabledScope - a greyed-out
+        /// explanation of why things are greyed out is close to unreadable.
+        /// </summary>
+        private static void DrawMissingPackageNote(string symbol)
+        {
+            string name, listing;
+            switch (symbol)
+            {
+                case "ZET_LTCGI":
+                    name = "LTCGI";
+                    listing = "https://vpm.pimaker.at/index.json";
+                    break;
+                case "ZET_LV_OK":
+                    name = "VRC Light Volumes";
+                    listing = "https://redsim.github.io/vpmlisting/index.json";
+                    break;
+                default:
+                    name = symbol;
+                    listing = null;
+                    break;
+            }
+
+            bool wasEnabled = GUI.enabled;
+            GUI.enabled = true;
+
+            EditorGUILayout.HelpBox(
+                name + " is not installed, so this section is inactive. Add the " +
+                name + " package to your project and it will switch on by itself - " +
+                "your settings here are kept either way.",
+                MessageType.Info);
+
+            if (listing != null)
+            {
+                Rect row = EditorGUI.IndentedRect(
+                    GUILayoutUtility.GetRect(0f, EditorGUIUtility.singleLineHeight,
+                                             GUILayout.ExpandWidth(true)));
+
+                // Primary hands the listing straight to VCC through its protocol
+                // handler. The browser button is not garnish: if VCC is not
+                // installed, or the handler was never registered, OpenURL on a
+                // vcc:// link does nothing at all and the user is left with a
+                // button that looks broken. The browser link always lands.
+                Rect add  = new Rect(row.x, row.y, 130f, row.height);
+                Rect open = new Rect(row.x + 134f, row.y, 110f, row.height);
+
+                if (GUI.Button(add, "Add to VCC", EditorStyles.miniButtonLeft))
+                    Application.OpenURL("vcc://vpm/addRepo?url=" + listing);
+
+                if (GUI.Button(open, "Open listing", EditorStyles.miniButtonRight))
+                    Application.OpenURL(listing.Replace("index.json", string.Empty));
+            }
+
+            EditorGUILayout.Space(4f);
+            GUI.enabled = wasEnabled;
         }
 
         /// <summary>

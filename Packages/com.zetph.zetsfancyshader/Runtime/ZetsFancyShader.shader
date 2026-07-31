@@ -825,29 +825,27 @@ Shader "Zetph/ZetsFancyShader"
                 {
                     return (AudioLinkDecodeDataAsUInt(ALPASS_CHRONOTENSITY + uint2(index, band))) / 100000.0;
                 }
-            // --- LTCGI (required dependency, stripped at lock when off) ---
-            // v0.2.0 final: BARE include inside ifex, on purpose. Two prior
-            // attempts failed empirically: __has_include silently ate this
-            // block in Thry's locked copies, and keyword-guarding the include
-            // died at lock because the optimizer does not carry enabled
-            // keywords into the locked shader as preprocessor defines - the
-            // feature compiled out of exactly the copies that get uploaded.
-            // Property-driven ifex is the only primitive that has survived
-            // every lock path. Consequence: the LTCGI package is a hard
-            // dependency of the shader SOURCE - declared in vpmDependencies
-            // so VCC installs it automatically, and stated in the README.
-//ifex _LTCGI==0
-            #include "Packages/at.pimaker.ltcgi/Shaders/LTCGI.cginc"
-            #define ZET_LTCGI 1
-//endex
-            // --- VRC Light Volumes (required dependency, stripped at lock when off) ---
-            // Bare include inside ifex, same rationale as LTCGI above.
-            // Requires VRC Light Volumes 2.1.3 or newer (LightVolumeSpecular's
-            // smoothness signature). Declared in vpmDependencies.
-//ifex _LightVolumes==0
-            #include "Packages/red.sim.lightvolumes/Shaders/LightVolumes.cginc"
-            #define ZET_LV_OK 1
-//endex
+            // --- Optional world lighting integrations ---
+            // Availability is resolved in C# by ZetIntegrationGenerator and written
+            // into this file, which ALWAYS exists and is always valid to include.
+            // It defines ZET_LTCGI and/or ZET_LV_OK only for packages actually
+            // present, so a project missing either one still compiles.
+            //
+            // This replaced bare includes inside //ifex. That worked, but ifex only
+            // strips at LOCK time, so an unlocked material compiled both includes
+            // unconditionally - which made both packages hard dependencies of the
+            // SOURCE and forced every user to add two third-party VPM repos before
+            // installing anything. The in-shader alternatives both failed:
+            // __has_include was silently eaten in locked copies, and keyword-guarding
+            // the include died at lock because the optimizer does not carry enabled
+            // keywords into the locked shader as preprocessor defines.
+            //
+            // Resolving it in C# sidesteps all of that: by lock time this is an
+            // ordinary include that either does or does not define a symbol.
+            // Relative on purpose: an absolute Packages/<id>/ path only resolves
+            // when the package is installed via VPM. A .unitypackage install drops
+            // everything under Assets/ instead, and the absolute path breaks.
+            #include "Generated/ZetIntegrations.cginc"
             // --- Textures & Samplers (kept outside the per-material cbuffer) ---
             Texture2D _MainTex; SamplerState sampler_MainTex;
             SamplerState sampler_LinearClamp;

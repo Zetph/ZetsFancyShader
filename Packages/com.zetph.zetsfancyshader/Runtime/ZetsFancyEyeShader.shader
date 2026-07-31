@@ -5,10 +5,12 @@
 // Anisotropic Highlights, Stylized Anime Specular, PBR specular lobe,
 // LTCGI, and VRC Light Volumes (ambient + speculars).
 //
-// Dependencies (installed via VCC / declared in vpmDependencies):
+// Optional integrations - neither is required to compile:
 //   - LTCGI (at.pimaker.ltcgi)
 //   - VRC Light Volumes 2.1.3+ (red.sim.lightvolumes)
-// Both are stripped at lock when their toggle is off, via Thry //ifex.
+// ZetIntegrationGenerator detects what is installed and writes
+// Runtime/Generated/ZetIntegrations.cginc accordingly. Missing packages leave
+// their feature inert rather than breaking the build.
 // ==============================================================================
 Shader "Zetph/ZetsFancyEyeShader"
 {
@@ -125,20 +127,27 @@ Shader "Zetph/ZetsFancyEyeShader"
             float _LightVolumes; float _LTCGI;
             float _EmissionEnable; float4 _EmissionMap_ST; float4 _EmissionColor; float _EmissionStrength; float _EmissionAlbedoTint;
             CBUFFER_END
-            // --- LTCGI (required dependency, stripped at lock when off) ---
-            // BARE include inside ifex - the only primitive that survives Thry's
-            // lock. __has_include silently fails in locked copies; keyword-
-            // guarding the include drops it at lock (the optimizer does not carry
-            // enabled keywords as preprocessor defines). ZET_LTCGI gates usage.
-//ifex _LTCGI==0
-            #include "Packages/at.pimaker.ltcgi/Shaders/LTCGI.cginc"
-            #define ZET_LTCGI 1
-//endex
-            // --- VRC Light Volumes 2.1.3+ (required dependency, stripped at lock) ---
-//ifex _LightVolumes==0
-            #include "Packages/red.sim.lightvolumes/Shaders/LightVolumes.cginc"
-            #define ZET_LV_OK 1
-//endex
+            // --- Optional world lighting integrations ---
+            // Availability is resolved in C# by ZetIntegrationGenerator and written
+            // into this file, which ALWAYS exists and is always valid to include.
+            // It defines ZET_LTCGI and/or ZET_LV_OK only for packages actually
+            // present, so a project missing either one still compiles.
+            //
+            // This replaced bare includes inside //ifex. That worked, but ifex only
+            // strips at LOCK time, so an unlocked material compiled both includes
+            // unconditionally - which made both packages hard dependencies of the
+            // SOURCE and forced every user to add two third-party VPM repos before
+            // installing anything. The in-shader alternatives both failed:
+            // __has_include was silently eaten in locked copies, and keyword-guarding
+            // the include died at lock because the optimizer does not carry enabled
+            // keywords into the locked shader as preprocessor defines.
+            //
+            // Resolving it in C# sidesteps all of that: by lock time this is an
+            // ordinary include that either does or does not define a symbol.
+            // Relative on purpose: an absolute Packages/<id>/ path only resolves
+            // when the package is installed via VPM. A .unitypackage install drops
+            // everything under Assets/ instead, and the absolute path breaks.
+            #include "Generated/ZetIntegrations.cginc"
             struct appdata { float4 vertex : POSITION; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct v2f { float4 pos : SV_POSITION; float2 uv : TEXCOORD0; float3 wNrm : TEXCOORD1; UNITY_FOG_COORDS(2) float3 wPos : TEXCOORD3; float4 wTan : TEXCOORD4; UNITY_SHADOW_COORDS(5) 
                 #ifdef VERTEXLIGHT_ON

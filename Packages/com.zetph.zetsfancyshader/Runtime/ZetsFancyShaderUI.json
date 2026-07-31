@@ -771,14 +771,16 @@
    "label": "LTCGI",
    "info": "Enables LTCGI area light support, so the avatar picks up coloured light from LTCGI world screens and emitters.",
    "toggle": "_LTCGI",
-   "showIf": []
+   "showIf": [],
+   "requires": "ZET_LTCGI"
   },
   {
    "path": "lightvolumes",
    "label": "VRC Light Volumes",
    "info": "Support for VRC Light Volumes, the voxel-based light probe replacement modern worlds use. The avatar picks up per-pixel baked lighting and moving point, spot, and area Light Volume lights - far more detailed than Unity's blended probes. Falls back to normal probes automatically in worlds without it. Requires the free VRC Light Volumes package (red.sim.lightvolumes), version 2.1.3 or newer - installed automatically alongside the shader via VCC.",
    "toggle": "_LightVolumes",
-   "showIf": []
+   "showIf": [],
+   "requires": "ZET_LV_OK"
   },
   {
    "path": "debug",

@@ -79,14 +79,16 @@
    "label": "LTCGI",
    "info": "",
    "toggle": "_LTCGI",
-   "showIf": []
+   "showIf": [],
+   "requires": "ZET_LTCGI"
   },
   {
    "path": "lightvolumes",
    "label": "VRC Light Volumes",
    "info": "",
    "toggle": "_LightVolumes",
-   "showIf": []
+   "showIf": [],
+   "requires": "ZET_LV_OK"
   }
  ],
  "tooltips": [

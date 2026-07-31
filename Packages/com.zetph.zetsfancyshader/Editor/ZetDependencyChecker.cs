@@ -4,18 +4,23 @@
 // the only modal - a popup per dependency trains users to dismiss the one that
 // matters.
 //
-//   LTCGI            - HARD. The shader source has a bare #include for it.
-//   VRC LightVolumes - HARD, 2.1.3+. Same, plus the specular signature.
+//   LTCGI            - optional. Adds area light support when present.
+//   VRC LightVolumes - optional, 2.1.3+. Adds voxel probe support when present.
 //   AudioLink        - optional. The sampling layer is embedded in the shader,
-//                      so reactive FX simply idle without it. Info line.
+//                      so reactive FX simply idle without it.
 //
-// Why LTCGI and Light Volumes are HARD rather than optional: both includes sit
-// inside //ifex blocks, and ifex only strips at LOCK time. An unlocked material
-// compiles the include unconditionally, so a project missing either package
-// fails to compile the shader at all - pink materials, not a missing feature.
-// Both are declared in vpmDependencies so VCC installs them automatically; this
-// check exists for legacy folder installs and manual drag-and-drop, where
-// nothing resolves dependencies on the user's behalf.
+// All three are optional as of 0.3.0, so nothing here is modal any more.
+// ZetIntegrationGenerator resolves LTCGI and Light Volumes availability in C#
+// and writes it into Generated/ZetIntegrations.cginc, which means a project
+// missing either one still compiles - the feature is simply inert. Before that,
+// both includes sat inside //ifex blocks and ifex only strips at LOCK time, so
+// an unlocked material compiled them unconditionally and a missing package meant
+// pink materials rather than a missing feature. That was the reason for the
+// modal, and the reason is gone.
+//
+// What is left is worth saying once per session and no louder: people who own an
+// avatar built for LTCGI worlds should know why it looks flat, and a popup is
+// the wrong way to tell them.
 //
 // ThryEditor was removed as a dependency in 0.2.0 - the package ships its own
 // material inspector (ZetMaterialInspector), locker (ZetShaderLocker) and map
@@ -32,8 +37,14 @@ public static class ZetDependencyChecker
 {
     const string SessionKey = "ZetsFancyShader_DepsChecked";
 
-    const string LtcgiUrl        = "https://github.com/PiMaker/ltcgi";
-    const string LightVolumesUrl = "https://github.com/REDSIM/VRCLightVolumes";
+    // VPM listings, not GitHub repos. A listing page has an Add to VCC button on
+    // it; a repo README leaves the user hunting for the VPM URL.
+    const string LtcgiUrl        = "https://vpm.pimaker.at/";
+    const string LightVolumesUrl = "https://redsim.github.io/vpmlisting/";
+
+    // AudioLink is carried in VRChat's own curated listing, so there is no repo
+    // to add - it appears in VCC's package list already. The project page is the
+    // more useful link here.
     const string AudioLinkUrl    = "https://github.com/llealloo/audiolink";
 
     const string LightVolumesPackage = "red.sim.lightvolumes";
@@ -53,32 +64,24 @@ public static class ZetDependencyChecker
         bool ltcgi = LtcgiPresent();
         bool volumes = LightVolumesPresent();
 
-        // ---- Hard dependencies. One modal listing everything that is missing,
-        //      rather than one per package. ----
-        if (!ltcgi || !volumes)
+        // ---- Optional integrations. Info only - the shader compiles without them. ----
+        if (!ltcgi)
+            Debug.Log(
+                "[ZetsFancyShader] LTCGI is not installed. Area light support stays " +
+                "inactive; everything else works normally. " + LtcgiUrl);
+
+        if (!volumes)
         {
-            string missing = string.Empty;
-            if (!ltcgi) missing += "\n  - LTCGI (at.pimaker.ltcgi)";
-            if (!volumes) missing += "\n  - VRC Light Volumes (red.sim.lightvolumes) " + LightVolumesMinimum + " or newer";
-
-            bool open = EditorUtility.DisplayDialog(
-                "ZetsFancyShader - required packages missing",
-                "ZetsFancyShader cannot compile without:" + missing + "\n\n" +
-                "The shader includes both directly. Those includes are only stripped " +
-                "when a material is locked, so an unlocked material fails to compile " +
-                "outright - materials will render pink until the packages are added.\n\n" +
-                "Installing ZetsFancyShader through the VRChat Creator Companion pulls " +
-                "both in automatically. If you installed by dragging a folder in, add " +
-                "them yourself.",
-                "Open download page",
-                "Later");
-
-            if (open) Application.OpenURL(!ltcgi ? LtcgiUrl : LightVolumesUrl);
+            Debug.Log(
+                "[ZetsFancyShader] VRC Light Volumes is not installed. The shader falls " +
+                "back to Unity light probes, which will look flatter in worlds built " +
+                "around volumes. " + LightVolumesUrl);
         }
         else
         {
             // Present, but possibly too old to expose the signature the shader
-            // calls. Warning rather than modal: it only bites on the specular path.
+            // calls. Warning rather than info: this one is a compile error, not a
+            // missing feature.
             string version = PackageVersion(LightVolumesPackage);
             if (version != null && IsOlderThan(version, LightVolumesMinimum))
                 Debug.LogWarning(
