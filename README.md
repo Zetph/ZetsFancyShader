@@ -2,13 +2,13 @@
 
 Yet another toon and PBR shader for VRChat avatars.
 
-- LTCGI area lights, VRC Light Volumes, and AudioLink with a built-in material inspector to help you diagnose issues.
+>>> LTCGI area lights, VRC Light Volumes, and AudioLink with a built-in material inspector to help you diagnose issues.
 
 PC only. Unity 2022.3. MIT.
 
 **[Install page →](https://zetph.github.io/ZetsFancyShader)**
 
----
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Install
 
@@ -17,6 +17,7 @@ Add this listing to VCC and install ZetsFancyShader. That's the whole thing:
 ```
 https://zetph.github.io/ZetsFancyShader
 ```
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Optional extras
 
@@ -34,6 +35,8 @@ Sections for packages you don't have appear grayed out in the inspector with a n
 
 Your settings in those sections are kept either way - install the package later and it picks up where you left off.
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ## Features
 
 **World lighting** - LTCGI area lights and VRC Light Volumes, both with specular, when those packages are present. Falls back to Unity light probes otherwise.
@@ -50,11 +53,20 @@ Your settings in those sections are kept either way - install the package later 
 
 **Eye shader** - a companion shader for eyes, sharing the packed-map format and the same lighting paths; **experimental WIP.**
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ## Two things worth knowing
 
-1. Disabled features are stripped at lock time, not at toggle time. An unlocked material compiles every feature it declares, including the refraction GrabPass, so uploading unlocked is both slower and heavier than it needs to be. `ZetLockOnUpload` handles this automatically.
+1. Disabled features are stripped at lock time, not at toggle time.
 
-2. Integration availability is resolved in C#, not in the shader. `ZetIntegrationGenerator` checks which packages are installed and writes `Runtime/Generated/ZetIntegrations.cginc`, which the shaders include unconditionally. That file is regenerated on domain reload, so adding or removing a package is picked up automatically — and because it resolves at edit time rather than compile time, locked and unlocked materials behave identically. If a section ever looks out of step with what you have installed, **Tools → ZetsFancyShader → Regenerate Integrations** forces a rebuild.
+An unlocked material compiles every feature it declares, including the refraction GrabPass, so uploading unlocked is both slower and heavier than it needs to be. `ZetLockOnUpload` handles this automatically.
+
+3. Integration availability is resolved in C#, not in the shader. `ZetIntegrationGenerator` checks which packages are installed and writes `Runtime/Generated/ZetIntegrations.cginc`, which the shaders include unconditionally.
+
+That file is regenerated on domain reload, so adding or removing a package is picked up automatically and because it resolves at edit time rather than compile time, locked and unlocked materials behave identically. 
+If a section ever looks out of step with what you have installed, **Tools -> ZetsFancyShader -> Regenerate Integrations** forces a rebuild.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Debug views
 
@@ -70,13 +82,17 @@ If a material looks wrong, utilise the Debug View dropdown:
 
 Set it back to Off before locking. It drives an `//ifex`, so Off removes the feature from the locked shader, and anything else ships the debug view to everyone who sees you.
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ## Contributing
 
-Issues and pull requests welcome.
+Issues are welcome.
 
 If you're reporting a rendering problem, the most useful thing you can include is a screenshot of the relevant debug view and the world it happens in. 
 
 !! The same material often behaves differently in a Light Volumes world than in one with baked probes.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Credits
 
