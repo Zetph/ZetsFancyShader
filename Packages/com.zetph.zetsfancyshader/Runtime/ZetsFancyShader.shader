@@ -1,6 +1,6 @@
 // ==============================================================================
 // ZetsFancyShader
-// Version: v0.2.0-alpha
+// Version: v0.3.0
 // Author: Zetph
 //
 // Welcome to the source code!
