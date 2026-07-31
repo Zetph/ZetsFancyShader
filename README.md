@@ -2,7 +2,7 @@
 
 Yet another toon and PBR shader for VRChat avatars.
 
-- LTCGI area lights, VRC Light Volumes, and AudioLink — with a built-in material inspector to help you diagnose issues.
+- LTCGI area lights, VRC Light Volumes, and AudioLink with a built-in material inspector to help you diagnose issues.
 
 PC only. Unity 2022.3. MIT.
 
@@ -20,7 +20,9 @@ https://zetph.github.io/ZetsFancyShader
 
 ### Optional extras
 
-None of these are required — the shader compiles and works without them. Add whichever you want, before or after installing the shader, and the matching features switch on by themselves!
+None of these are required. 
+
+The shader compiles and works without them, add whichever you want, before or after installing the shader, and the matching features switch on by themselves!
 
 | Repository | Package | Adds |
 |---|---|---|
@@ -30,23 +32,23 @@ None of these are required — the shader compiles and works without them. Add w
 
 Sections for packages you don't have appear grayed out in the inspector with a note and an Add to VCC button. 
 
-Your settings in those sections are kept either way — install the package later and it picks up where you left off.
+Your settings in those sections are kept either way - install the package later and it picks up where you left off.
 
 ## Features
 
-**World lighting** — LTCGI area lights and VRC Light Volumes, both with specular, when those packages are present. Falls back to Unity light probes otherwise.
+**World lighting** - LTCGI area lights and VRC Light Volumes, both with specular, when those packages are present. Falls back to Unity light probes otherwise.
 
-**AudioLink** — emission, geometry break and glitch driven by the music. The sampling layer is embedded, so reactive features idle quietly rather than breaking when no AudioLink object is present.
+**AudioLink** - emission, geometry break and glitch driven by the music. The sampling layer is embedded, so reactive features idle quietly rather than breaking when no AudioLink object is present.
 
-**Toon and PBR** — ramp shading with metallic, smoothness and AO from a packed map, plus subsurface scattering for skin and thin cloth.
+**Toon and PBR** - ramp shading with metallic, smoothness and AO from a packed map, plus subsurface scattering for skin and thin cloth.
 
-**Effects** — interior mapping, refraction, outlines, matcaps, iridescence, dissolve, and a screen shader for panels and displays.
+**Effects** - interior mapping, refraction, outlines, matcaps, iridescence, dissolve, and a screen shader for panels and displays.
 
-**Debug views** — render one term on its own (albedo, normals, AO, ambient, reflection, LTCGI) instead of guessing which input turned a material black. Strips out entirely when the material is locked.
+**Debug views** - render one term on its own (albedo, normals, AO, ambient, reflection, LTCGI) instead of guessing which input turned a material black. Strips out entirely when the material is locked.
 
-**Its own tooling** — material inspector, locking, animated-property tracking, dependency checking and a channel packer.
+**Its own tooling** - material inspector, locking, animated-property tracking, dependency checking and a channel packer.
 
-**Eye shader** — a companion shader for eyes, sharing the packed-map format and the same lighting paths; **experimental WIP.**
+**Eye shader** - a companion shader for eyes, sharing the packed-map format and the same lighting paths; **experimental WIP.**
 
 ## Two things worth knowing
 
@@ -72,7 +74,9 @@ Set it back to Off before locking. It drives an `//ifex`, so Off removes the fea
 
 Issues and pull requests welcome.
 
-If you're reporting a rendering problem, the most useful thing you can include is a screenshot of the relevant debug view and the world it happens in — the same material often behaves differently in a Light Volumes world than in one with baked probes.
+If you're reporting a rendering problem, the most useful thing you can include is a screenshot of the relevant debug view and the world it happens in. 
+
+!! The same material often behaves differently in a Light Volumes world than in one with baked probes.
 
 ## Credits
 
