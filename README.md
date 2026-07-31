@@ -1,6 +1,7 @@
 # ZetsFancyShader
 
 Yet another toon and PBR shader for VRChat avatars.
+
 - LTCGI area lights, VRC Light Volumes, and AudioLink — with a built-in material inspector to help you diagnose issues.
 
 PC only. Unity 2022.3. MIT.
@@ -11,23 +12,29 @@ PC only. Unity 2022.3. MIT.
 
 ## Install
 
-**IMPORTANT, THIS MUST BE DONE:**. 
+Add this listing to VCC and install ZetsFancyShader. That's the whole thing:
 
-The first two are dependencies; **add them before the shader or VCC has nowhere to resolve them from.**
+```
+https://zetph.github.io/ZetsFancyShader
+```
 
-| | Repository | Package |
+### Optional extras
+
+None of these are required — the shader compiles and works without them. Add whichever you want, before or after installing the shader, and the matching features switch on by themselves!
+
+| Repository | Package | Adds |
 |---|---|---|
-| 1 | [vpm.pimaker.at](https://vpm.pimaker.at/) | `at.pimaker.ltcgi` |
-| 2 | [redsim.github.io/vpmlisting](https://redsim.github.io/vpmlisting/) | `red.sim.lightvolumes` (2.1.3+) |
-| 3 | [zetph.github.io/ZetsFancyShader](https://zetph.github.io/ZetsFancyShader) | `com.zetph.zetsfancyshader` |
+| [vpm.pimaker.at](https://vpm.pimaker.at/) | `at.pimaker.ltcgi` | LTCGI area lights |
+| [redsim.github.io/vpmlisting](https://redsim.github.io/vpmlisting/) | `red.sim.lightvolumes` (2.1.3+) | VRC Light Volumes |
+| VRChat curated (already in VCC) | `com.llealloo.audiolink` | Audio-reactive features |
 
-Then open your avatar project in VCC and add ZetsFancyShader from the package list. Both dependencies install with it automatically.
+Sections for packages you don't have appear grayed out in the inspector with a note and an Add to VCC button. 
 
-Adding the shader on its own will fail to resolve; VCC only searches repositories you have already added, and neither dependency is in VRChat's curated repo.
+Your settings in those sections are kept either way — install the package later and it picks up where you left off.
 
 ## Features
 
-**World lighting** — LTCGI area lights and VRC Light Volumes, both with specular. Falls back to Unity light probes in worlds that use neither.
+**World lighting** — LTCGI area lights and VRC Light Volumes, both with specular, when those packages are present. Falls back to Unity light probes otherwise.
 
 **AudioLink** — emission, geometry break and glitch driven by the music. The sampling layer is embedded, so reactive features idle quietly rather than breaking when no AudioLink object is present.
 
@@ -45,11 +52,11 @@ Adding the shader on its own will fail to resolve; VCC only searches repositorie
 
 1. Disabled features are stripped at lock time, not at toggle time. An unlocked material compiles every feature it declares, including the refraction GrabPass, so uploading unlocked is both slower and heavier than it needs to be. `ZetLockOnUpload` handles this automatically.
 
-2. **LTCGI and Light Volumes are required, not optional.** Their `#include`s are only stripped when a material locks, so an unlocked material in a project missing either package fails to compile — pink materials rather than a missing feature. This is why the install order above matters.
+2. Integration availability is resolved in C#, not in the shader. `ZetIntegrationGenerator` checks which packages are installed and writes `Runtime/Generated/ZetIntegrations.cginc`, which the shaders include unconditionally. That file is regenerated on domain reload, so adding or removing a package is picked up automatically — and because it resolves at edit time rather than compile time, locked and unlocked materials behave identically. If a section ever looks out of step with what you have installed, **Tools → ZetsFancyShader → Regenerate Integrations** forces a rebuild.
 
 ## Debug views
 
-If a material looks wrong, switch the Debug View dropdown rather than guessing:
+If a material looks wrong, utilise the Debug View dropdown:
 
 | Symptom | Look at |
 |---|---|
@@ -63,7 +70,7 @@ Set it back to Off before locking. It drives an `//ifex`, so Off removes the fea
 
 ## Contributing
 
-Issues and pull requests welcome. 
+Issues and pull requests welcome.
 
 If you're reporting a rendering problem, the most useful thing you can include is a screenshot of the relevant debug view and the world it happens in — the same material often behaves differently in a Light Volumes world than in one with baked probes.
 
