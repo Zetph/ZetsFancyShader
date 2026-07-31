@@ -9,19 +9,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-    
+
     @property --lx {
         syntax: "<percentage>";
         inherits: true;
         initial-value: 50%
     }
-
     @property --ly {
         syntax: "<percentage>";
         inherits: true;
         initial-value: 38%
     }
-
   :root{
     --ink:#0B1015;
     --panel:#121A21;
@@ -30,11 +28,9 @@
     --violet:#7B6BF0;
     --text:#DBE5EB;
     --muted:#7C919E;
-
     --lx:50%;
     --ly:38%;
   }
-
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
@@ -46,7 +42,6 @@
   }
   a{color:var(--teal)}
   .wrap{width:min(1040px,92vw);margin:0 auto}
-
   /* ---------- hero: a surface with a light on it ---------- */
     .hero {
         position: relative;
@@ -55,7 +50,6 @@
         border-bottom: 1px solid var(--line);
         padding: clamp(5rem,14vh,9rem) 0 clamp(3.5rem,8vh,5.5rem);
     }
-
   /* The moving light. Two stops so it reads as falloff, not a flashlight circle. */
     .hero::before {
         content: "";
@@ -78,14 +72,12 @@
     pointer-events:none;
   }
   .hero .wrap{position:relative;z-index:1}
-
   .eyebrow{
     font:500 12px/1 "IBM Plex Mono",monospace;
     letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
     display:flex;gap:.9rem;align-items:center;flex-wrap:wrap;
   }
   .eyebrow b{color:var(--teal);font-weight:500}
-
   h1{
     font:700 clamp(3rem,9vw,5.75rem)/0.95 "Space Grotesk",sans-serif;
     letter-spacing:-.035em;
@@ -97,16 +89,18 @@
     color:var(--muted);max-width:46ch;margin:1.25rem 0 0;
   }
   .thesis strong{color:var(--text);font-weight:500}
-
   /* ---------- sections ---------- */
   section{padding:clamp(3.5rem,9vh,6rem) 0;border-bottom:1px solid var(--line)}
   h2{
     font:500 clamp(1.5rem,3.4vw,2.1rem)/1.15 "Space Grotesk",sans-serif;
     letter-spacing:-.02em;margin:0 0 .6rem;
   }
+  h3.sub{
+    font:500 1.2rem/1.2 "Space Grotesk",sans-serif;
+    letter-spacing:-.01em;margin:3rem 0 .6rem;
+  }
   .lede{color:var(--muted);max-width:58ch;margin:0 0 2.5rem}
-
-  /* ---------- install: a real sequence, so it gets real numbers ---------- */
+  /* ---------- install rows ---------- */
   .steps{display:grid;gap:1rem}
   .step{
     display:grid;
@@ -117,14 +111,16 @@
     border-radius:10px;
     padding:1.35rem 1.5rem;
   }
+  /* Short labels, not sequence numbers: install order stopped mattering in
+     0.3.0, so numbering would imply a sequence that no longer exists. */
   .num{
     font:500 13px/1 "IBM Plex Mono",monospace;
     color:var(--violet);letter-spacing:.1em;
+    min-width:3.2rem;
   }
   .step h3{margin:0;font:500 1.05rem/1.3 "IBM Plex Sans",sans-serif}
   .step p{margin:.3rem 0 0;color:var(--muted);font-size:.92rem}
   .step p code{font-family:"IBM Plex Mono",monospace;font-size:.85em;color:var(--muted)}
-
   .btn{
     display:inline-block;white-space:nowrap;
     font:500 .9rem/1 "IBM Plex Sans",sans-serif;
@@ -137,14 +133,13 @@
   .btn:hover{border-color:var(--teal);color:var(--teal)}
   .btn-primary{background:var(--teal);color:#07110F;border-color:var(--teal);font-weight:500}
   .btn-primary:hover{background:#77DAD5;border-color:#77DAD5;color:#07110F}
+  .btn-static{opacity:.45;pointer-events:none}
   a:focus-visible,.btn:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
-
   .note{
     margin-top:1.6rem;padding-left:1rem;
     border-left:2px solid var(--violet);
     color:var(--muted);font-size:.92rem;max-width:62ch;
   }
-
   /* ---------- features ---------- */
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2rem 2.5rem}
   .feat h3{
@@ -153,18 +148,15 @@
     letter-spacing:.13em;text-transform:uppercase;color:var(--teal);
   }
   .feat p{margin:0;color:var(--muted);font-size:.95rem}
-
   /* ---------- specs ---------- */
   .specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;
          font:400 .9rem/1.5 "IBM Plex Mono",monospace}
   .specs div span{display:block;color:var(--muted);font-size:.75rem;letter-spacing:.12em;
                   text-transform:uppercase;margin-bottom:.35rem}
-
   footer{padding:2.5rem 0 4rem;color:var(--muted);font-size:.88rem;
          display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:space-between}
   footer a{text-decoration:none}
   footer a:hover{text-decoration:underline}
-
   @media (max-width:640px){
     .step{grid-template-columns:auto 1fr;gap:.5rem 1rem}
     .step .btn{grid-column:1 / -1;text-align:center;margin-top:.6rem}
@@ -173,11 +165,9 @@
         html {
             scroll-behavior: auto
         }
-
         .hero {
             transition: none
         }
-        /* was .hero::before */
         * {
             animation: none !important
         }
@@ -185,10 +175,9 @@
 </style>
 </head>
 <body>
-
 <header class="hero" id="hero">
   <div class="wrap">
-    <p class="eyebrow"><b>v0.2.1</b> <span>VRChat avatars</span> <span>Unity 2022.3</span> <span>PC only</span></p>
+    <p class="eyebrow"><b>v0.3.0</b> <span>VRChat avatars</span> <span>Unity 2022.3</span> <span>PC only</span></p>
     <h1>Zets<span class="zf">Fancy</span>Shader</h1>
     <p class="thesis">A toon and PBR shader that reacts to the world it's standing in — <strong>LTCGI area lights, VRC Light Volumes, AudioLink</strong> — with an inspector built to tell you which input is wrong.</p>
     <p style="margin-top:2.25rem">
@@ -197,33 +186,13 @@
     </p>
   </div>
 </header>
-
 <section id="install">
   <div class="wrap">
     <h2>Install</h2>
-    <p class="lede">Installation, 3 repositories required. The first two are the shader's dependencies — add them before the shader itself, or VCC has nowhere to resolve them from.</p>
-
+    <p class="lede">One repository. Add it to VCC, install ZetsFancyShader into your avatar project, and you're done.</p>
     <div class="steps">
       <div class="step">
-        <span class="num">01</span>
-        <div>
-          <h3>LTCGI</h3>
-          <p>Area lighting by PiMaker. <code>at.pimaker.ltcgi</code></p>
-        </div>
-        <a class="btn" href="https://vpm.pimaker.at/">Add repo</a>
-      </div>
-
-      <div class="step">
-        <span class="num">02</span>
-        <div>
-          <h3>VRC Light Volumes</h3>
-          <p>Voxel light probes by RED_SIM, 2.1.3 or newer. <code>red.sim.lightvolumes</code></p>
-        </div>
-        <a class="btn" href="https://redsim.github.io/vpmlisting/">Add repo</a>
-      </div>
-
-      <div class="step">
-        <span class="num">03</span>
+        <span class="num">VCC</span>
         <div>
           <h3>ZetsFancyShader</h3>
           <p>This listing. <code>com.zetph.zetsfancyshader</code></p>
@@ -232,20 +201,46 @@
       </div>
     </div>
 
-    <p class="note">Then open your avatar project in VCC and add ZetsFancyShader from the package list. Both dependencies install with it.<br><br>
-    Adding the shader on its own will fail to resolve — VCC only searches repositories you've already added, and neither dependency is in VRChat's curated repo.</p>
+    <h3 class="sub">Optional extras</h3>
+    <p class="lede">The shader compiles and works without any of these. Add whichever you want, before or after installing — the matching features switch themselves on.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="num">LTCGI</span>
+        <div>
+          <h3>Area lights</h3>
+          <p>By PiMaker. <code>at.pimaker.ltcgi</code></p>
+        </div>
+        <a class="btn" href="https://vpm.pimaker.at/">Add repo</a>
+      </div>
+      <div class="step">
+        <span class="num">LV</span>
+        <div>
+          <h3>VRC Light Volumes</h3>
+          <p>Voxel light probes by RED_SIM, 2.1.3 or newer. <code>red.sim.lightvolumes</code></p>
+        </div>
+        <a class="btn" href="https://redsim.github.io/vpmlisting/">Add repo</a>
+      </div>
+      <div class="step">
+        <span class="num">AL</span>
+        <div>
+          <h3>AudioLink</h3>
+          <p>Already in VCC via VRChat's curated listing. <code>com.llealloo.audiolink</code></p>
+        </div>
+        <span class="btn btn-static">No repo needed</span>
+      </div>
+    </div>
+
+    <p class="note">Sections for packages you don't have stay visible in the material inspector, greyed out with a note and a one-click Add to VCC button — so nothing disappears without explanation, and your settings in those sections are kept either way.</p>
   </div>
 </section>
-
 <section>
   <div class="wrap">
     <h2>What's in it</h2>
     <p class="lede">Built for avatars that have to look right in worlds you didn't light.</p>
-
     <div class="grid">
       <div class="feat">
         <h3>World lighting</h3>
-        <p>LTCGI area lights and VRC Light Volumes, both with specular. Falls back to Unity probes in worlds that use neither.</p>
+        <p>LTCGI area lights and VRC Light Volumes, both with specular, when those packages are present. Falls back to Unity probes otherwise.</p>
       </div>
       <div class="feat">
         <h3>AudioLink</h3>
@@ -270,20 +265,18 @@
     </div>
   </div>
 </section>
-
 <section>
   <div class="wrap">
     <h2>Requirements</h2>
     <div class="specs">
       <div><span>Unity</span>2022.3</div>
       <div><span>Platform</span>PC only</div>
-      <div><span>Required</span>LTCGI<br>Light Volumes 2.1.3+</div>
-      <div><span>Optional</span>AudioLink</div>
+      <div><span>Required</span>Nothing else</div>
+      <div><span>Optional</span>LTCGI<br>Light Volumes 2.1.3+<br>AudioLink</div>
       <div><span>Licence</span>MIT</div>
     </div>
   </div>
 </section>
-
 <footer class="wrap">
   <span>ZetsFancyShader by Zetph — MIT</span>
   <span>
@@ -292,15 +285,12 @@
     <a href="https://discord.gg/T2he8aAkyr">Discord</a>
   </span>
 </footer>
-
 <script>
   (function () {
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce || !window.matchMedia('(pointer: fine)').matches) return;
-
     var hero = document.getElementById('hero');
     var frame = null;
-
     hero.addEventListener('pointermove', function (e) {
       if (frame) return;
       frame = requestAnimationFrame(function () {
