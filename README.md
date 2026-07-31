@@ -2,11 +2,11 @@
 
 Yet another toon and PBR shader for VRChat avatars.
 
->>> LTCGI area lights, VRC Light Volumes, and AudioLink with a built-in material inspector to help you diagnose issues.
+> LTCGI area lights, VRC Light Volumes, and AudioLink with a built-in material inspector to help you diagnose issues.
 
 PC only. Unity 2022.3. MIT.
 
-**[Install page →](https://zetph.github.io/ZetsFancyShader)**
+**[Install page ->](https://zetph.github.io/ZetsFancyShader)**
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
