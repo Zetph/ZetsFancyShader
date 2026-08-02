@@ -29,7 +29,6 @@ The shader compiles and works without them, add whichever you want, before or af
 |---|---|---|
 | [vpm.pimaker.at](https://vpm.pimaker.at/) | `at.pimaker.ltcgi` | LTCGI area lights |
 | [redsim.github.io/vpmlisting](https://redsim.github.io/vpmlisting/) | `red.sim.lightvolumes` (2.1.3+) | VRC Light Volumes |
-| VRChat curated (already in VCC) | `com.llealloo.audiolink` | Audio-reactive features |
 
 Sections for packages you don't have appear grayed out in the inspector with a note and an Add to VCC button. 
 
