@@ -1,33 +1,16 @@
 // ZetDependencyChecker.cs
-// Detects ZetsFancyShader's dependencies and guides the user to any that are
-// missing. Severity is tiered so the checks that actually break compilation are
-// the only modal - a popup per dependency trains users to dismiss the one that
-// matters.
+// Notes which optional packages are missing. Console only.
 //
-//   LTCGI            - optional. Adds area light support when present.
-//   VRC LightVolumes - optional, 2.1.3+. Adds voxel probe support when present.
-//   AudioLink        - optional. The sampling layer is embedded in the shader,
-//                      so reactive FX simply idle without it.
+//   LTCGI            - adds area light support when present.
+//   VRC LightVolumes - adds voxel probe support when present, 2.1.3+.
 //
-// All three are optional as of 0.3.0, so nothing here is modal any more.
-// ZetIntegrationGenerator resolves LTCGI and Light Volumes availability in C#
-// and writes it into Generated/ZetIntegrations.cginc, which means a project
-// missing either one still compiles - the feature is simply inert. Before that,
-// both includes sat inside //ifex blocks and ifex only strips at LOCK time, so
-// an unlocked material compiled them unconditionally and a missing package meant
-// pink materials rather than a missing feature. That was the reason for the
-// modal, and the reason is gone.
+// AudioLink and VRSL GI are not checked: both read globals the
+// WORLD publishes, with the sampling code embedded in the shader, so there is
+// nothing for the user to install.
 //
-// What is left is worth saying once per session and no louder: people who own an
-// avatar built for LTCGI worlds should know why it looks flat, and a popup is
-// the wrong way to tell them.
-//
-// ThryEditor was removed as a dependency in 0.2.0 - the package ships its own
-// material inspector (ZetMaterialInspector), locker (ZetShaderLocker) and map
-// packer, so there is no longer anything to detect or warn about.
-//
-// Uses reflection + package-manager queries only, so this compiles whether or
-// not any dependency exists. Must live inside an "Editor" folder.
+// Reflection only, so this compiles with or without either package.
+// Must live inside an "Editor" folder.
+
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -37,22 +20,16 @@ public static class ZetDependencyChecker
 {
     const string SessionKey = "ZetsFancyShader_DepsChecked";
 
-    // VPM listings, not GitHub repos. A listing page has an Add to VCC button on
-    // it; a repo README leaves the user hunting for the VPM URL.
+    // Listing pages, not GitHub repos: they carry an Add to VCC button.
     const string LtcgiUrl        = "https://vpm.pimaker.at/";
     const string LightVolumesUrl = "https://redsim.github.io/vpmlisting/";
-
-    // AudioLink is carried in VRChat's own curated listing, so there is no repo
-    // to add - it appears in VCC's package list already. The project page is the
-    // more useful link here.
-    const string AudioLinkUrl    = "https://github.com/llealloo/audiolink";
 
     const string LightVolumesPackage = "red.sim.lightvolumes";
     const string LightVolumesMinimum = "2.1.3";
 
     static ZetDependencyChecker()
     {
-        // Delay so all assemblies are loaded before we probe for types.
+        // Delayed so all assemblies are loaded before probing for types.
         EditorApplication.delayCall += Check;
     }
 
@@ -64,7 +41,6 @@ public static class ZetDependencyChecker
         bool ltcgi = LtcgiPresent();
         bool volumes = LightVolumesPresent();
 
-        // ---- Optional integrations. Info only - the shader compiles without them. ----
         if (!ltcgi)
             Debug.Log(
                 "[ZetsFancyShader] LTCGI is not installed. Area light support stays " +
@@ -79,9 +55,7 @@ public static class ZetDependencyChecker
         }
         else
         {
-            // Present, but possibly too old to expose the signature the shader
-            // calls. Warning rather than info: this one is a compile error, not a
-            // missing feature.
+            // Warning, not info: too old is a compile error, not a lost feature.
             string version = PackageVersion(LightVolumesPackage);
             if (version != null && IsOlderThan(version, LightVolumesMinimum))
                 Debug.LogWarning(
@@ -89,19 +63,10 @@ public static class ZetDependencyChecker
                     LightVolumesMinimum + ". Light Volume speculars will fail to compile - " +
                     "update the package via VCC. " + LightVolumesUrl);
         }
-
-        // ---- Fully optional: AudioLink. Reactive FX just idle. Info line. ----
-        if (!AudioLinkPresent())
-            Debug.Log(
-                "[ZetsFancyShader] AudioLink is not installed. Audio-reactive features " +
-                "will stay idle until an AudioLink object is present in the world. " +
-                "This is fine - AudioLink is optional. " + AudioLinkUrl);
     }
 
     // --- presence probes -----------------------------------------------------
-    // Type reflection is the most reliable signal: it is true only when the
-    // package's assembly actually compiled into the project, which is exactly
-    // the condition under which the shader's include of it will succeed.
+    // Type reflection: true only once the package's assembly has compiled
 
     static bool TypeExists(params string[] typeNames)
     {
@@ -113,34 +78,22 @@ public static class ZetDependencyChecker
 
     static bool LtcgiPresent()
     {
-        // LTCGI's controller type; namespace is pi.LTCGI.
         return TypeExists("pi.LTCGI.LTCGI_Controller", "pi.LTCGI.LTCGI");
     }
 
     static bool LightVolumesPresent()
     {
-        // VRC Light Volumes manager/component types (VRCLightVolumes namespace).
         return TypeExists(
             "VRCLightVolumes.LightVolumeManager",
             "VRCLightVolumes.LightVolume",
             "LightVolumeManager");
     }
 
-    static bool AudioLinkPresent()
-    {
-        // AudioLink's core component; namespace VRCAudioLink (classic) or AudioLink.
-        return TypeExists(
-            "VRCAudioLink.AudioLink",
-            "AudioLink.AudioLink",
-            "VRCAudioLink.AudioLinkController");
-    }
-
     // --- version -------------------------------------------------------------
 
     /// <summary>
-    /// Installed version of a package, or null if it cannot be determined.
-    /// Wrapped because the package-manager query is unavailable in some editor
-    /// states, and a dependency check must never be the thing that throws.
+    /// Installed version, or null. Wrapped: the package-manager query is
+    /// unavailable in some editor states, and this must never throw.
     /// </summary>
     static string PackageVersion(string packageName)
     {
@@ -159,8 +112,8 @@ public static class ZetDependencyChecker
     }
 
     /// <summary>
-    /// Numeric-segment comparison. Prerelease suffixes are ignored: "2.1.3-beta"
-    /// compares equal to "2.1.3", which errs toward staying quiet.
+    /// Numeric-segment compare. Prerelease suffixes are ignored, so "2.1.3-beta"
+    /// counts as 2.1.3 - errs toward staying quiet.
     /// </summary>
     static bool IsOlderThan(string version, string minimum)
     {

@@ -1,6 +1,6 @@
 // ==============================================================================
 // ZetsFancyShader
-// Version: v0.3.0
+// Version: v0.4.0
 // Author: Zetph
 //
 // Welcome to the source code!
@@ -3114,7 +3114,6 @@ Shader "Zetph/ZetsFancyShader"
                     else if (_DebugView < 11.5) dbg = packed.rgb;
                     else if (_DebugView < 12.5) dbg = half3(frac(i.uv), 0);
                     else if (_DebugView < 13.5) dbg = vrslDiffuse;
-                    
                     // Light count as greyscale. VRSL GI cannot be previewed in
                     // the editor at all, so this is the one number worth seeing
                     // in-world: black means the global is unbound, anything else
@@ -3127,16 +3126,6 @@ Shader "Zetph/ZetsFancyShader"
                     // "the world is not publishing anything".
                     else                        dbg = half3(1, 0, 1);
                     #endif
-
-                    // Keep _MainTex alive. With _DebugView baked to a literal this
-                    // branch is unconditional, so every earlier term is dead code -
-                    // including the albedo sample. Unity strips _MainTex from the
-                    // program while sampler_MainTex is still declared in CGINCLUDE,
-                    // then reports the sampler as matching no texture. _Time is a
-                    // uniform, so the compiler cannot fold this away and must keep
-                    // the sample; the branch never executes.
-                    if (_Time.w < -1e9) dbg += albedo.rgb;
-
                     return fixed4(dbg, 1.0);
                 }
 //endex
