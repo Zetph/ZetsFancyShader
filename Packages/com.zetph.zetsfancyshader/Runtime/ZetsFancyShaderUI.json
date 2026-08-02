@@ -788,6 +788,13 @@
    "info": "Renders one isolated term instead of the finished surface - albedo, normals, AO, ambient, and so on. Use it to find which input is wrong when a material looks black or blown out, rather than guessing from the composited result. Set it back to Off before locking: it drives an //ifex, so Off strips the whole feature from the locked shader, and anything else ships the debug view to everyone who sees you.",
    "toggle": "",
    "showIf": []
+  },
+  {
+   "path": "vrslgi",
+   "label": "VRSL GI",
+   "info": "Lighting from VRSL GI stage rigs - the moving heads, pars and spots in club and event worlds actually illuminate the avatar, with cone shapes respected. No package to install: the world publishes the light data as a global, so this simply switches itself on in worlds running VRSL GI and costs nothing everywhere else. It cannot be previewed in the editor, only in-world.",
+   "toggle": "_VRSLGI",
+   "showIf": []
   }
  ],
  "tooltips": [
@@ -3250,6 +3257,34 @@
   {
    "name": "_LVPointShading",
    "text": "How strongly Point Light Volumes are shaped by the surface normal. Only used when VRC Light Volumes 3.x or newer is installed - on 2.x the shader calls an overload that has no shading and this does nothing. 0 disables per-surface shading, 1 is the standard smooth gradient, higher is sharper. Leave at 1 unless you want a harder falloff: LV 3.x's own default when the argument is omitted is 3, which is what makes lighting snap between areas."
+  },
+  {
+   "name": "_DebugView",
+   "text": "Renders one lighting term on its own instead of the finished surface. Ambient covers indirect light including Light Volumes, and is the one to check first when a surface renders black; AO is the second, since it multiplies both ambient and reflections. Direct is realtime lights only. Reflection is the probe and fallback cubemap contribution after metallic and smoothness are applied. Set back to Off before locking - Off strips the feature from the locked shader, anything else ships it."
+  },
+  {
+   "name": "_VRSLGI",
+   "text": "Reads the VRSL GI light data the world publishes. In worlds without it the light count reads zero and the loop never runs, so leaving this on is safe."
+  },
+  {
+   "name": "_VRSLGIStrength",
+   "text": "Overall brightness of VRSL GI lights on this material."
+  },
+  {
+   "name": "_VRSLGISpecular",
+   "text": "Adds specular highlights from each VRSL light, using this material's own smoothness and F0 tint rather than a separate set of controls."
+  },
+  {
+   "name": "_VRSLGISpecularClamp",
+   "text": "Ceiling on any single light's specular. Stage rigs are bright and close; without a clamp a moving head sweeping past blows out to white."
+  },
+  {
+   "name": "_VRSLGIToon",
+   "text": "Hard terminator instead of a smooth lambert gradient, so rig lighting matches a toon base rather than dropping realistic shading onto flat art."
+  },
+  {
+   "name": "_VRSLGIOcclusion",
+   "text": "How much the AO map darkens VRSL GI contribution."
   }
  ],
  "lockCritical": [
@@ -3257,6 +3292,29 @@
   "_LightVolumes",
   "_RefractEnable",
   "_OutlineStdEnable",
-  "_DebugView"
+  "_DebugView",
+  "_VRSLGI"
+ ],
+ "enums": [
+  {
+   "name": "_DebugView",
+   "options": [
+    "Off",
+    "Albedo",
+    "World Normal",
+    "Metallic",
+    "Smoothness",
+    "AO",
+    "Ambient",
+    "Direct",
+    "LTCGI",
+    "LV Specular",
+    "Reflection",
+    "Packed Map RGB",
+    "UV0",
+    "VRSL GI",
+    "VRSL Light Count"
+   ]
+  }
  ]
 }

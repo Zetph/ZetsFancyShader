@@ -37,8 +37,8 @@ namespace Zetph.FancyShader.EditorUI
             if (!Enabled || avatar == null) return true;
 
             var seen = new HashSet<Material>();
+            var targets = new List<Material>();
             var failures = new List<string>();
-            int locked = 0;
 
             foreach (Renderer r in avatar.GetComponentsInChildren<Renderer>(true))
             {
@@ -50,15 +50,22 @@ namespace Zetph.FancyShader.EditorUI
                     if (!IsOurs(m)) continue;
                     if (ZetShaderLocker.IsLocked(m)) continue;
 
-                    string message;
-                    if (ZetShaderLocker.Lock(m, out message)) locked++;
-                    else failures.Add(m.name + ": " + message);
+                    targets.Add(m);
                 }
             }
 
+            // Collected first, then locked in one batch. Calling Lock in the loop
+            // above forced a synchronous shader compile per material, serially,
+            // plus a full-project orphan sweep each time - which is most of what
+            // made a pre-upload lock feel like a hang on a twenty-material avatar.
+            int locked = ZetShaderLocker.LockMany(targets, failures);
+
             if (locked > 0)
             {
-                AssetDatabase.SaveAssets();
+                // Deferred until nothing is compiling: saving mid-compile leaves
+                // material thumbnails stuck on the old shader.
+                if (!ShaderUtil.anythingCompiling) AssetDatabase.SaveAssets();
+                else EditorApplication.update += SaveWhenIdle;
                 Debug.Log("[ZetsFancyShader] Locked " + locked + " material(s) before upload.");
 
                 // Upload is the one moment the whole project is guaranteed to be
@@ -76,6 +83,14 @@ namespace Zetph.FancyShader.EditorUI
                 Debug.LogWarning("[ZetsFancyShader] Skipped during pre-upload lock - " + f);
 
             return true;
+        }
+
+        private static void SaveWhenIdle()
+        {
+            if (ShaderUtil.anythingCompiling) return;
+
+            EditorApplication.update -= SaveWhenIdle;
+            AssetDatabase.SaveAssets();
         }
 
         private static bool IsOurs(Material m)

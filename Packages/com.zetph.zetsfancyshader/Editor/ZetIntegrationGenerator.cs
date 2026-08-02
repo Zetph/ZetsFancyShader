@@ -30,6 +30,9 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+// ZetShaderLocker lives in this namespace; the generator itself stays in the
+// global one so the shaders' own tooling can reach it without a using.
+using Zetph.FancyShader.EditorUI;
 
 [InitializeOnLoad]
 public static class ZetIntegrationGenerator
@@ -129,6 +132,49 @@ public static class ZetIntegrationGenerator
         ReimportShaders();
 
         Debug.Log("[ZetsFancyShader] Integrations regenerated: " + Summary());
+
+        WarnAboutStaleLocks();
+    }
+
+    /// <summary>
+    /// Locked shaders have their integrations inlined, so they do not follow a
+    /// package change - and if a package was REMOVED, the inlined #include now
+    /// points at nothing and the shader fails to compile. Materials are not
+    /// re-locked automatically: locking is a deliberate, destructive-ish action
+    /// and doing it silently to every material in a project on a package change
+    /// would be worse than the problem. Name them instead and let the inspector
+    /// offer the fix.
+    /// </summary>
+    static void WarnAboutStaleLocks()
+    {
+        var stale = new System.Collections.Generic.List<string>();
+
+        // Locked materials live wherever the user keeps them, so there is no folder
+        // to scope to - but every one of them points at a generated shader in the
+        // locked output folder. If that folder does not exist, nothing in the
+        // project is locked and the whole sweep can be skipped. That is the common
+        // case for anyone who has not locked anything yet.
+        if (!ZetShaderLocker.HasLockedShaders()) return;
+
+        // Otherwise this does walk every material. FindAssets returns GUIDs
+        // cheaply; the cost is LoadAssetAtPath deserialising each one, so bail as
+        // soon as there are enough examples to report rather than loading the lot.
+        foreach (var guid in AssetDatabase.FindAssets("t:Material"))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+
+            if (ZetShaderLocker.IsStale(mat)) stale.Add(path);
+            if (stale.Count >= 20) break;   // enough to make the point
+        }
+
+        if (stale.Count == 0) return;
+
+        Debug.LogWarning(
+            "[ZetsFancyShader] " + stale.Count + " locked material(s) were locked against a " +
+            "different set of packages and will not reflect this change until re-locked. " +
+            "Select one and use Re-lock in the inspector.\n  " +
+            string.Join("\n  ", stale.ToArray()));
     }
 
     /// <summary>
@@ -136,15 +182,25 @@ public static class ZetIntegrationGenerator
     /// of truth with the generated cginc - both read the same Integrations table,
     /// so the inspector can never disagree with what the shader compiled.
     /// </summary>
+    // File.Exists results, cached for the lifetime of the domain. This is called
+    // from OnGUI - once per gated group, per repaint, per selected material - so
+    // an uncached syscall here is a steady drip of disk access while an inspector
+    // is merely open. Package installs trigger a domain reload, which clears it.
+    static System.Collections.Generic.Dictionary<string, bool> _availability;
+
     public static bool IsAvailable(string symbol)
     {
         if (string.IsNullOrEmpty(symbol)) return true;
 
-        foreach (var it in Integrations)
-            if (it.Symbol == symbol) return File.Exists(it.Include);
+        if (_availability == null)
+        {
+            _availability = new System.Collections.Generic.Dictionary<string, bool>();
+            foreach (var it in Integrations)
+                _availability[it.Symbol] = File.Exists(it.Include);
+        }
 
         // Unknown symbol: show the group rather than hide it on a typo.
-        return true;
+        return !_availability.TryGetValue(symbol, out bool present) || present;
     }
 
     static string Normalise(string text)

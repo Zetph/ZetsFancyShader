@@ -111,6 +111,10 @@ namespace Zetph.FancyShader.EditorUI
         private bool _animatedDirty = true;
         private UnityEngine.Object[] _animatedFor;
 
+        // Cached lock preview - see DrawLockButton.
+        private ZetShaderLocker.Plan _plan;
+        private int _planFor = -1;
+
         private static GUIStyle _infoStyle;
         private static GUIStyle _headerLabelStyle;
         private static GUIStyle _animBadgeStyle;
@@ -162,6 +166,12 @@ namespace Zetph.FancyShader.EditorUI
             HandleRightClick(materialEditor);
 
             DrawBanner(material);
+
+            // The lock preview reflects current property values, so any edit
+            // invalidates it. Layout events fire before the user can have changed
+            // anything this frame, which makes them a safe place to notice.
+            if (Event.current.type == EventType.Layout && GUI.changed) _plan = null;
+
             DrawLockButton(materialEditor);
 
             if (ZetShaderLocker.IsLocked(material))
@@ -1006,6 +1016,34 @@ namespace Zetph.FancyShader.EditorUI
         }
 
         /// <summary>
+        /// Dropdown for a float property whose options come from the UI JSON.
+        /// Values are option indices, so the shader compares against 0, 1, 2 and
+        /// the labels can say whatever they like - no ShaderLab lexer involved.
+        /// </summary>
+        private static void DrawEnumRow(MaterialProperty property, GUIContent label,
+                                        string[] options, MaterialEditor editor)
+        {
+            var contents = new GUIContent[options.Length];
+            for (int i = 0; i < options.Length; i++) contents[i] = new GUIContent(options[i]);
+
+            Rect row = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.showMixedValue = property.hasMixedValue;
+
+            int current = Mathf.Clamp(Mathf.RoundToInt(property.floatValue), 0, options.Length - 1);
+            int picked = EditorGUI.Popup(row, label, current, contents);
+
+            EditorGUI.showMixedValue = false;
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                editor.RegisterPropertyChangeUndo(label.text);
+                property.floatValue = picked;
+            }
+        }
+
+        /// <summary>
         /// Texture slot drawn Standard-shader style: thumbnail against the left
         /// edge, label to its right. Unity's default ShaderProperty parks the slot
         /// at the far right of a three-line block, which turns "which slots in this
@@ -1102,9 +1140,14 @@ namespace Zetph.FancyShader.EditorUI
             using (new EditorGUI.DisabledScope(_lockedView && !animated))
             {
                 var content = new GUIContent(property.displayName, tip);
+                string[] options = _data != null ? _data.EnumOptions(property.name) : null;
 
                 if (property.type == MaterialProperty.PropType.Texture)
                     DrawTextureRow(property, content, editor);
+                else if (options != null &&
+                         (property.type == MaterialProperty.PropType.Float ||
+                          property.type == MaterialProperty.PropType.Range))
+                    DrawEnumRow(property, content, options, editor);
                 else
                     editor.ShaderProperty(property, content);
             }
@@ -1261,6 +1304,29 @@ namespace Zetph.FancyShader.EditorUI
                 EditorGUILayout.LabelField(
                     "Locked. Values are baked into a generated shader; unlock to edit them.",
                     _infoStyle);
+
+                // The locked shader has its integrations inlined, so it is frozen
+                // against the packages present at lock time. Adding one since then
+                // means the feature is missing until re-locked; REMOVING one means
+                // the locked shader references an include that no longer exists and
+                // will not compile. Both are fixed the same way.
+                if (ZetShaderLocker.IsStale(material))
+                {
+                    EditorGUILayout.Space(4f);
+                    EditorGUILayout.HelpBox(
+                        "This material was locked against a different set of installed " +
+                        "packages. The locked shader has them baked in, so it will not " +
+                        "pick up the change - and if a package was removed, it will fail " +
+                        "to compile. Re-lock to rebuild it against what is installed now.",
+                        MessageType.Warning);
+
+                    if (GUILayout.Button("Re-lock"))
+                    {
+                        RunLock(editor, false);   // unlock first: Lock() refuses a locked material
+                        RunLock(editor, true);
+                    }
+                }
+
                 EditorGUILayout.Space(2f);
                 return;
             }
@@ -1269,8 +1335,17 @@ namespace Zetph.FancyShader.EditorUI
                 RunLock(editor, true);
 
             // Describe the outcome before committing to it, so the button is not a
-            // leap of faith. Cheap: reads the file, strips nothing.
-            ZetShaderLocker.Plan plan = ZetShaderLocker.Build(material);
+            // leap of faith. NOT cheap: Build reads the whole .shader off disk and
+            // parses it, and DrawLockButton runs on every repaint - so on a 260KB
+            // shader this was a file read plus a full parse per frame, for the
+            // entire time a material was selected. Cached per material, and
+            // invalidated on any GUI change so the preview still tracks edits.
+            if (_plan == null || _planFor != material.GetInstanceID())
+            {
+                _plan = ZetShaderLocker.Build(material);
+                _planFor = material.GetInstanceID();
+            }
+            ZetShaderLocker.Plan plan = _plan;
 
             if (plan.Error != null)
             {

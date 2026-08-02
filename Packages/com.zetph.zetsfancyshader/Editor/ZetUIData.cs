@@ -34,6 +34,25 @@ namespace Zetph.FancyShader.EditorUI
         public string text;
     }
 
+    /// <summary>
+    /// Dropdown options for a float property, by index: options[0] is value 0.
+    ///
+    /// These live here rather than in a [Enum(...)] ShaderLab attribute because
+    /// that route has two hard limits and both fail near-silently. Unity's built-in
+    /// Enum drawer is a fixed set of constructors, one per name/value pair count,
+    /// and stops at seven pairs. And the ShaderLab attribute lexer accepts only
+    /// identifiers, numbers, dots, commas, spaces and hyphens - commas separate
+    /// arguments, so there is no safe delimiter left for packing a long list into
+    /// one argument. JSON has neither problem, and the inspector is already
+    /// reading this file for tooltips and groups.
+    /// </summary>
+    [Serializable]
+    public class EnumDef
+    {
+        public string name;
+        public string[] options;
+    }
+
     [Serializable]
     public class ZetUIData
     {
@@ -43,6 +62,7 @@ namespace Zetph.FancyShader.EditorUI
 
         public GroupDef[] groups;
         public TooltipDef[] tooltips;
+        public EnumDef[] enums;
 
         /// <summary>
         /// Properties driving an //ifex block. Marking one animated means that
@@ -65,6 +85,23 @@ namespace Zetph.FancyShader.EditorUI
             }
 
             return _lockCriticalSet.Contains(propertyName);
+        }
+
+        private Dictionary<string, string[]> _enumLookup;
+
+        /// <summary>Dropdown options for a property, or null to draw it normally.</summary>
+        public string[] EnumOptions(string propertyName)
+        {
+            if (_enumLookup == null)
+            {
+                _enumLookup = new Dictionary<string, string[]>();
+                if (enums != null)
+                    foreach (EnumDef e in enums)
+                        if (!string.IsNullOrEmpty(e.name) && e.options != null && e.options.Length > 0)
+                            _enumLookup[e.name] = e.options;
+            }
+
+            return _enumLookup.TryGetValue(propertyName, out string[] opts) ? opts : null;
         }
 
         private Dictionary<string, string> _tooltipLookup;
@@ -127,6 +164,7 @@ namespace Zetph.FancyShader.EditorUI
                 version = string.Empty,
                 groups = new GroupDef[0],
                 tooltips = new TooltipDef[0],
+                enums = new EnumDef[0],
                 lockCritical = new string[0]
             };
         }

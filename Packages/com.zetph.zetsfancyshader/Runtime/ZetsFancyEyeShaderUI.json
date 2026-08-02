@@ -89,6 +89,20 @@
    "toggle": "_LightVolumes",
    "showIf": [],
    "requires": "ZET_LV_OK"
+  },
+  {
+   "path": "vrslgi",
+   "label": "VRSL GI",
+   "info": "Lighting from VRSL GI stage rigs - club and event rig fixtures light the eyes, cones respected. No package to install: the world publishes the data as a global, so it switches itself on in VRSL GI worlds and costs nothing elsewhere. Cannot be previewed in the editor.",
+   "toggle": "_VRSLGI",
+   "showIf": []
+  },
+  {
+   "path": "debug",
+   "label": "Debug Views",
+   "info": "Renders one isolated term instead of the finished eye. Set back to Off before locking: it drives an //ifex, so Off strips the feature from the locked shader and anything else ships the debug view to everyone.",
+   "toggle": "",
+   "showIf": []
   }
  ],
  "tooltips": [
@@ -131,6 +145,30 @@
  ],
  "lockCritical": [
   "_LTCGI",
-  "_LightVolumes"
+  "_LightVolumes",
+  "_DebugView",
+  "_VRSLGI"
+ ],
+ "enums": [
+  {
+   "name": "_DebugView",
+   "options": [
+    "Off",
+    "Albedo",
+    "World Normal",
+    "Metallic",
+    "Smoothness",
+    "AO",
+    "Ambient",
+    "Direct",
+    "LTCGI",
+    "LV Specular",
+    "Reflection",
+    "Packed Map RGB",
+    "UV0",
+    "VRSL GI",
+    "VRSL Light Count"
+   ]
+  }
  ]
 }

@@ -734,9 +734,23 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lightvolumes)] [ShowIf(_LightVolumes)] _LightVolumesStrength ("Light Volumes Strength", Range(0, 2)) = 1
         [Toggle] [Group(lightvolumes)] [ShowIf(_LightVolumes)] _LightVolumesSpec ("Light Volume Speculars", Float) = 1
         [Group(lightvolumes)] [ShowIf(_LightVolumes)] _LVPointShading ("Point Light Shaping", Range(0, 4)) = 1
+        // --- VRSL GI -------------------------------------------------------
+        // No package required. The world publishes _Udon_VRSL_GI_LightTexture as
+        // a global, exactly like AudioLink's _AudioTexture, so the avatar only
+        // has to read it. In a world without VRSL GI the texture is unbound, the
+        // light count reads 0, and the loop never runs.
+        [Toggle(ZET_VRSLGI)] [GroupToggle(vrslgi)] _VRSLGI ("VRSL GI System", Float) = 0
+        [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIStrength ("VRSL GI Strength", Range(0, 4)) = 1
+        [Toggle] [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecular ("VRSL GI Speculars", Float) = 1
+        [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecularMult ("Specular Multiplier", Range(0, 4)) = 1
+        [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecularClamp ("Specular Clamp", Range(0, 8)) = 2
+        [Toggle] [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIToon ("Toon Falloff", Float) = 0
+        [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIOcclusion ("Apply AO", Range(0, 1)) = 1
+
         // Debug views. Drives an //ifex, so Off strips every line of this from a
         // locked shader - production builds carry none of it.
-        [Enum(Off,0,Albedo,1,World Normal,2,Metallic,3,Smoothness,4,AO,5,Ambient (incl. Light Volumes),6,Direct,7,LTCGI,8,LV Specular,9,Reflection,10,Packed Map RGB,11,UV0,12)] [Group(debug)] _DebugView ("Debug View", Float) = 0
+        // Options come from ZetsFancyShaderUI.json - see EnumDef for why not [Enum].
+        [Group(debug)] _DebugView ("Debug View", Float) = 0
     }
     SubShader
     {
@@ -825,6 +839,14 @@ Shader "Zetph/ZetsFancyShader"
                 {
                     return (AudioLinkDecodeDataAsUInt(ALPASS_CHRONOTENSITY + uint2(index, band))) / 100000.0;
                 }
+            // --- VRSL GI light data (world-published global) -------------------
+            // Declared in the same form and the same place as _AudioTexture,
+            // deliberately: that is the one global texture in this shader proven
+            // to work alongside the sampler_MainTex pairing. A bare "Texture2D"
+            // declared down beside the pass-level slots broke that pairing -
+            // Unity reported sampler_MainTex as matching no texture - so this
+            // copies the known-good pattern rather than inventing a second one.
+            uniform Texture2D<float4> _Udon_VRSL_GI_LightTexture;
             // --- Optional world lighting integrations ---
             // Availability is resolved in C# by ZetIntegrationGenerator and written
             // into this file, which ALWAYS exists and is always valid to include.
@@ -846,6 +868,31 @@ Shader "Zetph/ZetsFancyShader"
             // when the package is installed via VPM. A .unitypackage install drops
             // everything under Assets/ instead, and the absolute path breaks.
             #include "Generated/ZetIntegrations.cginc"
+
+            // --- VRSL GI ------------------------------------------------------
+            // Declared here rather than pulled from VRSLGI-Functions.cginc on
+            // purpose. That file declares _LTCGIStrength, _AreaLitStrength and
+            // ~30 other uniforms of its own - _LTCGIStrength collides with ours
+            // outright - and it carries a "#pragma exclude_renderers d3d11 gles"
+            // inside its specular block, which would silently drop this shader on
+            // the exact platform VRChat PC runs. The texture LAYOUT is the
+            // contract; that cginc is just one consumer of it.
+            //
+            // Row layout of _Udon_VRSL_GI_LightTexture, addressed by Load(int3(x, row, 0)):
+            //   row 0 : light colour rgb, .a = range multiplier
+            //   row 1 : light position xyz, .w > 180 marks a spotlight
+            //   row 2 : Load(int3(0,2,0)).r is the light COUNT
+            //   row 3 : spot direction xyz, .w packs cone angle and edge blend
+            // The texture itself is declared INSIDE each pass under
+            // ZET_VRSLGI, with the other keyword-gated slots - see the texture
+            // budget note below. Declaring it here cost a texture slot in every
+            // variant whether or not the feature was on, and this shader is
+            // already over Unity's 64-texture cap without help.
+
+            // Hard ceiling on the loop. The count comes from a texture this
+            // shader does not own; if it is ever garbage, an uncapped [loop]
+            // hangs the GPU rather than rendering wrong.
+            #define ZET_VRSL_MAX_LIGHTS 64
             // --- Textures & Samplers (kept outside the per-material cbuffer) ---
             Texture2D _MainTex; SamplerState sampler_MainTex;
             SamplerState sampler_LinearClamp;
@@ -1277,6 +1324,9 @@ Shader "Zetph/ZetsFancyShader"
             float _LightVolumes;
             float _LTCGI;
             float _DebugView;
+            float _VRSLGI; float _VRSLGIStrength; float _VRSLGISpecular;
+            float _VRSLGISpecularMult; float _VRSLGISpecularClamp;
+            float _VRSLGIToon; float _VRSLGIOcclusion;
             float _LTCGITintOn; float4 _LTCGIDiffuseTint; float4 _LTCGISpecularTint; float _LTCGIOcclusion;
             float _ZTest; float _ZWriteOverride; float _ColorMask; float _OffsetFactor; float _OffsetUnits;
             float _LightVolumesStrength;
@@ -1759,6 +1809,7 @@ Shader "Zetph/ZetsFancyShader"
             #pragma geometry geom
             #pragma fragment fragBase
             #pragma target 5.0
+            #pragma shader_feature_local _ ZET_VRSLGI
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
             #pragma shader_feature_local _ LTCGI
@@ -2104,6 +2155,80 @@ Shader "Zetph/ZetsFancyShader"
                     }
                 }
             }
+            #if defined(ZET_VRSLGI)
+            // Accumulates VRSL GI point and spot lights. Diffuse and specular
+            // are returned separately: diffuse is multiplied by albedo downstream
+            // with every other diffuse term, specular is added after, because
+            // specCol already carries the F0 tint.
+            void ZetVRSLGI(float3 wPos, half3 n, half3 viewDir, half smoothness,
+                           out half3 vrslDiffuse, out half3 vrslSpec)
+            {
+                vrslDiffuse = 0;
+                vrslSpec = 0;
+
+                int lightCount = (int) _Udon_VRSL_GI_LightTexture.Load(int3(0, 2, 0)).r;
+                lightCount = clamp(lightCount, 0, ZET_VRSL_MAX_LIGHTS);
+
+                half specPower = exp2(smoothness * 9.0 + 1.0);
+
+                [loop]
+                for (int x = 0; x < lightCount; x++)
+                {
+                    float4 rawColor = _Udon_VRSL_GI_LightTexture.Load(int3(x, 0, 0));
+                    float4 lightPos = _Udon_VRSL_GI_LightTexture.Load(int3(x, 1, 0));
+
+                    // The 0.5 and the range scaling by .a are VRSL's own
+                    // normalisation - matching them is what keeps brightness in
+                    // step with the world's fixtures.
+                    half3 lightColor = rawColor.rgb * (0.5 * rawColor.a);
+
+                    float3 toLight = lightPos.xyz - wPos;
+                    float range = length(toLight) * rawColor.a;
+                    half3 lightDir = normalize(toLight);
+
+                    half atten = saturate(dot(lightDir, n));
+                    if (_VRSLGIToon > 0.5)
+                    {
+                        // Hard terminator, to match a toon base rather than
+                        // dropping a smooth lambert gradient onto flat shading.
+                        atten = smoothstep(0.0, 0.01, lerp(0.0025, 1.0, atten));
+                    }
+
+                    float falloff = 1.0 / max(range * range, 0.0001);
+
+                    half spec = 0;
+                    if (_VRSLGISpecular > 0.5)
+                    {
+                        half3 H = normalize(lightDir + viewDir);
+                        spec = pow(saturate(dot(n, H)), specPower) * _VRSLGISpecularMult;
+                        spec = min(spec, _VRSLGISpecularClamp);
+                    }
+
+                    // Spot cone. lightPos.w above 180 flags a spotlight; row 3
+                    // holds the direction, with the cone angle and the edge blend
+                    // packed into .w as integer and fractional parts.
+                    if (lightPos.w > 180.0)
+                    {
+                        float4 rawDir = _Udon_VRSL_GI_LightTexture.Load(int3(x, 3, 0));
+                        float angle = (floor(rawDir.w - 1.0) / 255.0) * 180.0;
+                        float blend = frac(rawDir.w);
+
+                        float theta = dot(lightDir, normalize(-rawDir.xyz));
+                        float cone = saturate(theta - cos(radians(angle)));
+
+                        atten = lerp(atten, atten * cone, blend);
+                        spec  = lerp(spec,  spec  * cone, blend);
+                    }
+
+                    vrslDiffuse += falloff * lightColor * atten;
+                    vrslSpec    += falloff * lightColor * spec;
+                }
+
+                vrslDiffuse *= _VRSLGIStrength;
+                vrslSpec    *= _VRSLGIStrength;
+            }
+            #endif
+
             fixed4 fragBase(g2f i, fixed facing : VFACE) : SV_Target {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 bool alAvail = AudioLinkIsAvailable();
@@ -2490,8 +2615,29 @@ Shader "Zetph/ZetsFancyShader"
                         }
                     }
                 }
+                // VRSL GI. Point and spot lights, so this belongs with direct
+                // light rather than ambient - it is a rig pointed at you, not
+                // indirect bounce. Runtime-gated for the same reason LV and LTCGI
+                // are: //ifex only strips at lock, so an unlocked material would
+                // otherwise run this with the toggle off.
+                half3 vrslDiffuse = 0, vrslSpec = 0;
+//ifex _VRSLGI==0
+                #if defined(ZET_VRSLGI)
+                if (_VRSLGI > 0.5)
+                {
+                    ZetVRSLGI(i.wPos, n, viewDir, smoothness, vrslDiffuse, vrslSpec);
+
+                    half vrslAO = lerp(1.0, ao, _VRSLGIOcclusion);
+                    vrslDiffuse *= vrslAO;
+                    vrslSpec    *= vrslAO;
+                }
+                #endif
+//endex
+                direct += vrslDiffuse;
+
                 fixed4 col = fixed4(diffuseCol * (direct + ambient + sssAdd), 1.0);
                 col.rgb += lvSpecAdd;
+                col.rgb += vrslSpec * specCol;
                 half spec = pow(saturate(dot(n, H)), exp2(smoothness * 9.0 + 1.0));
                 half3 anisoAdd = 0;
                 if (_AnisoEnable > 0.5) {
@@ -2966,7 +3112,31 @@ Shader "Zetph/ZetsFancyShader"
                     else if (_DebugView < 9.5)  dbg = lvSpecAdd;
                     else if (_DebugView < 10.5) dbg = dbgRefl;
                     else if (_DebugView < 11.5) dbg = packed.rgb;
-                    else                        dbg = half3(frac(i.uv), 0);
+                    else if (_DebugView < 12.5) dbg = half3(frac(i.uv), 0);
+                    else if (_DebugView < 13.5) dbg = vrslDiffuse;
+                    
+                    // Light count as greyscale. VRSL GI cannot be previewed in
+                    // the editor at all, so this is the one number worth seeing
+                    // in-world: black means the global is unbound, anything else
+                    // means data is arriving and the problem is downstream.
+                    #if defined(ZET_VRSLGI)
+                    else                        dbg = ((half) _Udon_VRSL_GI_LightTexture.Load(int3(0, 2, 0)).r / 16.0).xxx;
+                    #else
+                    // VRSL GI switched off: no texture to count. Magenta rather
+                    // than black, so "feature is off" cannot be mistaken for
+                    // "the world is not publishing anything".
+                    else                        dbg = half3(1, 0, 1);
+                    #endif
+
+                    // Keep _MainTex alive. With _DebugView baked to a literal this
+                    // branch is unconditional, so every earlier term is dead code -
+                    // including the albedo sample. Unity strips _MainTex from the
+                    // program while sampler_MainTex is still declared in CGINCLUDE,
+                    // then reports the sampler as matching no texture. _Time is a
+                    // uniform, so the compiler cannot fold this away and must keep
+                    // the sample; the branch never executes.
+                    if (_Time.w < -1e9) dbg += albedo.rgb;
+
                     return fixed4(dbg, 1.0);
                 }
 //endex

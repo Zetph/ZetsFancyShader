@@ -12,25 +12,22 @@ namespace Zetph.FancyShader.EditorUI
     /// State lives in material override tags rather than in the shader or the
     /// companion JSON, because it is a per-material decision: one avatar animates
     /// emission colour, another does not, and both use the same shader. This is
-    /// the same storage ThryEditor used, which is why a scan of the shader source
-    /// found no trace of the feature.
+    /// the same type of storage system ThryEditor used in the original test build.
     ///
-    /// Nothing here strips or bakes anything yet. It records intent so the
-    /// information exists when the locker lands, and so the inspector can warn
-    /// about choices that would silently defeat a strip.
+    /// Records intent so the information exists when the locker lands, and so the 
+    /// inspector can warn about choices.
     /// </summary>
     public static class ZetAnimatedProperties
     {
         private const string TagPrefix = "ZetAnimated_";
 
         /// <summary>
-        /// ThryEditor's convention: a tag named "&lt;property&gt;Animated".
+        /// ThryEditor's convention was preseved: a tag named "&lt;property&gt;Animated".
         ///
-        /// Written alongside our own so external tooling can see the flag.
-        /// VRCFury identifies these materials as Poiyomi - most likely from the
-        /// _ShaderOptimizerEnabled property - and warns when it animates a
-        /// property that is not marked. That warning is correct and worth
-        /// keeping, so the tag it looks for is emitted rather than suppressed.
+        /// This was written alongside my own so external tooling can see the flag.
+        /// VRCFury identifies these materials as Poiyomi; due to the _ShaderOptimizerEnabled property
+        /// and warns when it animates a property that is not marked. This is intentional, so the tag
+        /// it looks for is emitted rather than suppressed.
         /// </summary>
         private static string ThryTag(string propertyName)
         {
@@ -73,7 +70,7 @@ namespace Zetph.FancyShader.EditorUI
                 Undo.RecordObject(m, animated ? "Mark Property Animated" : "Unmark Property Animated");
 
                 // An empty value removes the tag rather than leaving "0" behind,
-                // so a material carries tags only for properties actually marked.
+                // material carries tags only for properties actually marked.
                 m.SetOverrideTag(TagPrefix + propertyName, animated ? "1" : string.Empty);
                 m.SetOverrideTag(ThryTag(propertyName), animated ? "1" : string.Empty);
                 EditorUtility.SetDirty(m);

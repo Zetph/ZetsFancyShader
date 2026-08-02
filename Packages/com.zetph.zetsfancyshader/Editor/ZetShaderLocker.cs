@@ -29,9 +29,44 @@ namespace Zetph.FancyShader.EditorUI
     public static class ZetShaderLocker
     {
         public const string LockedFromTag = "ZetLockedFrom";
+
+        // Which integrations were available when this material was locked. A
+        // locked shader has them inlined, so it is frozen against that state: if
+        // the packages change afterwards the locked copy is stale, and in the
+        // case of a REMOVED package it no longer compiles at all. Recording the
+        // state is what lets the inspector notice and say so.
+        public const string LockedIntegrationsTag = "ZetLockedIntegrations";
         public const string LockedKeyTag = "ZetLockedKey";
 
         private const string OutputFolder = "Assets/ZetsFancyShader/Locked";
+
+        // Relative include emitted by ZetIntegrationGenerator, resolved against
+        // the SOURCE shader's folder.
+        private const string GeneratedInclude = "Generated/ZetIntegrations.cginc";
+
+        /// <summary>
+        /// Contents of the integrations include that sits beside the source
+        /// shader. Returns a comment rather than throwing if it is missing: a
+        /// lock should not fail outright over an optional-feature header, and an
+        /// absent file means no integrations, which is a valid state.
+        /// </summary>
+        private static string[] ReadGeneratedInclude(string sourcePath)
+        {
+            try
+            {
+                string dir = Path.GetDirectoryName(sourcePath);
+                string full = Path.Combine(dir ?? string.Empty, GeneratedInclude)
+                                  .Replace('\\', '/');
+
+                if (File.Exists(full)) return File.ReadAllLines(full);
+
+                return new[] { "// " + GeneratedInclude + " not found - no integrations active." };
+            }
+            catch (Exception e)
+            {
+                return new[] { "// Failed to read " + GeneratedInclude + ": " + e.Message };
+            }
+        }
 
         private static readonly Regex IfexOpen = new Regex(
             @"^\s*//ifex\s+(?<prop>_\w+)\s*(?<op>==|!=|>=|<=|>|<)\s*(?<val>-?[\d.]+)\s*$",
@@ -227,6 +262,16 @@ namespace Zetph.FancyShader.EditorUI
             sb.Append(Hash(string.Join("\n", plan.Lines)));
             sb.Append('-');
 
+            // So is the integration state, because Generate() INLINES the
+            // generated include. Without this, a locked file produced under a
+            // different set of installed packages has the same key and gets
+            // reused wholesale - the generated shader is only written when the
+            // path does not already exist. That is how a pre-fix locked copy
+            // survives a re-lock and keeps failing on an include that is no
+            // longer there.
+            sb.Append(Hash(IntegrationStamp()));
+            sb.Append('-');
+
             plan.Drivers.Sort(StringComparer.Ordinal);
             foreach (string d in plan.Drivers)
                 sb.Append(plan.Strip[d] ? '1' : '0');
@@ -333,8 +378,132 @@ namespace Zetph.FancyShader.EditorUI
 
         // -------------------------------------------------------------- lock
 
+        /// <summary>
+        /// Locks many materials in one pass. Use this instead of calling Lock in
+        /// a loop whenever more than one material is involved.
+        ///
+        /// Lock() imports its generated shader with ForceSynchronousImport, which
+        /// blocks until Unity has compiled it. That is correct for a single
+        /// material - the caller wants the result immediately - but locking an
+        /// avatar one material at a time means one blocking compile per material,
+        /// serially, and each one also triggered a full-project orphan sweep.
+        /// That is the bulk of the pre-upload stall.
+        ///
+        /// So this splits the work: write every generated shader to disk first
+        /// with asset importing suspended, let Unity compile the whole batch in
+        /// one go, then assign them. Cleanup runs once at the end rather than per
+        /// material. Same output, one compile round trip.
+        /// </summary>
+        /// <returns>Number of materials locked. Failures are reported per material.</returns>
+        public static int LockMany(IEnumerable<Material> materials, List<string> failures = null)
+        {
+            var pending = new List<PendingLock>();
+
+            // --- phase 1: generate, with importing suspended -------------------
+            // Nothing inside here may call LoadAssetAtPath on a file it just
+            // wrote: while asset editing is paused the import has not happened
+            // and the load returns null.
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                foreach (Material material in materials)
+                {
+                    if (material == null) continue;
+
+                    string message;
+                    PendingLock entry;
+
+                    if (Prepare(material, out entry, out message)) pending.Add(entry);
+                    else if (failures != null && message != null)
+                        failures.Add(material.name + ": " + message);
+                }
+            }
+            finally
+            {
+                // In a finally block on purpose: an exception mid-batch that left
+                // asset editing suspended would leave the editor unable to import
+                // anything at all, which looks like Unity itself has broken.
+                AssetDatabase.StopAssetEditing();
+            }
+
+            if (pending.Count == 0) return 0;
+
+            // Unity compiles the whole batch here.
+            AssetDatabase.Refresh();
+
+            // --- phase 2: assign ----------------------------------------------
+            int locked = 0;
+            var orphans = new List<Shader>();
+
+            foreach (PendingLock entry in pending)
+            {
+                Shader generated = AssetDatabase.LoadAssetAtPath<Shader>(entry.OutputPath);
+                if (generated == null)
+                {
+                    if (failures != null)
+                        failures.Add(entry.Material.name + ": generated shader failed to import: " + entry.OutputPath);
+                    continue;
+                }
+
+                if (entry.Previous != null && entry.Previous != generated)
+                    orphans.Add(entry.Previous);
+
+                Apply(entry, generated);
+                locked++;
+            }
+
+            // One sweep for the batch. DeleteIfOrphaned walks every material in
+            // the project, so calling it per material made locking an avatar
+            // quadratic in project size.
+            foreach (Shader orphan in orphans) DeleteIfOrphaned(orphan);
+
+            return locked;
+        }
+
+        /// <summary>Everything Lock does up to writing the generated file.</summary>
+        private struct PendingLock
+        {
+            public Material Material;
+            public Plan Plan;
+            public string OutputPath;
+            public Shader Previous;
+            public Dictionary<string, string> Literals;
+        }
+
         public static bool Lock(Material material, out string message)
         {
+            PendingLock entry;
+            if (!Prepare(material, out entry, out message)) return false;
+
+            // Single-material path: import now, because the caller wants the
+            // result on this frame. LockMany defers this for the whole batch.
+            AssetDatabase.ImportAsset(entry.OutputPath, ImportAssetOptions.ForceSynchronousImport);
+
+            Shader generated = AssetDatabase.LoadAssetAtPath<Shader>(entry.OutputPath);
+            if (generated == null)
+            {
+                message = "Generated shader failed to import: " + entry.OutputPath;
+                return false;
+            }
+
+            Apply(entry, generated);
+
+            if (entry.Previous != null && entry.Previous != generated)
+                DeleteIfOrphaned(entry.Previous);
+
+            message = "Locked: removed " + entry.Plan.LinesRemoved + " lines, baked " +
+                      entry.Literals.Count + " properties.";
+            return true;
+        }
+
+        /// <summary>
+        /// Builds the plan and writes the generated shader to disk. Deliberately
+        /// does NOT import or load it: this runs inside StartAssetEditing during a
+        /// batch, where the file exists but no asset does yet.
+        /// </summary>
+        private static bool Prepare(Material material, out PendingLock entry, out string message)
+        {
+            entry = default(PendingLock);
             message = null;
 
             Shader previous = null;
@@ -342,7 +511,7 @@ namespace Zetph.FancyShader.EditorUI
             if (IsLocked(material))
             {
                 // Relock: bake the current values rather than refusing. The old
-                // generated copy is swept below once nothing points at it.
+                // generated copy is swept once nothing points at it.
                 previous = material.shader;
 
                 string unlockMessage;
@@ -381,49 +550,48 @@ namespace Zetph.FancyShader.EditorUI
             var literals = new Dictionary<string, string>();
             BuildLiteralTable(plan, material, literals);
 
-            Shader locked = AssetDatabase.LoadAssetAtPath<Shader>(outPath);
-
-            if (locked == null)
+            // File.Exists rather than LoadAssetAtPath: during a batch the asset
+            // does not exist yet even though the file does, so an asset-level
+            // check would regenerate every shader on every pass.
+            if (!File.Exists(outPath))
             {
                 Directory.CreateDirectory(OutputFolder);
                 File.WriteAllText(outPath, Generate(plan, lockedName, literals, material));
-
-                AssetDatabase.ImportAsset(outPath, ImportAssetOptions.ForceSynchronousImport);
-                locked = AssetDatabase.LoadAssetAtPath<Shader>(outPath);
             }
 
-            if (locked == null)
+            entry = new PendingLock
             {
-                message = "Generated shader failed to import: " + outPath;
-                return false;
-            }
+                Material = material,
+                Plan = plan,
+                OutputPath = outPath,
+                Previous = previous,
+                Literals = literals,
+            };
+            return true;
+        }
+
+        /// <summary>Points the material at its generated shader.</summary>
+        private static void Apply(PendingLock entry, Shader generated)
+        {
+            Material material = entry.Material;
 
             Undo.RecordObject(material, "Lock Material");
 
             // Record where to come back to before swapping, so an interrupted
             // lock still leaves the material recoverable.
-            material.SetOverrideTag(LockedFromTag, plan.SourcePath);
-            material.SetOverrideTag(LockedKeyTag, plan.Key);
+            material.SetOverrideTag(LockedFromTag, entry.Plan.SourcePath);
+            material.SetOverrideTag(LockedIntegrationsTag, IntegrationStamp());
+            material.SetOverrideTag(LockedKeyTag, entry.Plan.Key);
 
             // Capture before the swap and restore after. Assigning a shader can
             // drop keywords the new shader does not appear to declare, and a
             // dependency like LTCGI gates its own internals on its keyword - so
             // losing it leaves the code compiled in and doing nothing.
             string[] keywords = material.shaderKeywords;
-            material.shader = locked;
+            material.shader = generated;
             material.shaderKeywords = keywords;
 
             EditorUtility.SetDirty(material);
-
-            // Orphaned the instant the material stopped pointing at it. Sweeping
-            // here means cleanup happens when the orphan is created rather than
-            // whenever someone remembers the menu item.
-            if (previous != null && previous != locked)
-                DeleteIfOrphaned(previous);
-
-            message = "Locked: removed " + plan.LinesRemoved + " lines, baked " +
-                      literals.Count + " properties.";
-            return true;
         }
 
         public static bool Unlock(Material material, out string message)
@@ -452,6 +620,7 @@ namespace Zetph.FancyShader.EditorUI
             material.shader = source;
             material.shaderKeywords = keywords;
             material.SetOverrideTag(LockedFromTag, string.Empty);
+            material.SetOverrideTag(LockedIntegrationsTag, string.Empty);
             material.SetOverrideTag(LockedKeyTag, string.Empty);
 
             EditorUtility.SetDirty(material);
@@ -483,6 +652,47 @@ namespace Zetph.FancyShader.EditorUI
             }
 
             AssetDatabase.DeleteAsset(path);
+        }
+
+        /// <summary>
+        /// Snapshot of which integrations are currently installed, e.g.
+        /// "ZET_LTCGI=1;ZET_LV_OK=0". Compared against the value stamped at lock
+        /// time to detect a locked shader built against a different set.
+        /// </summary>
+        /// <summary>
+        /// Whether this project contains any generated locked shaders. Cheap
+        /// directory check used to skip work that only matters once something has
+        /// actually been locked.
+        /// </summary>
+        public static bool HasLockedShaders()
+        {
+            return Directory.Exists(OutputFolder) &&
+                   Directory.GetFiles(OutputFolder, "*.shader").Length > 0;
+        }
+
+        public static string IntegrationStamp()
+        {
+            return "ZET_LTCGI=" + (ZetIntegrationGenerator.IsAvailable("ZET_LTCGI") ? "1" : "0") +
+                   ";ZET_LV_OK=" + (ZetIntegrationGenerator.IsAvailable("ZET_LV_OK") ? "1" : "0");
+        }
+
+        /// <summary>
+        /// True when the material is locked against a different set of installed
+        /// packages than the project has now. Unlocked materials are never stale;
+        /// they resolve integrations fresh on every compile.
+        /// </summary>
+        public static bool IsStale(Material material)
+        {
+            if (material == null || !IsLocked(material)) return false;
+
+            string stamped = material.GetTag(LockedIntegrationsTag, false, string.Empty);
+
+            // Locked before this tag existed. Unknown rather than stale - saying
+            // nothing beats crying wolf on every material locked by an older
+            // version of the tool.
+            if (string.IsNullOrEmpty(stamped)) return false;
+
+            return stamped != IntegrationStamp();
         }
 
         public static bool IsLocked(Material material)
@@ -605,6 +815,23 @@ namespace Zetph.FancyShader.EditorUI
                 string line = plan.Lines[i];
                 string trimmed = line.TrimStart();
 
+                // The integrations include is written NEXT TO THE SOURCE shader,
+                // and locked copies are emitted into OutputFolder instead - so a
+                // relative #include resolves against the wrong directory and the
+                // locked shader fails to compile. Inline the file's contents
+                // rather than rewriting the path: a locked shader is a snapshot,
+                // and a snapshot that still reaches out to a file which can be
+                // regenerated underneath it is not really frozen.
+                if (trimmed.StartsWith("#include", StringComparison.Ordinal) &&
+                    trimmed.Contains(GeneratedInclude))
+                {
+                    sb.AppendLine("// --- inlined from " + GeneratedInclude + " at lock time ---");
+                    foreach (string gl in ReadGeneratedInclude(plan.SourcePath))
+                        sb.AppendLine(gl);
+                    sb.AppendLine("// --- end inlined block ---");
+                    continue;
+                }
+
                 // Pragmas are dropped wherever they sit; the defines went in at
                 // the top of CGINCLUDE instead.
                 if (enabled != null && ShaderFeature.IsMatch(line)) continue;
@@ -720,16 +947,30 @@ namespace Zetph.FancyShader.EditorUI
             int done = 0, failed = 0;
             var notes = new List<string>();
 
+            var selected = new List<Material>();
             foreach (UnityEngine.Object o in Selection.objects)
             {
                 var m = o as Material;
-                if (m == null) continue;
+                if (m != null) selected.Add(m);
+            }
 
-                string msg;
-                bool ok = lockThem ? Lock(m, out msg) : Unlock(m, out msg);
-
-                if (ok) done++;
-                else { failed++; notes.Add(m.name + ": " + msg); }
+            if (lockThem)
+            {
+                // Batched: one compile round trip for the whole selection rather
+                // than one per material.
+                done = LockMany(selected, notes);
+                failed = notes.Count;
+            }
+            else
+            {
+                // Unlock only swaps the shader reference back - no generation, no
+                // import - so there is nothing to batch.
+                foreach (Material m in selected)
+                {
+                    string msg;
+                    if (Unlock(m, out msg)) done++;
+                    else { failed++; notes.Add(m.name + ": " + msg); }
+                }
             }
 
             AssetDatabase.SaveAssets();
