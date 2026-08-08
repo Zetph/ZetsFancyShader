@@ -189,6 +189,7 @@ namespace Zetph.FancyShader.EditorUI
         public string Property;
         public bool HasValue;
         public float Value;
+        public int Op;   // 0 = equals, 1 = >=, 2 = <=
 
         /// <summary>Parses an attribute argument list: "_Bar, 3" or "_Foo".</summary>
         public static bool TryParseArgs(string args, out ZetCondition condition)
@@ -207,10 +208,19 @@ namespace Zetph.FancyShader.EditorUI
             condition.Property = args.Substring(0, comma).Trim();
             if (condition.Property.Length == 0) return false;
 
+            // Optional third token is a comparison operator: "ge" (>=) or "le" (<=).
+            string rest = args.Substring(comma + 1);
+            int comma2 = rest.IndexOf(',');
+            string valueText = (comma2 < 0 ? rest : rest.Substring(0, comma2)).Trim();
+            if (comma2 >= 0)
+            {
+                string op = rest.Substring(comma2 + 1).Trim().ToLowerInvariant();
+                condition.Op = op == "ge" ? 1 : op == "le" ? 2 : 0;
+            }
+
             float parsed;
             condition.HasValue = float.TryParse(
-                args.Substring(comma + 1).Trim(),
-                NumberStyles.Float, CultureInfo.InvariantCulture, out parsed);
+                valueText, NumberStyles.Float, CultureInfo.InvariantCulture, out parsed);
             condition.Value = parsed;
             return true;
         }
@@ -249,9 +259,10 @@ namespace Zetph.FancyShader.EditorUI
             if (!actual.HasValue) return true;
 
             const float Epsilon = 0.0001f;
-            return HasValue
-                ? Math.Abs(actual.Value - Value) < Epsilon
-                : Math.Abs(actual.Value) >= Epsilon;
+            if (!HasValue) return Math.Abs(actual.Value) >= Epsilon;
+            if (Op == 1) return actual.Value >= Value - Epsilon;   // >=
+            if (Op == 2) return actual.Value <= Value + Epsilon;   // <=
+            return Math.Abs(actual.Value - Value) < Epsilon;       // ==
         }
 
         /// <summary>All conditions must pass. An empty or null list is always visible.</summary>

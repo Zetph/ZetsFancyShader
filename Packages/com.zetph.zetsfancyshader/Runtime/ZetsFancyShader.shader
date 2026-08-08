@@ -272,11 +272,11 @@ Shader "Zetph/ZetsFancyShader"
         [HDR] [Group(lighting_reflspec_spec2)] [ShowIf(_Spec2Enable)] _Spec2Color ("2nd Specular Tint", Color) = (1, 1, 1, 1)
         [Group(lighting_reflspec_spec2)] [ShowIf(_Spec2Enable)] _Spec2Smoothness ("2nd Smoothness", Range(0, 1)) = 0.8
         [Group(lighting_reflspec_spec2)] [ShowIf(_Spec2Enable)] _Spec2Mask ("2nd Specular Mask", 2D) = "white" {}
-        [Toggle] [GroupToggle(lighting_matcaps_mc0)] _MatcapEnable ("Enable MatCap (Base)", Float) = 0
-        [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapTex ("Base MatCap Texture", 2D) = "black" {}
+        [Toggle] [GroupToggle(lighting_matcaps_mc0)] _MatcapEnable ("Enable MatCap 0", Float) = 0
+        [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapTex ("MatCap 0 Texture", 2D) = "black" {}
         [Enum(Additive, 0, Multiply, 1, Screen, 2)] [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapMode ("Blend Mode", Float) = 0
         [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapStrength ("Strength (0-100)", Range(0, 100)) = 50
-        [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapMask ("Base MatCap Mask", 2D) = "white" {}
+        [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapMask ("MatCap 0 Mask", 2D) = "white" {}
         [Toggle(ZET_MC1)] [GroupToggle(lighting_matcaps_mc1)] _Matcap1Enable ("Enable MatCap 1", Float) = 0
         [Group(lighting_matcaps_mc1)] [ShowIf(_Matcap1Enable)] _Matcap1Tex ("MatCap 1 Texture", 2D) = "black" {}
         [Enum(Additive, 0, Multiply, 1, Screen, 2)] [Group(lighting_matcaps_mc1)] [ShowIf(_Matcap1Enable)] _Matcap1Mode ("Blend Mode", Float) = 0
@@ -635,7 +635,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdDistFade)] _OutlineStdFadeNear ("Full Width Within (m)", Range(0, 10)) = 1
         [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdDistFade)] _OutlineStdFadeFar ("Gone Beyond (m)", Range(0, 20)) = 5
         [Toggle] [GroupToggle(specialfx_stars)] _StarEnable ("Enable Constellation FX", Float) = 0
-        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarMask ("Constellation Mask", 2D) = "black" {}
+        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarMask ("Constellation Mask (optional)", 2D) = "white" {}
+        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _ConstellationBlend ("Blend Mode", Float) = 0
+        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarUVSource ("UV Source", Float) = 0
+        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _ConstellationEmission ("Emission Strength", Range(0, 8)) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarBand ("Stars AL Band", Float) = 2
         [Enum(Base Color, 0, ColorChord, 1, Random Per Star, 2)] [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarColorMode ("Star Color Mode", Float) = 0
         [HDR] [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarColor ("Star Base Color", Color) = (1, 1, 1, 1)
@@ -644,6 +647,7 @@ Shader "Zetph/ZetsFancyShader"
         [IntRange] [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarLayers ("Constellation Layers", Range(1, 5)) = 3
         [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarDensity ("Star Density", Range(0, 100)) = 50
         [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarSize ("Star Size", Range(0, 100)) = 25
+        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarScatter ("Star Scatter", Range(0, 1)) = 0.7
         [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarSoftness ("Star Softness", Range(0, 100)) = 35
         [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarTwinkle ("Twinkle Amount", Range(0, 100)) = 50
         [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarTwinkleSpeed ("Twinkle Speed", Range(0, 100)) = 30
@@ -651,14 +655,67 @@ Shader "Zetph/ZetsFancyShader"
         [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarDrift ("Chaotic Jitter", Range(0, 100)) = 25
         [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarParallax ("Parallax Depth", Range(0, 100)) = 30
         [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarGlassWarp ("Glass Warp", Range(0, 1)) = 0
-        [Enum(Base Color, 0, ColorChord, 1, Shifting Hue, 2)] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaColorMode ("Nebula Color Mode", Float) = 0
+        [Toggle] [GroupToggle(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineEnable ("Enable Constellation Lines", Float) = 0
+        [Enum(Line Color, 0, Star Color, 1)] [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineColorMode ("Line Color Mode", Float) = 0
+        [HDR] [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineColor ("Line Color", Color) = (0.6, 0.8, 1.0, 1)
+        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineStrength ("Line Brightness", Range(0, 4)) = 1
+        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineThickness ("Line Thickness", Range(0, 100)) = 25
+        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineMaxLen ("Max Connection Length", Range(0, 100)) = 55
+        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineFade ("Length Falloff", Range(0, 100)) = 50
+        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineDepthFade ("Depth Fade", Range(0, 100)) = 40
+        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineSpeed ("Line Motion", Range(0, 100)) = 30
+        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaColorMode ("Nebula Color Mode", Float) = 0
         [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _StarBgColor ("Nebula Base Color", Color) = (0.05, 0.0, 0.1, 1)
         [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaBright ("Nebula Brightness", Range(0, 3)) = 1.0
         [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaPopColor ("Nebula AL Pop Color", Color) = (0.5, 0.0, 1.0, 1)
+        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor0 ("Gradient Color 1", Color) = (0.05, 0.05, 0.4, 1)
+        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor1 ("Gradient Color 2", Color) = (0.35, 0.1, 0.6, 1)
+        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor2 ("Gradient Color 3", Color) = (0.8, 0.2, 0.7, 1)
+        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor3 ("Gradient Color 4", Color) = (1.0, 0.5, 0.8, 1)
+        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradPos1 ("Color 2 Position", Range(0, 1)) = 0.33
+        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradPos2 ("Color 3 Position", Range(0, 1)) = 0.66
+        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 4)] _NebGradTex ("Gradient Ramp", 2D) = "white" {}
         [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaAL ("Nebula Pop Transition Sensitivity", Range(0, 10)) = 2.0
         [Toggle] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _RaymarchEnable ("Enable Raymarched Nebula", Float) = 0
         [IntRange] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_RaymarchEnable)] _RaymarchSteps ("Raymarch Quality", Range(8, 128)) = 32
         [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_RaymarchEnable)] _RaymarchDensity ("Fog Density", Range(0, 10)) = 2.0
+        [Toggle] [GroupToggle(specialfx_holo)] _HoloEnable ("Enable Hologram", Float) = 0
+        [HDR] [Group(specialfx_holo)] [ShowIf(_HoloEnable)] _HoloColor ("Holo Color", Color) = (0.0, 0.9, 1.0, 1)
+        [Group(specialfx_holo)] [ShowIf(_HoloEnable)] _HoloTintAmount ("Tint Amount", Range(0, 1)) = 0.7
+        [Group(specialfx_holo)] [ShowIf(_HoloEnable)] _HoloTransStyle ("Transparency Style", Float) = 0
+        [Group(specialfx_holo)] [ShowIf(_HoloEnable)] _HoloOpacity ("Base Opacity", Range(0, 1)) = 0.5
+        [Group(specialfx_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanDensity ("Scanline Density", Range(0, 200)) = 60
+        [Group(specialfx_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanSpeed ("Scanline Speed", Range(0, 20)) = 3
+        [Group(specialfx_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanSharpness ("Scanline Sharpness", Range(1, 16)) = 4
+        [Group(specialfx_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanStrength ("Scanline Strength", Range(0, 4)) = 1
+        [Group(specialfx_holo_rim)] [ShowIf(_HoloEnable)] _HoloRimStrength ("Rim Strength", Range(0, 4)) = 1.5
+        [Group(specialfx_holo_rim)] [ShowIf(_HoloEnable)] _HoloRimPower ("Rim Power", Range(0.5, 8)) = 3
+        [Group(specialfx_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepStrength ("Sweep Strength", Range(0, 4)) = 1
+        [Group(specialfx_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepSpeed ("Sweep Speed", Range(0, 10)) = 1.5
+        [Group(specialfx_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepWidth ("Sweep Width", Range(0.001, 0.5)) = 0.05
+        [Group(specialfx_holo_glitch)] [ShowIf(_HoloEnable)] _HoloFlicker ("Flicker", Range(0, 1)) = 0.15
+        [Group(specialfx_holo_glitch)] [ShowIf(_HoloEnable)] _HoloGlitchAmount ("Glitch Amount", Range(0, 1)) = 0.2
+        [Group(specialfx_holo_glitch)] [ShowIf(_HoloEnable)] _HoloGlitchSpeed ("Glitch Speed", Range(0, 10)) = 2
+        [Toggle] [GroupToggle(specialfx_plasma)] _PlasmaEnable ("Enable Plasma Hits", Float) = 0
+        [IntRange] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaSites ("Hit Sites", Range(1, 8)) = 8
+        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaSpread ("Hit Spread", Range(0.1, 3)) = 0.9
+        [Enum(Random Per Site, 0, Fixed Color, 1, Per Hit, 2)] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaColorMode ("Color Mode", Float) = 0
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 1)] _PlasmaColor ("Fixed Color", Color) = (0.0, 0.8, 1.0, 1)
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] _PlasmaColor1 ("Hit 1 Color", Color) = (1.0, 0.2, 0.2, 1)
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 2, ge)] _PlasmaColor2 ("Hit 2 Color", Color) = (1.0, 0.6, 0.1, 1)
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 3, ge)] _PlasmaColor3 ("Hit 3 Color", Color) = (0.9, 1.0, 0.2, 1)
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 4, ge)] _PlasmaColor4 ("Hit 4 Color", Color) = (0.2, 1.0, 0.4, 1)
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 5, ge)] _PlasmaColor5 ("Hit 5 Color", Color) = (0.2, 0.9, 1.0, 1)
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 6, ge)] _PlasmaColor6 ("Hit 6 Color", Color) = (0.3, 0.4, 1.0, 1)
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 7, ge)] _PlasmaColor7 ("Hit 7 Color", Color) = (0.7, 0.3, 1.0, 1)
+        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 8, ge)] _PlasmaColor8 ("Hit 8 Color", Color) = (1.0, 0.3, 0.8, 1)
+        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaGlow ("Glow Strength", Range(0, 8)) = 2
+        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRate ("Hit Rate", Range(0.2, 8)) = 2
+        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaThreshold ("Audio Threshold", Range(0, 1)) = 0.3
+        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRippleDist ("Hit Reach", Range(0.03, 1.5)) = 0.4
+        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRingWidth ("Ring Width", Range(0.01, 0.5)) = 0.08
+        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaHitSize ("Hit Flash Size", Range(0.01, 0.5)) = 0.12
+        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaDisplace ("Displacement", Range(0, 0.3)) = 0.05
         [Toggle] [GroupToggle(specialfx_break)] _BreakEnable ("Enable Geometry Break", Float) = 0
         [Group(specialfx_break)] [ShowIf(_BreakEnable)] _MaskTex ("Effect Mask (white = breaks)", 2D) = "white" {}
         [HDR] [Group(specialfx_break)] [ShowIf(_BreakEnable)] _EmissionColor ("Break Glow", Color) = (0, 1, 1, 1)
@@ -906,6 +963,7 @@ Shader "Zetph/ZetsFancyShader"
             Texture2D _DissolveTex;
             Texture2D _MatcapTex; Texture2D _MatcapMask;
             Texture2D _MaskTex;
+            Texture2D _NebGradTex;
             Texture2D _Em0Mask;
             Texture2D _Em0BgTex;
             Texture2D _OutlineMask;
@@ -1386,9 +1444,9 @@ Shader "Zetph/ZetsFancyShader"
             float _OutlineStdEnable; float4 _OutlineStdColor; float _OutlineStdWidth; float _OutlineStdWidthMode; float _OutlineStdTexTint; float _OutlineStdLit; float _OutlineStdDistFade; float _OutlineStdFadeNear; float _OutlineStdFadeFar; float _OutlineStdVColorMask; float _OutlineStdVColorChannel;
             float _OutlineRGBSplit;
             float4 _OutlineColor;
-            float _StarEnable;
+            float _StarEnable; float _ConstellationBlend; float _ConstellationEmission; float _StarUVSource;
             float _StarDensity;
-            float _StarSize;
+            float _StarSize; float _StarScatter;
             float _StarSpeed;
             float _StarParallax;
             float _StarGlassWarp;
@@ -1396,6 +1454,8 @@ Shader "Zetph/ZetsFancyShader"
             float _StarColorMode;
             float _StarSaturation;
             float _NebulaColorMode;
+            float4 _NebGradColor0; float4 _NebGradColor1; float4 _NebGradColor2; float4 _NebGradColor3;
+            float _NebGradPos1; float _NebGradPos2;
             float _StarAL;
             float _NebulaAL;
             float _StarSoftness;
@@ -1410,6 +1470,18 @@ Shader "Zetph/ZetsFancyShader"
             float _NebulaBright;
             float _RaymarchSteps;
             float _RaymarchDensity;
+            float _HoloEnable; float4 _HoloColor; float _HoloTintAmount; float _HoloTransStyle; float _HoloOpacity;
+            float _HoloScanDensity; float _HoloScanSpeed; float _HoloScanSharpness; float _HoloScanStrength;
+            float _HoloRimStrength; float _HoloRimPower;
+            float _HoloSweepStrength; float _HoloSweepSpeed; float _HoloSweepWidth;
+            float _HoloFlicker; float _HoloGlitchAmount; float _HoloGlitchSpeed;
+            float _PlasmaEnable; float _PlasmaSites; float _PlasmaSpread; float _PlasmaColorMode; float4 _PlasmaColor;
+            float4 _PlasmaColor1; float4 _PlasmaColor2; float4 _PlasmaColor3; float4 _PlasmaColor4;
+            float4 _PlasmaColor5; float4 _PlasmaColor6; float4 _PlasmaColor7; float4 _PlasmaColor8;
+            float _PlasmaGlow; float _PlasmaRate; float _PlasmaThreshold; float _PlasmaRippleDist; float _PlasmaRingWidth; float _PlasmaHitSize; float _PlasmaDisplace;
+            float _StarLineEnable; float _StarLineColorMode; float4 _StarLineColor;
+            float _StarLineStrength; float _StarLineThickness; float _StarLineMaxLen;
+            float _StarLineFade; float _StarLineDepthFade; float _StarLineSpeed;
             CBUFFER_END
             // ---- UV Tile Discard --------------------------------------------
             // Vertex-level: a discarded tile collapses its vertices to NaN, so the
@@ -1459,6 +1531,79 @@ Shader "Zetph/ZetsFancyShader"
                 else             { gap = 1.0; fade = 0.0; } // Full Energy
             }
             float2 hash2D(float2 p) { return frac(sin(float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)))) * 43758.5453); }
+            // The jitter and drift the star points use, for any cell in layer s. Each
+            // star gets its own drift frequency and phase per axis, so the field wanders
+            // as scattered points instead of oscillating on one shared clock (the "wave").
+            float2 ZetStarJitter(float2 cell, float s) {
+                float2 rr = (hash2D(cell + s * 11.23) - 0.5) * _StarScatter;
+                float2 freq  = 0.35 + hash2D(cell + s * 13.7) * 1.65;   // 0.35..2.0, per star and axis
+                float2 phase = hash2D(cell + s * 4.9) * 6.2832;
+                float jt = _Time.y;
+                rr += float2(sin(jt * freq.x + phase.x), sin(jt * freq.y + phase.y)) * (_StarDrift * 0.003);
+                return rr;
+            }
+            // Photoshop-style blend of the constellation (src) over the surface (dst).
+            half3 ZetPhotoBlend(half3 d, half3 s, float mode) {
+                if (mode < 0.5) return d + s;                                                 // Add
+                else if (mode < 1.5) return 1.0 - (1.0 - saturate(d)) * (1.0 - saturate(s));  // Screen
+                else if (mode < 2.5) return d * s;                                            // Multiply
+                else if (mode < 3.5) return lerp(2.0 * d * s, 1.0 - 2.0 * (1.0 - d) * (1.0 - s), step(0.5, d)); // Overlay
+                else if (mode < 4.5) return max(d, s);                                        // Lighten
+                else if (mode < 5.5) return min(d, s);                                        // Darken
+                else return s;                                                                // Replace
+            }
+            // Four-stop gradient (stops 0 and 3 anchored at 0 and 1; 1 and 2 movable).
+            half3 ZetNebGrad(float t) {
+                t = saturate(t);
+                half3 c = _NebGradColor0.rgb;
+                c = lerp(c, _NebGradColor1.rgb, saturate(t / max(_NebGradPos1, 1e-4)));
+                c = lerp(c, _NebGradColor2.rgb, saturate((t - _NebGradPos1) / max(_NebGradPos2 - _NebGradPos1, 1e-4)));
+                c = lerp(c, _NebGradColor3.rgb, saturate((t - _NebGradPos2) / max(1.0 - _NebGradPos2, 1e-4)));
+                return c;
+            }
+            // 4x4 ordered dither, 0..1, array-free. For screen-door transparency.
+            float ZetBayer2(float2 a) { a = floor(a); return frac(a.x * 0.5 + a.y * a.y * 0.75); }
+            float ZetBayer4(float2 p) { return ZetBayer2(0.5 * p) * 0.25 + ZetBayer2(p); }
+            // Holographic overlay: object-space scanlines, rim glow, a travelling sweep
+            // bar, flicker, glitch tearing, mono tint, and see-through (true alpha or
+            // ordered dither). Applied to the finished colour just before fog.
+            void ZetApplyHologram(inout half3 col, inout half alpha, float3 wPos, float3 wNrm, float2 sp) {
+                if (_HoloEnable < 0.5) return;
+                float3 objPos = mul(unity_WorldToObject, float4(wPos, 1.0)).xyz;   // avatar's own space
+                float3 vdir = normalize(_WorldSpaceCameraPos - wPos);
+                half3 nrm = normalize(wNrm);
+                float t = _Time.y;
+
+                // Glitch: occasional horizontal tear of the scan coordinate.
+                float bnd = floor(objPos.y * 40.0);
+                float roll = frac(sin(bnd * 12.9898 + floor(t * (_HoloGlitchSpeed + 1.0))) * 43758.5453);
+                float tear = step(1.0 - _HoloGlitchAmount * 0.35, roll) * (frac(sin(bnd * 78.233) * 1234.5) - 0.5) * _HoloGlitchAmount * 0.2;
+                float scanY = objPos.y + tear;
+
+                // Scanlines banded along the avatar's up axis, scrolling.
+                float sc = 0.5 + 0.5 * sin(scanY * _HoloScanDensity * 6.2832 - t * _HoloScanSpeed);
+                float scan = pow(sc, _HoloScanSharpness) * _HoloScanStrength;
+
+                // Sweep bar cycling up the body.
+                float sweepPos = frac(t * (_HoloSweepSpeed * 0.1));
+                float sweep = smoothstep(_HoloSweepWidth, 0.0, abs(frac(objPos.y * 0.5) - sweepPos)) * _HoloSweepStrength;
+
+                // Fresnel rim glow.
+                float rim = pow(1.0 - saturate(dot(nrm, vdir)), _HoloRimPower) * _HoloRimStrength;
+
+                // Flicker: two-rate brightness flutter.
+                float flick = 1.0 - _HoloFlicker * 0.5 * (0.5 + 0.5 * sin(t * 30.0 + sin(t * 7.0) * 3.0));
+
+                // Collapse toward the holo colour, then add holographic light.
+                half lum = dot(col, half3(0.299, 0.587, 0.114));
+                col = lerp(col, lum * _HoloColor.rgb, _HoloTintAmount);
+                col = col * flick + _HoloColor.rgb * (scan + sweep + rim);
+
+                // See-through: bright bands read as more solid.
+                float holoA = saturate(_HoloOpacity + scan + sweep + rim);
+                if (_HoloTransStyle < 0.5) alpha *= holoA;              // true alpha (needs a Transparent mode)
+                else if (holoA < ZetBayer4(sp)) clip(-1);              // dither (works in Opaque or Cutout)
+            }
             // v64e: stateless fast-attack / smooth-release envelope. 2 taps:
             // raw band + AudioLink's pre-filtered row (column = Release knob).
             // (A per-invocation static cache lived here in v64b-v64d; mutable
@@ -1596,6 +1741,69 @@ Shader "Zetph/ZetsFancyShader"
                 const half3 k = half3(0.57735, 0.57735, 0.57735);
                 half co = cos(a);
                 return c * co + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - co);
+            }
+            // --- Plasma Hits: audio-gated hits that pop at random spots in the -------
+            // avatar's own 3D space and ripple outward. Each of the up to 8 slots relocates
+            // on its own clock; brightness is the band envelope past a threshold, so it's
+            // dark without audio (and without AudioLink). Slots cycle the four bands.
+            float  ZetHash1(float n) { return frac(sin(n * 43.32 + 7.13) * 43758.5453); }
+            float3 ZetHash3(float n) { return frac(sin(float3(n * 12.98 + 1.3, n * 78.23 + 4.7, n * 37.71 + 9.1)) * 43758.5453); }
+            half3  ZetPlasmaColor(float s) { return hueShift(half3(1.0, 0.15, 0.15), ZetHash1(s + 3.1) * 6.28318); }
+            float  ZetPlasmaGate(float e) { return saturate((e - _PlasmaThreshold) / max(1.0 - _PlasmaThreshold, 0.01)); }
+            // Per-hit colour slot, for the Per Hit colour mode.
+            half3  ZetPlasmaSlot(int k) {
+                return k == 0 ? _PlasmaColor1.rgb : k == 1 ? _PlasmaColor2.rgb : k == 2 ? _PlasmaColor3.rgb :
+                       k == 3 ? _PlasmaColor4.rgb : k == 4 ? _PlasmaColor5.rgb : k == 5 ? _PlasmaColor6.rgb :
+                       k == 6 ? _PlasmaColor7.rgb : _PlasmaColor8.rgb;
+            }
+            // Random point in the avatar's own 3D space for a spawn seed.
+            float3 ZetPlasmaSite(float seed) {
+                float3 h = ZetHash3(seed);
+                return float3((h.x - 0.5) * 2.0, h.y * 2.0, (h.z - 0.5) * 2.0) * _PlasmaSpread;
+            }
+            // The expanding ring front for a hit: a thin band that travels out and fades.
+            float ZetPlasmaField(float d, float ph) {
+                return smoothstep(_PlasmaRingWidth, 0.0, abs(d - ph * _PlasmaRippleDist)) * (1.0 - ph);
+            }
+            // One relocating hit for slot k. Seed changes each cycle, so it jumps to a new
+            // random spot; shared by both stages so glow and displacement line up.
+            float ZetPlasmaHit(float3 objP, int k, float e, out float d, out float ph, out float seed) {
+                float clock = _Time.y * _PlasmaRate + ZetHash1((float)k * 1.37) * 17.0;
+                ph = frac(clock);
+                seed = floor(clock) * 8.0 + (float)k + 0.5;
+                d = length(objP - ZetPlasmaSite(seed));
+                return ZetPlasmaField(d, ph) * e;
+            }
+            void ZetApplyPlasmaDisplace(inout float3 zp, float3 zn) {
+                if (_PlasmaEnable < 0.5 || _PlasmaDisplace < 0.0001 || !AudioLinkIsAvailable()) return;
+                float e0 = ZetPlasmaGate(ZetVertBand(0)), e1 = ZetPlasmaGate(ZetVertBand(1));
+                float e2 = ZetPlasmaGate(ZetVertBand(2)), e3 = ZetPlasmaGate(ZetVertBand(3));
+                float disp = 0, d, ph, seed;
+                int cnt = (int)_PlasmaSites;
+                [loop] for (int i = 0; i < 8; i++) {
+                    if (i >= cnt) break;
+                    float e = (i & 3) == 0 ? e0 : (i & 3) == 1 ? e1 : (i & 3) == 2 ? e2 : e3;
+                    disp += ZetPlasmaHit(zp, i, e, d, ph, seed);
+                }
+                zp += zn * disp * _PlasmaDisplace;
+            }
+            void ZetApplyPlasma(inout half3 col, float3 wPos) {
+                if (_PlasmaEnable < 0.5 || !AudioLinkIsAvailable()) return;
+                float3 objP = mul(unity_WorldToObject, float4(wPos, 1.0)).xyz;
+                float e0 = ZetPlasmaGate(ALEnv(0)), e1 = ZetPlasmaGate(ALEnv(1));
+                float e2 = ZetPlasmaGate(ALEnv(2)), e3 = ZetPlasmaGate(ALEnv(3));
+                half3 add = 0; float d, ph, seed;
+                int cnt = (int)_PlasmaSites;
+                [loop] for (int i = 0; i < 8; i++) {
+                    if (i >= cnt) break;
+                    float e = (i & 3) == 0 ? e0 : (i & 3) == 1 ? e1 : (i & 3) == 2 ? e2 : e3;
+                    float f = ZetPlasmaHit(objP, i, e, d, ph, seed);
+                    float flash = e * (1.0 - ph) * (1.0 - ph) * smoothstep(_PlasmaHitSize, 0.0, d);
+                    half3 c = (_PlasmaColorMode < 0.5) ? ZetPlasmaColor(seed)
+                            : (_PlasmaColorMode < 1.5) ? _PlasmaColor.rgb : ZetPlasmaSlot(i);
+                    add += c * (f + flash);
+                }
+                col += add * _PlasmaGlow;
             }
             float hash31(float3 p3) {
                 p3  = frac(p3 * 0.1031);
@@ -1892,6 +2100,7 @@ Shader "Zetph/ZetsFancyShader"
                 float3 zn = v.normal;
                 float3 zt = v.tangent.xyz;
                 ZetApplyVertexAL(zp, zn, zt, v.uv, o.uv);
+                ZetApplyPlasmaDisplace(zp, zn);
                 o.objPos = float4(zp, v.vertex.w);
                 o.normal = zn;
                 o.tangent = float4(zt, v.tangent.w);
@@ -2977,11 +3186,24 @@ Shader "Zetph/ZetsFancyShader"
                     if (starMask > 0.001) 
                     {
                         float alS = alAvail ? ALEnv((uint)_StarBand) : 0.0;
-                        float2 starUVw = i.uv + float2(sin(i.uv.y * 25.0 + _Time.y * 2.0), cos(i.uv.x * 25.0 + _Time.y * 1.7)) * (_StarGlassWarp * 0.03);
+                        // UV source: UV0 (mesh), Panosphere (view ray, reads as real sky), or
+                        // Polar. The mask stays on UV0, so it still confines the effect to a region.
+                        float2 uvSrc = i.uv;
+                        if (_StarUVSource == 1) {
+                            float3 vd = normalize(i.wPos - _WorldSpaceCameraPos);
+                            uvSrc = float2(atan2(vd.z, vd.x) * 0.15915 + 0.5, acos(clamp(vd.y, -1.0, 1.0)) * 0.31831);
+                        } else if (_StarUVSource == 2) {
+                            float2 pc = i.uv - 0.5;
+                            uvSrc = float2(atan2(pc.y, pc.x) * 0.15915 + 0.5, length(pc) * 2.0);
+                        }
+                        float2 starUVw = uvSrc + float2(sin(uvSrc.y * 25.0 + _Time.y * 2.0), cos(uvSrc.x * 25.0 + _Time.y * 1.7)) * (_StarGlassWarp * 0.03);
                         float nebPop = saturate(alS * _NebulaAL);
                         half3 finalNebulaColor;
+                        float nebT = saturate((noise3D(float3(starUVw * 4.0, _Time.y * 0.03)) - 0.5) * 2.5 + 0.5);
                         if (_NebulaColorMode == 1) finalNebulaColor = c_star * _NebulaBright * (1.0 + nebPop);
                         else if (_NebulaColorMode == 2) finalNebulaColor = hueShift(half3(0.5, 0.1, 1.0), _Time.y * 0.5) * _NebulaBright * (1.0 + nebPop); 
+                        else if (_NebulaColorMode == 3) finalNebulaColor = ZetNebGrad(nebT) * _NebulaBright + _NebulaPopColor.rgb * nebPop;
+                        else if (_NebulaColorMode == 4) finalNebulaColor = _NebGradTex.SampleLevel(sampler_LinearClamp, float2(nebT, 0.5), 0).rgb * _NebulaBright + _NebulaPopColor.rgb * nebPop;
                         else finalNebulaColor = _StarBgColor.rgb * _NebulaBright + _NebulaPopColor.rgb * nebPop;
                         
                         half3 starAccum = finalNebulaColor; 
@@ -3009,6 +3231,8 @@ Shader "Zetph/ZetsFancyShader"
                                 if (dens > 0.01) {
                                     half3 emit = _StarBgColor.rgb * _NebulaBright * lerp(0.5, 1.0, n2) + _NebulaPopColor.rgb * nebPop;
                                     if (_NebulaColorMode == 2) emit = hueShift(emit, p.z * 0.5);
+                                    else if (_NebulaColorMode == 3) emit = ZetNebGrad(n2) * _NebulaBright * lerp(0.5, 1.0, n2) + _NebulaPopColor.rgb * nebPop;
+                                    else if (_NebulaColorMode == 4) emit = _NebGradTex.SampleLevel(sampler_LinearClamp, float2(saturate(n2), 0.5), 0).rgb * _NebulaBright * lerp(0.5, 1.0, n2) + _NebulaPopColor.rgb * nebPop;
                                     rmAccum += emit * dens * transmit * stepSize * 4.0;
                                     transmit *= exp(-dens * stepSize * 4.0); 
                                 }
@@ -3028,11 +3252,8 @@ Shader "Zetph/ZetsFancyShader"
                             
                             float2 gv = frac(starUV) - 0.5;
                             float2 id = floor(starUV);
-                            float2 r = (hash2D(id + s * 11.23) - 0.5) * 0.2; 
+                            float2 r = ZetStarJitter(id, s);
                             float starHash = hash2(id + s * 7.31); 
-                            // Chaotic jitter: own clock (independent of Global Drift), per-star phase, real magnitude
-                            float jt = _Time.y * 2.0;
-                            r += float2(sin(jt * 1.3 + starHash * 6.2832), cos(jt * 1.7 + starHash * 9.4248)) * (_StarDrift * 0.002);
                             
                             float twAmt = saturate(_StarTwinkle * 0.01);
                             float twPhase = _Time.y * (_StarTwinkleSpeed * 0.1) + starHash * 100.0 + s * 2.3;
@@ -3054,11 +3275,45 @@ Shader "Zetph/ZetsFancyShader"
                             if (_StarColorMode == 1) finalStarColor = c_star;
                             else if (_StarColorMode == 2) finalStarColor = hueShift(half3(1.0, 0.2, 0.2), starHash * 6.28); 
                             finalStarColor = max(0.0, lerp(dot(finalStarColor, half3(0.299, 0.587, 0.114)).xxx, finalStarColor, _StarSaturation));
+                            // Constellation lines: link this cell's star to neighbours in
+                            // this layer's own 3x3, so both ends stay in the window and the
+                            // link is never clipped. Depth comes from the layers themselves,
+                            // which sit at different parallax depths and drift at their own speed.
+                            if (_StarLineEnable > 0.5 && starHash >= 0.5) {
+                                float lth    = _StarLineThickness * 0.0003 + 0.0004;
+                                float lmaxL  = _StarLineMaxLen * 0.02 + 0.2;
+                                float lfadeS = lerp(lmaxL, lmaxL * 0.3, saturate(_StarLineFade * 0.01));
+                                float lineAmt = 0;
+                                [unroll] for (int oy = -1; oy <= 1; oy++) {
+                                    [unroll] for (int ox = -1; ox <= 1; ox++) {
+                                        float2 o = float2(ox, oy);
+                                        float2 ncell = id + o;
+                                        if ((ox != 0 || oy != 0) && hash2(ncell + s * 7.31) >= 0.5) {
+                                            float2 pn = o + ZetStarJitter(ncell, s);    // neighbour star, this-cell frame
+                                            float2 ab = pn - r;
+                                            float llen = length(ab);
+                                            float lenFade = smoothstep(lmaxL, lfadeS, llen);
+                                            float tt = saturate(dot(gv - r, ab) / max(dot(ab, ab), 1e-6));
+                                            float dPerp = length(gv - (r + ab * tt));
+                                            float taper = pow(abs(tt - 0.5) * 2.0, 1.6);
+                                            float w = lerp(lth * 0.6, lth * 1.4, taper);
+                                            float lcore = 1.0 - smoothstep(w * 0.2, w, dPerp);
+                                            float lang = atan2(ab.y, ab.x);
+                                            float lh = hash2(ncell + id + s * 3.7);
+                                            float life = 0.55 + 0.45 * sin(_Time.y * (_StarLineSpeed * 0.03) + llen * 9.0 + lang * 2.0 + lh * 6.2832);
+                                            lineAmt += lcore * lenFade * life;
+                                        }
+                                    }
+                                }
+                                half3 lc = (_StarLineColorMode > 0.5) ? finalStarColor : _StarLineColor.rgb;
+                                float ldFade = lerp(1.0, 1.0 / depth, saturate(_StarLineDepthFade * 0.01));
+                                starAccum += lc * lineAmt * ldFade * (1.0 + alS * _StarAL) * _StarLineStrength;
+                            }
                             finalStarColor *= (1.0 + alS * _StarAL);
                             
                             starAccum += finalStarColor * star * (starHash * 2.0) * twinkle * occlusion;
                         }
-                        col.rgb += starAccum * starMask * proxAlpha;
+                        col.rgb = lerp(col.rgb, ZetPhotoBlend(col.rgb, starAccum * _ConstellationEmission, _ConstellationBlend), starMask * proxAlpha);
                     }
                 }
                 
@@ -3129,6 +3384,10 @@ Shader "Zetph/ZetsFancyShader"
                     return fixed4(dbg, 1.0);
                 }
 //endex
+                half3 hcol = col.rgb;
+                ZetApplyPlasma(hcol, i.wPos);
+                ZetApplyHologram(hcol, outAlpha, i.wPos, i.wNrm, i.pos.xy);
+                col.rgb = hcol;
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return fixed4(col.rgb, outAlpha);
             }
@@ -3159,6 +3418,7 @@ Shader "Zetph/ZetsFancyShader"
                 {
                     float3 zp = v.vertex.xyz; float3 zn = v.normal; float3 zt = float3(1, 0, 0);
                     ZetApplyVertexAL(zp, zn, zt, v.uv, o.uv);
+                    ZetApplyPlasmaDisplace(zp, zn);
                     v.vertex.xyz = zp; v.normal = zn;
                 }
                 o.wNrm = UnityObjectToWorldNormal(v.normal);
@@ -3267,6 +3527,7 @@ Shader "Zetph/ZetsFancyShader"
                 float3 zn = v.normal;
                 float3 zt = v.tangent.xyz;
                 ZetApplyVertexAL(zp, zn, zt, v.uv, o.uv);
+                ZetApplyPlasmaDisplace(zp, zn);
                 o.objPos = float4(zp, v.vertex.w);
                 o.normal = zn;
                 o.tangent = float4(zt, v.tangent.w);

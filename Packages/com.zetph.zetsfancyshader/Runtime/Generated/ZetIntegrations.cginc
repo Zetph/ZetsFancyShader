@@ -5,8 +5,12 @@
 #ifndef ZET_INTEGRATIONS_INCLUDED
 #define ZET_INTEGRATIONS_INCLUDED
 
-// LTCGI: not installed - ZET_LTCGI stays undefined
+// LTCGI: present
+#include "Packages/at.pimaker.ltcgi/Shaders/LTCGI.cginc"
+#define ZET_LTCGI 1
 
-// VRC Light Volumes: not installed - ZET_LV_OK stays undefined
+// VRC Light Volumes: present
+#include "Packages/red.sim.lightvolumes/Shaders/LightVolumes.cginc"
+#define ZET_LV_OK 1
 
 #endif // ZET_INTEGRATIONS_INCLUDED

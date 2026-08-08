@@ -8,7 +8,15 @@
 // WORLD publishes, with the sampling code embedded in the shader, so there is
 // nothing for the user to install.
 //
-// Reflection only, so this compiles with or without either package.
+// Presence is read from ZetIntegrationGenerator.IsAvailable, the same file
+// check that decides what the shader actually compiles, so this console message
+// can never disagree with the generated integrations. It is still a plain file
+// check, not a reference to any package type, so this file compiles with or
+// without either package installed.
+//
+// The Light Volumes version check is the one thing this file still owns:
+// presence alone does not tell us whether the installed copy is new enough.
+//
 // Must live inside an "Editor" folder.
 
 using System.Linq;
@@ -29,7 +37,7 @@ public static class ZetDependencyChecker
 
     static ZetDependencyChecker()
     {
-        // Delayed so all assemblies are loaded before probing for types.
+        // Delayed so all assemblies are loaded before the package query runs.
         EditorApplication.delayCall += Check;
     }
 
@@ -38,8 +46,11 @@ public static class ZetDependencyChecker
         if (SessionState.GetBool(SessionKey, false)) return;
         SessionState.SetBool(SessionKey, true);
 
-        bool ltcgi = LtcgiPresent();
-        bool volumes = LightVolumesPresent();
+        // Same presence answer the shader compiles against. IsAvailable resolves
+        // lazily on first call, so it does not matter whether the generator's own
+        // delayCall has run yet.
+        bool ltcgi   = ZetIntegrationGenerator.IsAvailable(ZetIntegrationGenerator.SymbolLtcgi);
+        bool volumes = ZetIntegrationGenerator.IsAvailable(ZetIntegrationGenerator.SymbolLightVolumes);
 
         if (!ltcgi)
             Debug.Log(
@@ -60,33 +71,9 @@ public static class ZetDependencyChecker
             if (version != null && IsOlderThan(version, LightVolumesMinimum))
                 Debug.LogWarning(
                     "[ZetsFancyShader] VRC Light Volumes " + version + " is older than " +
-                    LightVolumesMinimum + ". Light Volume speculars will fail to compile - " +
-                    "update the package via VCC. " + LightVolumesUrl);
+                    LightVolumesMinimum + ". Light Volume speculars will fail to compile. " +
+                    "Update the package via VCC. " + LightVolumesUrl);
         }
-    }
-
-    // --- presence probes -----------------------------------------------------
-    // Type reflection: true only once the package's assembly has compiled
-
-    static bool TypeExists(params string[] typeNames)
-    {
-        foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
-            foreach (var t in typeNames)
-                if (asm.GetType(t) != null) return true;
-        return false;
-    }
-
-    static bool LtcgiPresent()
-    {
-        return TypeExists("pi.LTCGI.LTCGI_Controller", "pi.LTCGI.LTCGI");
-    }
-
-    static bool LightVolumesPresent()
-    {
-        return TypeExists(
-            "VRCLightVolumes.LightVolumeManager",
-            "VRCLightVolumes.LightVolume",
-            "LightVolumeManager");
     }
 
     // --- version -------------------------------------------------------------
@@ -113,7 +100,7 @@ public static class ZetDependencyChecker
 
     /// <summary>
     /// Numeric-segment compare. Prerelease suffixes are ignored, so "2.1.3-beta"
-    /// counts as 2.1.3 - errs toward staying quiet.
+    /// counts as 2.1.3, which errs toward staying quiet.
     /// </summary>
     static bool IsOlderThan(string version, string minimum)
     {

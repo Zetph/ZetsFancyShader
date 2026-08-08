@@ -83,7 +83,11 @@ Shader "Zetph/ZetsFancyEyeShader"
             [Group(reflspec_emission)] _EmissionStrength ("Emission Strength", Range(0, 8)) = 1
             [Toggle] [Group(reflspec_emission)] _EmissionAlbedoTint ("Tint by Albedo", Float) = 0
         [Toggle(LTCGI)] [GroupToggle(ltcgi)] _LTCGI ("LTCGI System", Float) = 0
-        [Group(ltcgi)] _LTCGIStrength ("LTCGI Strength", Range(0, 2)) = 1
+        [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGIStrength ("LTCGI Strength", Range(0, 2)) = 1
+        [Toggle] [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGITintOn ("Tint LTCGI", Float) = 0
+        [Group(ltcgi)] [ShowIf(_LTCGI)] [ShowIf(_LTCGITintOn)] _LTCGIDiffuseTint ("LTCGI Diffuse Tint", Color) = (1, 1, 1, 1)
+        [Group(ltcgi)] [ShowIf(_LTCGI)] [ShowIf(_LTCGITintOn)] _LTCGISpecularTint ("LTCGI Specular Tint", Color) = (1, 1, 1, 1)
+        [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGIOcclusion ("LTCGI Occlusion", Range(0, 1)) = 1
         [Toggle(ZET_LIGHT_VOLUMES)] [GroupToggle(lightvolumes)] _LightVolumes ("Light Volumes System", Float) = 1
         [Group(lightvolumes)] _LightVolumesStrength ("Light Volumes Strength", Range(0, 2)) = 1
         [Toggle] [Group(lightvolumes)] _LightVolumesSpec ("Light Volume Speculars", Float) = 1
@@ -146,7 +150,8 @@ Shader "Zetph/ZetsFancyEyeShader"
             float _SS3Size; float _SS3Feather; float _SS3Strength;
             float _ParallaxEnable; float _ParallaxStrength; float _ParallaxOffset; float _ParallaxMipBias;
             float _WetnessEnable; float4 _WetnessColor; float _WetnessStrength;
-            float _LTCGIStrength; float _LightVolumesStrength; float _LightVolumesSpec; float _LVPointShading;
+            float _LTCGIStrength; float _LTCGITintOn; float4 _LTCGIDiffuseTint; float4 _LTCGISpecularTint; float _LTCGIOcclusion;
+            float _LightVolumesStrength; float _LightVolumesSpec; float _LVPointShading;
             // [Toggle(KEYWORD)] declares the keyword; the float still needs
             // declaring to be readable at runtime, which is how an UNLOCKED
             // build learns the user switched the feature off (ifex is inert
@@ -455,8 +460,10 @@ Shader "Zetph/ZetsFancyEyeShader"
                 #if defined(ZET_LTCGI)
                 if (ltcgiOn) {
                     half3 lDiff = 0, lSpec = 0; LTCGI_Contribution(i.wPos, n, viewDir, 1.0 - smoothness, float2(0, 0), lDiff, lSpec);
-                    dbgLTCGI = (albedo.rgb * (1.0 - metallic) * lDiff * ao + specCol * lSpec) * _LTCGIStrength;
-                    col.rgb += (albedo.rgb * (1.0 - metallic) * lDiff * ao + specCol * lSpec) * _LTCGIStrength;
+                    half3 ltAO = lerp(half3(1,1,1), ao.xxx, _LTCGIOcclusion);
+                    if (_LTCGITintOn > 0.5) { lDiff *= _LTCGIDiffuseTint.rgb; lSpec *= _LTCGISpecularTint.rgb; }
+                    dbgLTCGI = (diffuseCol * lDiff * ltAO + specCol * lSpec) * _LTCGIStrength;
+                    col.rgb += (diffuseCol * lDiff * ltAO + specCol * lSpec) * _LTCGIStrength;
                 }
                 #endif
                 if (_UseEnvReflections > 0.5) {

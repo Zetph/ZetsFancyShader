@@ -239,7 +239,7 @@
   },
   {
    "path": "lighting_matcaps_mc0",
-   "label": "MatCap Base",
+   "label": "MatCap 0",
    "info": "A MatCap fakes lighting from a sphere image. Pick a matcap texture, choose how it blends, and mask where it shows. Great for metal, glass, or rim light with no real lights.",
    "toggle": "_MatcapEnable",
    "showIf": []
@@ -698,7 +698,7 @@
   {
    "path": "specialfx_stars",
    "label": "Constellation / Nebula",
-   "info": "A starfield and nebula rendered into masked areas, like a window into space.",
+   "info": "A starfield and nebula. Leave the Constellation Mask empty to cover the whole material, or assign one (white shows, black hides) to confine it to specific areas, like a window into space.",
    "toggle": "_StarEnable",
    "showIf": []
   },
@@ -710,6 +710,65 @@
    "showIf": [
     "_StarEnable"
    ]
+  },
+  {
+   "path": "specialfx_stars_lines",
+   "label": "Constellation Lines",
+   "info": "Draws faint lines linking nearby stars across the parallax layers. Because the layers drift at different speeds, links stretch, dim, and reconnect on their own as stars move apart and back together.",
+   "toggle": "_StarLineEnable",
+   "showIf": [
+    "_StarEnable"
+   ]
+  },
+  {
+   "path": "specialfx_holo",
+   "label": "Hologram",
+   "info": "Makes the avatar look like a projected hologram: object-space scanlines, rim glow, a sweep bar, flicker, glitch, and a see-through look. For the True Alpha style, set the material's Transparency Mode to a transparent option; the Dither style works in any mode.",
+   "toggle": "_HoloEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_holo_scan",
+   "label": "Scanlines",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_HoloEnable"
+   ]
+  },
+  {
+   "path": "specialfx_holo_rim",
+   "label": "Rim Glow",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_HoloEnable"
+   ]
+  },
+  {
+   "path": "specialfx_holo_sweep",
+   "label": "Sweep Bar",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_HoloEnable"
+   ]
+  },
+  {
+   "path": "specialfx_holo_glitch",
+   "label": "Glitch & Flicker",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_HoloEnable"
+   ]
+  },
+  {
+   "path": "specialfx_plasma",
+   "label": "Plasma Hits",
+   "info": "Audio-reactive sci-fi hits that pop at random spots in the avatar's own 3D space and ripple outward, bumping the surface as they pass. Hits keep landing in new places and react to the audio bands (bass, low mids, high mids, treble). Stays dark below the Audio Threshold and when no AudioLink is present.",
+   "toggle": "_PlasmaEnable",
+   "showIf": []
   },
   {
    "path": "specialfx_stars_nebula",
@@ -2888,7 +2947,19 @@
   },
   {
    "name": "_StarMask",
-   "text": "Where the starfield and nebula show through."
+   "text": "Optional. White shows the effect, black hides it. Leave it empty to apply the starfield across the whole material, or paint a mask to confine it, like a window into space."
+  },
+  {
+   "name": "_ConstellationBlend",
+   "text": "How the whole constellation composites onto the surface. Add glows (the default), Screen glows more gently, Multiply and Darken tint or sink it into the surface, Overlay contrasts, Replace paints it on flat with no glow."
+  },
+  {
+   "name": "_StarUVSource",
+   "text": "Which coordinate space the stars and nebula live in. UV0 maps to the mesh UVs and stretches with them. Panosphere projects onto a sphere around the view, so the field reads like real sky seen through the surface. Polar wraps it into rings. The mask still uses UV0 either way."
+  },
+  {
+   "name": "_ConstellationEmission",
+   "text": "Master brightness for the entire constellation, applied before it blends onto the surface. Scales stars, lines, and nebula together."
   },
   {
    "name": "_StarBand",
@@ -2923,6 +2994,10 @@
    "text": "Size of each star."
   },
   {
+   "name": "_StarScatter",
+   "text": "How far each star wanders from its cell centre. Low values line the stars up on a grid, which makes constellation lines look rectangular. Higher values scatter them so the lines connect at natural angles."
+  },
+  {
    "name": "_StarSoftness",
    "text": "How soft the star dots are."
   },
@@ -2951,8 +3026,44 @@
    "text": "Distorts the starfield with a rippling glass wobble, like a window pane over space. 0 is flat. Pairs well with an emissive rim around the mask."
   },
   {
+   "name": "_StarLineEnable",
+   "text": "Links nearby stars with faint lines. Stars on different layers drift at different speeds, so links stretch and reconnect on their own."
+  },
+  {
+   "name": "_StarLineColorMode",
+   "text": "Line Color uses a single colour. Star Color gradients each link from its near star's colour to its far star's colour, following Star Color Mode."
+  },
+  {
+   "name": "_StarLineColor",
+   "text": "Colour of the lines, used when Line Color Mode is set to Line Color."
+  },
+  {
+   "name": "_StarLineStrength",
+   "text": "Overall line brightness. 0 hides the lines entirely."
+  },
+  {
+   "name": "_StarLineThickness",
+   "text": "Line width, from thin hairlines to thick bars."
+  },
+  {
+   "name": "_StarLineMaxLen",
+   "text": "Links longer than this fade out, so only nearby stars connect. Lower keeps the web sparse."
+  },
+  {
+   "name": "_StarLineFade",
+   "text": "How sharply a link fades as it approaches the maximum length."
+  },
+  {
+   "name": "_StarLineDepthFade",
+   "text": "How much deeper links dim so distance stays readable. 0 draws every link at full strength."
+  },
+  {
+   "name": "_StarLineSpeed",
+   "text": "How fast each link shimmers. Each one is keyed to its own length and angle, so they pulse independently."
+  },
+  {
    "name": "_NebulaColorMode",
-   "text": "How the nebula colour is chosen."
+   "text": "How the nebula colour is chosen. Base Color is a flat tint, ColorChord and Shifting Hue animate it, Gradient blends a four-stop gradient across the cloud, and Gradient Texture reads the colour from a ramp you supply."
   },
   {
    "name": "_StarBgColor",
@@ -2965,6 +3076,34 @@
   {
    "name": "_NebulaPopColor",
    "text": "Colour the nebula flashes to on audio peaks."
+  },
+  {
+   "name": "_NebGradColor0",
+   "text": "First gradient stop, anchored at position 0."
+  },
+  {
+   "name": "_NebGradColor1",
+   "text": "Second gradient stop. Its position along the gradient is set by Color 2 Position."
+  },
+  {
+   "name": "_NebGradColor2",
+   "text": "Third gradient stop. Its position along the gradient is set by Color 3 Position."
+  },
+  {
+   "name": "_NebGradColor3",
+   "text": "Fourth gradient stop, anchored at position 1."
+  },
+  {
+   "name": "_NebGradPos1",
+   "text": "Where the second colour sits along the gradient, between the first and third stops."
+  },
+  {
+   "name": "_NebGradPos2",
+   "text": "Where the third colour sits along the gradient, between the second and fourth stops."
+  },
+  {
+   "name": "_NebGradTex",
+   "text": "A horizontal ramp texture read left to right across the nebula. Used when Nebula Color Mode is Gradient Texture."
   },
   {
    "name": "_NebulaAL",
@@ -3285,6 +3424,154 @@
   {
    "name": "_VRSLGIOcclusion",
    "text": "How much the AO map darkens VRSL GI contribution."
+  },
+  {
+   "name": "_HoloEnable",
+   "text": "Turns the whole hologram overlay on. Adds scanlines, rim glow, a sweep bar, flicker, glitch, and a see-through look on top of the finished surface."
+  },
+  {
+   "name": "_HoloColor",
+   "text": "The hologram's colour. Everything the effect adds (scanlines, rim, sweep) is tinted with it, and the surface is pulled toward it by Tint Amount."
+  },
+  {
+   "name": "_HoloTintAmount",
+   "text": "How far the avatar's own colours collapse toward the Holo Color. 0 keeps the original colours, 1 goes fully monochrome."
+  },
+  {
+   "name": "_HoloTransStyle",
+   "text": "How the see-through look is produced. True Alpha is real transparency and looks best, but needs the material's Transparency Mode set to a transparent option. Dither clips pixels in a fine pattern so it reads see-through in any render mode with no queue change."
+  },
+  {
+   "name": "_HoloOpacity",
+   "text": "Base see-through amount. Bright scanlines, rim, and sweep push opacity back up locally, so the lit bands stay solid while flat areas fade."
+  },
+  {
+   "name": "_HoloScanDensity",
+   "text": "How many scanlines run across the body. Measured in the avatar's own space, so very large or very small avatars may want this retuned."
+  },
+  {
+   "name": "_HoloScanSpeed",
+   "text": "How fast the scanlines scroll along the body."
+  },
+  {
+   "name": "_HoloScanSharpness",
+   "text": "Line shape. Low is soft wide bands, high is thin crisp lines."
+  },
+  {
+   "name": "_HoloScanStrength",
+   "text": "Brightness of the scanlines."
+  },
+  {
+   "name": "_HoloRimStrength",
+   "text": "Brightness of the fresnel edge glow that haloes the silhouette."
+  },
+  {
+   "name": "_HoloRimPower",
+   "text": "Width of the rim. Low spreads the glow inward, high keeps it to a thin edge."
+  },
+  {
+   "name": "_HoloSweepStrength",
+   "text": "Brightness of the bright bar that travels up the body."
+  },
+  {
+   "name": "_HoloSweepSpeed",
+   "text": "How fast the sweep bar cycles up the body."
+  },
+  {
+   "name": "_HoloSweepWidth",
+   "text": "Thickness of the sweep bar."
+  },
+  {
+   "name": "_HoloFlicker",
+   "text": "Amount of brightness flutter, for an unstable-projection feel. 0 is steady."
+  },
+  {
+   "name": "_HoloGlitchAmount",
+   "text": "Amount of horizontal tearing that jolts bands of the scanlines sideways."
+  },
+  {
+   "name": "_HoloGlitchSpeed",
+   "text": "How often the glitch tears fire."
+  },
+  {
+   "name": "_PlasmaEnable",
+   "text": "Turns on the plasma hits: audio-reactive flashes with expanding ripples that also bump the surface. Reacts to AudioLink."
+  },
+  {
+   "name": "_PlasmaSites",
+   "text": "How many hit sites are scattered over the avatar. They cycle through the four audio bands, so more sites means more of the spectrum is represented."
+  },
+  {
+   "name": "_PlasmaColorMode",
+   "text": "How hit colours are chosen. Random Per Site gives each hit a fresh random colour. Fixed Color makes every hit one colour. Per Hit gives each hit slot its own colour (Hit 1, Hit 2, ...), and the number of slots follows Hit Sites."
+  },
+  {
+   "name": "_PlasmaColor",
+   "text": "The colour used for every hit when Color Mode is Fixed Color."
+  },
+  {
+   "name": "_PlasmaGlow",
+   "text": "Overall brightness of the hits and ripples."
+  },
+  {
+   "name": "_PlasmaRippleDist",
+   "text": "How far each hit reaches before it fades."
+  },
+  {
+   "name": "_PlasmaHitSize",
+   "text": "Size of the bright flash at the moment a hit lands."
+  },
+  {
+   "name": "_PlasmaDisplace",
+   "text": "How strongly the geometry reacts. In Ripple it is the surface bump height; in Shatter it is how far the shards break apart. The shard look itself (rise, tumble, shrink, gap) comes from the Geometry Break advanced settings."
+  },
+  {
+   "name": "_PlasmaRate",
+   "text": "How fast each hit slot relocates and re-fires. Higher means hits pop more often at new spots. Roughly, one ripple per hit per 1/Rate seconds."
+  },
+  {
+   "name": "_PlasmaRingWidth",
+   "text": "Thickness of the expanding ring, in the Ripple style."
+  },
+  {
+   "name": "_PlasmaThreshold",
+   "text": "Audio level a band must exceed before its hits show. Raise it to ignore quiet passages and the AudioLink noise floor so it stays dark until the music hits."
+  },
+  {
+   "name": "_PlasmaSpread",
+   "text": "How far across the avatar's own 3D space the hits scatter. Tune to your avatar's size so hits land on the body."
+  },
+  {
+   "name": "_PlasmaColor1",
+   "text": "Colour for hit slot 1, used in the Per Hit colour mode."
+  },
+  {
+   "name": "_PlasmaColor2",
+   "text": "Colour for hit slot 2, used in the Per Hit colour mode."
+  },
+  {
+   "name": "_PlasmaColor3",
+   "text": "Colour for hit slot 3, used in the Per Hit colour mode."
+  },
+  {
+   "name": "_PlasmaColor4",
+   "text": "Colour for hit slot 4, used in the Per Hit colour mode."
+  },
+  {
+   "name": "_PlasmaColor5",
+   "text": "Colour for hit slot 5, used in the Per Hit colour mode."
+  },
+  {
+   "name": "_PlasmaColor6",
+   "text": "Colour for hit slot 6, used in the Per Hit colour mode."
+  },
+  {
+   "name": "_PlasmaColor7",
+   "text": "Colour for hit slot 7, used in the Per Hit colour mode."
+  },
+  {
+   "name": "_PlasmaColor8",
+   "text": "Colour for hit slot 8, used in the Per Hit colour mode."
   }
  ],
  "lockCritical": [
@@ -3296,6 +3583,43 @@
   "_VRSLGI"
  ],
  "enums": [
+  {
+   "name": "_HoloTransStyle",
+   "options": [
+    "True Alpha",
+    "Dither"
+   ]
+  },
+  {
+   "name": "_StarUVSource",
+   "options": [
+    "UV0",
+    "Panosphere",
+    "Polar"
+   ]
+  },
+  {
+   "name": "_ConstellationBlend",
+   "options": [
+    "Add",
+    "Screen",
+    "Multiply",
+    "Overlay",
+    "Lighten",
+    "Darken",
+    "Replace"
+   ]
+  },
+  {
+   "name": "_NebulaColorMode",
+   "options": [
+    "Base Color",
+    "ColorChord",
+    "Shifting Hue",
+    "Gradient",
+    "Gradient Texture"
+   ]
+  },
   {
    "name": "_DebugView",
    "options": [

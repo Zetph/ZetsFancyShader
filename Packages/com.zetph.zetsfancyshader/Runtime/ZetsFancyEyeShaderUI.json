@@ -77,7 +77,7 @@
   {
    "path": "ltcgi",
    "label": "LTCGI",
-   "info": "",
+   "info": "Enables LTCGI area light support, so the avatar picks up coloured light from LTCGI world screens and emitters.",
    "toggle": "_LTCGI",
    "showIf": [],
    "requires": "ZET_LTCGI"
@@ -133,6 +133,30 @@
   {
    "name": "_StyleSpecUseLight",
    "text": "Multiply the glint by the scene light colour, so it dims in dark rooms instead of glowing white. Turn off only for a stylised glint that ignores world lighting."
+  },
+  {
+   "name": "_LTCGI",
+   "text": "Enables LTCGI area light support and sets the LTCGI shader keyword. Needs the LTCGI package in the project."
+  },
+  {
+   "name": "_LTCGIStrength",
+   "text": "How strongly LTCGI area lights affect the avatar."
+  },
+  {
+   "name": "_LTCGITintOn",
+   "text": "Multiply LTCGI diffuse and specular by a colour, to warm or cool the light from world screens."
+  },
+  {
+   "name": "_LTCGIDiffuseTint",
+   "text": "Colour multiplied into the LTCGI diffuse contribution."
+  },
+  {
+   "name": "_LTCGISpecularTint",
+   "text": "Colour multiplied into the LTCGI specular contribution."
+  },
+  {
+   "name": "_LTCGIOcclusion",
+   "text": "How strongly baked AO darkens LTCGI. 0 ignores AO (screens light crevices freely), 1 applies it fully."
   },
   {
    "name": "_LightVolumes",

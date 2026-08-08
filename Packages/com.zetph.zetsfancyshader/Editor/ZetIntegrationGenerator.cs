@@ -37,6 +37,12 @@ using Zetph.FancyShader.EditorUI;
 [InitializeOnLoad]
 public static class ZetIntegrationGenerator
 {
+    // Shader-side symbols each integration enables. Public so other editor
+    // tooling (the dependency checker) can ask about presence by the same name
+    // the generator writes, instead of repeating the string.
+    public const string SymbolLtcgi = "ZET_LTCGI";
+    public const string SymbolLightVolumes = "ZET_LV_OK";
+
     // Include paths, and the symbol each one enables in the shader.
     struct Integration
     {
@@ -50,13 +56,12 @@ public static class ZetIntegrationGenerator
         }
     }
 
-    static readonly Integration[] Integrations =
-    {
+    static readonly Integration[] Integrations = {
         new Integration("Packages/at.pimaker.ltcgi/Shaders/LTCGI.cginc",
-                        "ZET_LTCGI", "LTCGI"),
+                        SymbolLtcgi, "LTCGI"),
 
         new Integration("Packages/red.sim.lightvolumes/Shaders/LightVolumes.cginc",
-                        "ZET_LV_OK", "VRC Light Volumes"),
+                        SymbolLightVolumes, "VRC Light Volumes"),
     };
 
     // Resolved from the shader's own location rather than hardcoded. A VPM
