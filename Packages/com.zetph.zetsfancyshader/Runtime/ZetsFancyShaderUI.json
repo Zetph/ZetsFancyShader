@@ -1,6 +1,6 @@
 {
  "title": "ZetsFancyShader",
- "version": "v0.4.1",
+ "version": "v0.5.0",
  "groups": [
   {
    "path": "engine",
@@ -491,14 +491,69 @@
    "showIf": []
   },
   {
-   "path": "specialfx_room",
+   "path": "specialfx_audio",
+   "label": "Audio Reactive",
+   "info": "Effects that pulse, ripple, and react to music through AudioLink.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style",
+   "label": "Stylized",
+   "info": "Looks and finishes: cosmic, retro, glass, glow, and other visual styles.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_geo",
+   "label": "Geometry",
+   "info": "Effects that reshape or break apart the mesh itself.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_view",
+   "label": "Visibility & World",
+   "info": "Where, and to whom, the material appears.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_room",
    "label": "Interior Mapping (3D Room)",
    "info": "Shows a believable 3D room behind the surface, like a window into an impossible space. Uses a room cubemap with real perspective, so it shifts correctly as you move around it. Great for chest panels, eyes, or portals.",
    "toggle": "_RoomEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_room_roommotion",
+   "path": "specialfx_style_room_roomvary",
+   "label": "Window Variety",
+   "info": "Makes each window show a different room. Without this every window shows an identical interior, which is the main giveaway that interior mapping is a trick.",
+   "toggle": "",
+   "showIf": [
+    "_RoomEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_room_roomfurn",
+   "label": "Furniture Layer",
+   "info": "An optional cut-out layer suspended inside the room at its own distance. Because it sits between the window and the back wall, it shifts against the background as you move, which is what makes the interior feel like real space.",
+   "toggle": "",
+   "showIf": [
+    "_RoomEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_room_roomlight",
+   "label": "Room Lights",
+   "info": "Lights the windows independently, switching over time and flickering, so a facade reads as occupied rather than uniformly lit.",
+   "toggle": "_RoomLightEnable",
+   "showIf": [
+    "_RoomEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_room_roommotion",
    "label": "Motion (Spin and Slide)",
    "info": "",
    "toggle": "",
@@ -507,16 +562,16 @@
    ]
   },
   {
-   "path": "specialfx_room_roomglass",
+   "path": "specialfx_style_room_roomglass",
    "label": "Glass and Edge",
-   "info": "",
+   "info": "How the glass in front of the interior distorts the view. Static Imperfection is fixed in the pane like real window glass; Ripple animates for water and aquarium looks.",
    "toggle": "",
    "showIf": [
     "_RoomEnable"
    ]
   },
   {
-   "path": "specialfx_room_roomatmo",
+   "path": "specialfx_style_room_roomatmo",
    "label": "Depth Atmosphere",
    "info": "",
    "toggle": "",
@@ -525,7 +580,7 @@
    ]
   },
   {
-   "path": "specialfx_room_roomal",
+   "path": "specialfx_style_room_roomal",
    "label": "AudioLink",
    "info": "",
    "toggle": "",
@@ -534,14 +589,23 @@
    ]
   },
   {
-   "path": "specialfx_refract",
+   "path": "specialfx_style_refract",
    "label": "Refraction (Glass / Heat Haze)",
    "info": "Bends whatever is rendered behind the surface, for glass, cloaks, or energy fields, with an optional chromatic split. It uses a GrabPass that is automatically stripped when this section is locked off, so it costs nothing unless you use it. Do not mark Enable Refraction as animated, or the strip cannot happen and the cost stays.",
    "toggle": "_RefractEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_refract_refractshimmer",
+   "path": "specialfx_style_refract_refractphys",
+   "label": "Physical Glass",
+   "info": "Refraction derived from Snell's law rather than a screen offset. The view ray genuinely bends by the index of refraction, each colour bends by a slightly different amount so edges split into a prism fringe, and rough glass scatters what shows through.",
+   "toggle": "",
+   "showIf": [
+    "_RefractEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_refract_refractshimmer",
    "label": "Shimmer (Heat Haze)",
    "info": "",
    "toggle": "",
@@ -550,7 +614,7 @@
    ]
   },
   {
-   "path": "specialfx_refract_refractal",
+   "path": "specialfx_style_refract_refractal",
    "label": "AudioLink",
    "info": "",
    "toggle": "",
@@ -559,14 +623,14 @@
    ]
   },
   {
-   "path": "specialfx_screen",
+   "path": "specialfx_audio_screen",
    "label": "Screen Display (Live Audio)",
    "info": "Turns a masked area into a live screen driven by the actual audio: an oscilloscope of the real waveform, or EQ bars per frequency band. Optional grid, LCD subpixels, scanlines, and a crash screen. Needs AudioLink for the live signal.",
    "toggle": "_ScreenEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_screen_scrbackdrop",
+   "path": "specialfx_audio_screen_scrbackdrop",
    "label": "Backdrop and Art",
    "info": "",
    "toggle": "",
@@ -575,7 +639,7 @@
    ]
   },
   {
-   "path": "specialfx_screen_scrgrid",
+   "path": "specialfx_audio_screen_scrgrid",
    "label": "Grid",
    "info": "",
    "toggle": "",
@@ -584,7 +648,7 @@
    ]
   },
   {
-   "path": "specialfx_screen_scrlcd",
+   "path": "specialfx_audio_screen_scrlcd",
    "label": "LCD and Scanlines",
    "info": "",
    "toggle": "",
@@ -593,7 +657,7 @@
    ]
   },
   {
-   "path": "specialfx_screen_scrbsod",
+   "path": "specialfx_audio_screen_scrbsod",
    "label": "Crash Screen",
    "info": "",
    "toggle": "",
@@ -602,14 +666,14 @@
    ]
   },
   {
-   "path": "specialfx_rim",
+   "path": "specialfx_style_rim",
    "label": "Fresnel Rim (Edge Glow)",
    "info": "A glow around the silhouette edges facing away from the camera, for a neon or holographic look.",
    "toggle": "_RimEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_rim_rimadv",
+   "path": "specialfx_style_rim_rimadv",
    "label": "Rim Settings",
    "info": "",
    "toggle": "",
@@ -618,14 +682,14 @@
    ]
   },
   {
-   "path": "specialfx_speaker",
+   "path": "specialfx_audio_speaker",
    "label": "Speaker Ripple",
    "info": "AudioLink driven ripples that pulse across the surface like a speaker cone reacting to bass.",
    "toggle": "_SpeakerEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_speaker_spkadv",
+   "path": "specialfx_audio_speaker_spkadv",
    "label": "Ripple Settings",
    "info": "",
    "toggle": "",
@@ -634,21 +698,30 @@
    ]
   },
   {
-   "path": "specialfx_eq",
+   "path": "specialfx_audio_eq",
    "label": "EQ Visualizer",
    "info": "Maps AudioLink frequency bands onto the surface as a moving equaliser pattern.",
    "toggle": "_EQEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_irid",
+   "path": "specialfx_style_irid",
    "label": "Iridescence",
    "info": "A view dependent colour shift (oil slick / soap bubble) layered over the surface.",
    "toggle": "_IridEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_irid_iridadv",
+   "path": "specialfx_style_irid_iridfilm",
+   "label": "Thin Film",
+   "info": "Physically based iridescence: the colours come from light interfering with itself inside a microscopically thin film, the same effect as a soap bubble or an oil slick. Hue shifts with viewing angle and film thickness rather than cycling through chosen colours.",
+   "toggle": "",
+   "showIf": [
+    "_IridEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_irid_iridadv",
    "label": "Iridescence Settings",
    "info": "",
    "toggle": "",
@@ -657,14 +730,32 @@
    ]
   },
   {
-   "path": "specialfx_dissolve",
+   "path": "specialfx_style_irid_iridal",
+   "label": "AudioLink Settings",
+   "info": "Makes the iridescence react to AudioLink. In Thin Film the beat physically shifts the film thickness, so the interference colours move; in Gradient it drives the phase. Pick a band, plus optional extra bands and volume response.",
+   "toggle": "_IridALEnable",
+   "showIf": [
+    "_IridEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_irid_iridal_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_IridALEnable"
+   ]
+  },
+  {
+   "path": "specialfx_geo_dissolve",
    "label": "Dissolve",
    "info": "Burns the mesh away along a noise edge with a glowing burn line. Good for spawn in and despawn moments.",
    "toggle": "_DissolveEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_dissolve_dissadv",
+   "path": "specialfx_geo_dissolve_dissadv",
    "label": "Dissolve Settings",
    "info": "",
    "toggle": "",
@@ -673,14 +764,14 @@
    ]
   },
   {
-   "path": "specialfx_outline",
+   "path": "specialfx_style_outline",
    "label": "Glitch Outline",
    "info": "A stylised, flickering outline that jitters and breaks up, reactive to AudioLink.",
    "toggle": "_OutlineEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_outline_outadv",
+   "path": "specialfx_style_outline_outadv",
    "label": "Outline Settings",
    "info": "",
    "toggle": "",
@@ -689,21 +780,21 @@
    ]
   },
   {
-   "path": "specialfx_outlinestd",
+   "path": "specialfx_style_outlinestd",
    "label": "Outline (Inverted Hull)",
    "info": "The classic toon / anime outline: a back-facing shell extruded around the mesh in a flat colour. Pick a colour and width, mask where it shows, optionally tint it by the texture or let it react to light. World width is a fixed thickness in metres (thins with distance); Screen width stays a constant on-screen thickness at any distance.",
    "toggle": "_OutlineStdEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_stars",
+   "path": "specialfx_style_stars",
    "label": "Constellation / Nebula",
    "info": "A starfield and nebula. Leave the Constellation Mask empty to cover the whole material, or assign one (white shows, black hides) to confine it to specific areas, like a window into space.",
    "toggle": "_StarEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_stars_staradv",
+   "path": "specialfx_style_stars_staradv",
    "label": "Star Settings",
    "info": "",
    "toggle": "",
@@ -712,7 +803,25 @@
    ]
   },
   {
-   "path": "specialfx_stars_lines",
+   "path": "specialfx_style_stars_staral",
+   "label": "AudioLink Settings",
+   "info": "Makes the starfield react to AudioLink. Pick a frequency band from bass to treble and how much it pops the stars, lines, and nebula, plus optional extra bands and volume response. Turn this off for a completely still, non-reactive starfield.",
+   "toggle": "_StarALEnable",
+   "showIf": [
+    "_StarEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_stars_staral_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_StarALEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_stars_lines",
    "label": "Constellation Lines",
    "info": "Draws faint lines linking nearby stars across the parallax layers. Because the layers drift at different speeds, links stretch, dim, and reconnect on their own as stars move apart and back together.",
    "toggle": "_StarLineEnable",
@@ -721,14 +830,14 @@
    ]
   },
   {
-   "path": "specialfx_holo",
+   "path": "specialfx_style_holo",
    "label": "Hologram",
    "info": "Makes the avatar look like a projected hologram: object-space scanlines, rim glow, a sweep bar, flicker, glitch, and a see-through look. For the True Alpha style, set the material's Transparency Mode to a transparent option; the Dither style works in any mode.",
    "toggle": "_HoloEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_holo_scan",
+   "path": "specialfx_style_holo_scan",
    "label": "Scanlines",
    "info": "",
    "toggle": "",
@@ -737,7 +846,7 @@
    ]
   },
   {
-   "path": "specialfx_holo_rim",
+   "path": "specialfx_style_holo_rim",
    "label": "Rim Glow",
    "info": "",
    "toggle": "",
@@ -746,7 +855,7 @@
    ]
   },
   {
-   "path": "specialfx_holo_sweep",
+   "path": "specialfx_style_holo_sweep",
    "label": "Sweep Bar",
    "info": "",
    "toggle": "",
@@ -755,7 +864,7 @@
    ]
   },
   {
-   "path": "specialfx_holo_glitch",
+   "path": "specialfx_style_holo_glitch",
    "label": "Glitch & Flicker",
    "info": "",
    "toggle": "",
@@ -764,14 +873,51 @@
    ]
   },
   {
-   "path": "specialfx_plasma",
+   "path": "specialfx_audio_plasma",
    "label": "Plasma Hits",
    "info": "Audio-reactive sci-fi hits that pop at random spots in the avatar's own 3D space and ripple outward, bumping the surface as they pass. Hits keep landing in new places and react to the audio bands (bass, low mids, high mids, treble). Stays dark below the Audio Threshold and when no AudioLink is present.",
    "toggle": "_PlasmaEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_stars_nebula",
+   "path": "specialfx_style_retro",
+   "label": "Retro / PS1",
+   "info": "Emulates the PlayStation 1 look: wobbly vertex snapping, chunky texture pixelation, colour posterisation with ordered dithering, and CRT scanlines. Applied at the very end, so it flattens the whole material including the other effects, which is how a real PS1 rendered. Aesthetically the opposite of the rest of the shader, but a fun combo.",
+   "toggle": "_RetroEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_morph",
+   "label": "UV Morph",
+   "info": "Warps the texture coordinates before anything samples them, so the whole surface swims, swirls, or glitches. Because it happens first, albedo, normals, emission and every other UV0 map distort together.",
+   "toggle": "_MorphEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_morph_morphal",
+   "label": "AudioLink Settings",
+   "info": "Makes the distortion react to AudioLink. Pick a frequency band from bass to treble and how much it deepens and quickens the warp, plus optional extra bands and volume response.",
+   "toggle": "_MorphAudio",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_morph_morphal_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_MorphAudio"
+   ]
+  },
+  {
+   "path": "specialfx_view_viewvis",
+   "label": "View Visibility",
+   "info": "Controls where this material shows up: in normal view (what you and other players see directly), in mirrors, and in cameras or photos, each independently. Turn a view off to hide the material there. For example, off in Normal but on in Mirror and Camera makes the material appear only in reflections and photos. Uses VRChat's mirror and camera globals, so it only takes effect in VRChat.",
+   "toggle": "_ViewVisEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_stars_nebula",
    "label": "Nebula",
    "info": "A volumetric nebula that adds real depth inside the constellation areas. PC only and noticeably heavier.",
    "toggle": "",
@@ -780,14 +926,14 @@
    ]
   },
   {
-   "path": "specialfx_break",
+   "path": "specialfx_geo_break",
    "label": "Geometry Break",
    "info": "Shatters or floats the mesh into pieces, driven by an audio beat or a slow drift, with glow and fade options.",
    "toggle": "_BreakEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_break_breakadv",
+   "path": "specialfx_geo_break_breakadv",
    "label": "Break Settings",
    "info": "",
    "toggle": "",
@@ -796,21 +942,21 @@
    ]
   },
   {
-   "path": "specialfx_glitter",
+   "path": "specialfx_style_glitter",
    "label": "Glitter / Sparkle",
    "info": "Procedural sparkle flakes scattered over the surface that twinkle and glint as you move. Tune density, size, viewable angle, and speed, mask where they show, and optionally react to AudioLink or be lit by the world.",
    "toggle": "_GlitterEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_glitch",
+   "path": "specialfx_geo_glitch",
    "label": "Mesh Glitch",
    "info": "Randomly displaces chunks of the mesh for a datamosh or digital glitch effect.",
    "toggle": "_GlitchEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_glitch_glitchadv",
+   "path": "specialfx_geo_glitch_glitchadv",
    "label": "Glitch Settings",
    "info": "",
    "toggle": "",
@@ -819,7 +965,7 @@
    ]
   },
   {
-   "path": "specialfx_height",
+   "path": "specialfx_style_height",
    "label": "Height & Parallax",
    "info": "Adds fake surface depth from a height map, so detail appears to sit below the surface as you move.",
    "toggle": "",
@@ -2515,7 +2661,7 @@
   },
   {
    "name": "_RoomGlassWarp",
-   "text": "Distorts the room view with a gentle rippling glass wobble, like looking through real glass or water. 0 is perfectly clear."
+   "text": "How strongly the glass bends the view of the interior. 0 is perfectly flat glass."
   },
   {
    "name": "_RoomGlassChroma",
@@ -2815,7 +2961,7 @@
   },
   {
    "name": "_IridThickness",
-   "text": "Thin film thickness. Changes how fast the colours band."
+   "text": "How quickly the gradient cycles across the viewing angle, in the Gradient model."
   },
   {
    "name": "_IridSpeed",
@@ -2823,11 +2969,11 @@
   },
   {
    "name": "_IridBand",
-   "text": "AudioLink band that drives the colour phase."
+   "text": "Which frequency band drives the iridescence."
   },
   {
    "name": "_IridAL",
-   "text": "How much audio pushes the colour phase."
+   "text": "How strongly the audio shifts the colours. In Thin Film this physically changes the film thickness, so the whole palette moves rather than just brightening."
   },
   {
    "name": "_DissolveColor",
@@ -2839,11 +2985,11 @@
   },
   {
    "name": "_DissolveTex",
-   "text": "Noise pattern controlling the burn shape."
+   "text": "Grayscale noise pattern that decides the order pixels burn away. This is required for a gradual dissolve: assign a cloud or Perlin noise texture. Left empty (plain white) the whole surface vanishes at once instead of eating away."
   },
   {
    "name": "_DissolveAmount",
-   "text": "How much of the mesh is dissolved. 100 is fully gone."
+   "text": "How much of the surface has burned away. 0 is fully intact, 100 is fully gone."
   },
   {
    "name": "_DissolveAL",
@@ -2851,7 +2997,7 @@
   },
   {
    "name": "_DissolveWidth",
-   "text": "Width of the glowing edge along the burn."
+   "text": "Thickness of the glowing burn edge that leads the dissolve."
   },
   {
    "name": "_DissolveBand",
@@ -2963,7 +3109,7 @@
   },
   {
    "name": "_StarBand",
-   "text": "AudioLink band that drives the star and nebula pops."
+   "text": "Which frequency band the stars, lines, and nebula react to."
   },
   {
    "name": "_StarColorMode",
@@ -3572,6 +3718,378 @@
   {
    "name": "_PlasmaColor8",
    "text": "Colour for hit slot 8, used in the Per Hit colour mode."
+  },
+  {
+   "name": "_RetroEnable",
+   "text": "Turns on the PS1 retro look: vertex snap, pixelation, colour reduction, and scanlines."
+  },
+  {
+   "name": "_RetroSnap",
+   "text": "Snaps vertices to a low virtual screen resolution, recreating the PS1's jittery, wobbly geometry."
+  },
+  {
+   "name": "_RetroSnapRes",
+   "text": "The virtual resolution vertices snap to. Lower is chunkier and more jittery; 320 is the PS1 default."
+  },
+  {
+   "name": "_RetroPixelate",
+   "text": "Snaps texture UVs to a coarse grid so textures look blocky, like low-resolution PS1 art."
+  },
+  {
+   "name": "_RetroPixelRes",
+   "text": "How many texture blocks across. Lower is chunkier."
+  },
+  {
+   "name": "_RetroLevels",
+   "text": "How many colour steps per channel the output is reduced to. 32 is the PS1's 5-bit colour; lower bands harder."
+  },
+  {
+   "name": "_RetroDither",
+   "text": "Strength of the ordered dither that hides the colour banding. 0 shows hard bands."
+  },
+  {
+   "name": "_RetroScanlines",
+   "text": "Darkens alternating screen rows for a CRT look. 0 is off."
+  },
+  {
+   "name": "_RetroScanCount",
+   "text": "How many scanlines run down the screen."
+  },
+  {
+   "name": "_RetroAffine",
+   "text": "Interpolates the main UVs without perspective correction, so textures swim and warp like PS1 rendering, strongest on large triangles at grazing angles. Affects UV0-based textures (albedo, detail, parallax, packed maps); matcaps and world- or screen-projected effects keep their own mapping."
+  },
+  {
+   "name": "_ViewVisEnable",
+   "text": "Lets this material be shown or hidden separately in normal view, mirrors, and cameras."
+  },
+  {
+   "name": "_ViewVisDirect",
+   "text": "Show in normal rendering: your own direct view and how other players see you. Off hides it there while mirrors and cameras can still show it."
+  },
+  {
+   "name": "_ViewVisMirror",
+   "text": "Show this material in mirrors."
+  },
+  {
+   "name": "_ViewVisCamera",
+   "text": "Show this material in VRChat cameras and photos."
+  },
+  {
+   "name": "_PlasmaIntensity",
+   "text": "Master fade for the whole effect. 1 is full, 0 is fully off. Drive this from a menu radial to smoothly fade the plasma in and out."
+  },
+  {
+   "name": "_HoloIntensity",
+   "text": "Master fade for the whole hologram, including the see-through. 1 is full, 0 returns the surface to normal. Ideal for a menu radial."
+  },
+  {
+   "name": "_EQIntensity",
+   "text": "Master fade for the EQ bars. 1 is full, 0 is fully off. Drive from a menu radial for a smooth fade."
+  },
+  {
+   "name": "_MorphEnable",
+   "text": "Distorts the surface's texture coordinates for a swimming, melting, or glitching look."
+  },
+  {
+   "name": "_MorphIntensity",
+   "text": "Master fade for the morph. 1 is full, 0 is fully off. Good for a menu radial."
+  },
+  {
+   "name": "_MorphMode",
+   "text": "The distortion pattern. Wave is a smooth cross-ripple, Swirl twists around the centre, Pinch pulses in and out, Noise drifts organically like heat haze, and Jitter snaps in blocks for a digital glitch."
+  },
+  {
+   "name": "_MorphStrength",
+   "text": "How far the coordinates are pushed. Small values read as a shimmer, large values smear the texture."
+  },
+  {
+   "name": "_MorphScale",
+   "text": "Size of the distortion pattern. Higher is finer and busier."
+  },
+  {
+   "name": "_MorphSpeed",
+   "text": "How fast the distortion animates. 0 freezes it as a static warp."
+  },
+  {
+   "name": "_MorphAudio",
+   "text": "Makes the distortion react to AudioLink. The base Distortion Amount still applies in silence; audio adds on top of it."
+  },
+  {
+   "name": "_MorphBand",
+   "text": "Which audio band drives the morph."
+  },
+  {
+   "name": "_PlasmaViewMode",
+   "text": "Where this effect appears. Everywhere is normal. Mirrors & Cameras Only hides it on your real body but shows it in reflections and photos. Normal View Only does the reverse."
+  },
+  {
+   "name": "_HoloViewMode",
+   "text": "Where this effect appears. Everywhere is normal. Mirrors & Cameras Only hides it on your real body but shows it in reflections and photos. Normal View Only does the reverse."
+  },
+  {
+   "name": "_StarViewMode",
+   "text": "Where this effect appears. Everywhere is normal. Mirrors & Cameras Only hides it on your real body but shows it in reflections and photos. Normal View Only does the reverse."
+  },
+  {
+   "name": "_MorphViewMode",
+   "text": "Where this effect appears. Everywhere is normal. Mirrors & Cameras Only hides it on your real body but shows it in reflections and photos. Normal View Only does the reverse."
+  },
+  {
+   "name": "_EQEnable",
+   "text": "Draws a live audio equaliser across the surface, with bars that rise and fall to the music."
+  },
+  {
+   "name": "_StarEnable",
+   "text": "Turns the surface into a window onto a starfield, with drifting stars, constellation lines, and an optional nebula."
+  },
+  {
+   "name": "_MorphFlowMap",
+   "text": "Your own distortion map, used by the Texture pattern. The red channel pushes horizontally and green vertically, with mid grey meaning no push, the same convention as a flow map. Paint your own motion here."
+  },
+  {
+   "name": "_MorphTiling",
+   "text": "Extra tiling and offset for the distortion pattern. X and Y stretch it independently, so you can make wide bands or tall streaks rather than square ripples; Z and W shift it."
+  },
+  {
+   "name": "_MorphMask",
+   "text": "Optional mask limiting where the morph applies. White distorts, black stays still, so you can swim the clothing and leave the face alone. Sampled undistorted, so the mask itself never drifts."
+  },
+  {
+   "name": "_MorphMaskInvert",
+   "text": "Flips the mask, so black areas distort instead of white."
+  },
+  {
+   "name": "_MorphALBoost",
+   "text": "How much the audio deepens the distortion on top of the base amount. 0 means audio has no effect on depth."
+  },
+  {
+   "name": "_MorphALSpeed",
+   "text": "How much the audio speeds up the warp. 0 keeps a steady speed and only the depth reacts."
+  },
+  {
+   "name": "_MorphMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_MorphMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_MorphAddBand",
+   "text": "A band added on top of the primary signal, for a second frequency to contribute directly."
+  },
+  {
+   "name": "_MorphAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_MorphVolBoost",
+   "text": "Scales the reaction by the overall volume across all bands, so quiet passages react less."
+  },
+  {
+   "name": "_MorphVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_StarALEnable",
+   "text": "Turns AudioLink reactivity on for the constellation. Off gives a still starfield that ignores music entirely."
+  },
+  {
+   "name": "_StarMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_StarMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_StarAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_StarAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_StarVolBoost",
+   "text": "Scales the reaction by overall volume across all bands, so quiet passages react less."
+  },
+  {
+   "name": "_StarVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_RoomVariety",
+   "text": "How much each window's room differs. Rotates and mirrors the interior per window so one cubemap reads as many different rooms. 0 makes every window identical."
+  },
+  {
+   "name": "_RoomVaryTint",
+   "text": "How much the colour temperature varies between windows, so some rooms read warmer or cooler than others."
+  },
+  {
+   "name": "_RoomVaryDepth",
+   "text": "How much room depth varies between windows, so they are not all the same size box."
+  },
+  {
+   "name": "_RoomFurnTex",
+   "text": "Cut-out furniture or silhouettes drawn inside the room. Alpha decides what is solid, so transparent areas show the back wall behind. Leave empty for an empty room."
+  },
+  {
+   "name": "_RoomFurnDepth",
+   "text": "How far into the room the furniture sits. Low is right against the glass, high is near the back wall. Mid values give the strongest parallax."
+  },
+  {
+   "name": "_RoomFurnScale",
+   "text": "Size of the furniture within the room."
+  },
+  {
+   "name": "_RoomFurnVariety",
+   "text": "Shifts which part of the furniture texture each window uses, so windows show different contents. Lay the texture out as a grid of items to get the most from this."
+  },
+  {
+   "name": "_RoomLightEnable",
+   "text": "Lights the interiors, with each window independently on or off."
+  },
+  {
+   "name": "_RoomLitChance",
+   "text": "What fraction of windows are lit at any time. 0 is a dark building, 1 lights them all."
+  },
+  {
+   "name": "_RoomLightColor",
+   "text": "Colour of the interior lighting. Warm yellows read as domestic, cold whites as offices."
+  },
+  {
+   "name": "_RoomLightStrength",
+   "text": "How brightly lit rooms glow."
+  },
+  {
+   "name": "_RoomFlicker",
+   "text": "Adds an unsteady flicker to lit windows, like a television or a failing bulb."
+  },
+  {
+   "name": "_RoomSwitching",
+   "text": "How often windows switch between lit and dark. 0 keeps them fixed."
+  },
+  {
+   "name": "_RoomGlassType",
+   "text": "What kind of glass this is. Static Imperfection is fixed distortion baked into the pane, like real window glass: it never animates, and the view through it shifts only as you move. Ripple animates continuously, for water, aquariums, and heat haze."
+  },
+  {
+   "name": "_RoomGlassScale",
+   "text": "Size of the imperfections in the pane. Low is broad gentle waviness, high is fine rippled texture."
+  },
+  {
+   "name": "_RoomGlassStreak",
+   "text": "Stretches the imperfections vertically, like the draw marks in old rolled or antique glass. 0 keeps them evenly blobby."
+  },
+  {
+   "name": "_RoomGlassSpeed",
+   "text": "How fast the ripple moves, for the animated glass type."
+  },
+  {
+   "name": "_IridMode",
+   "text": "Gradient blends between three colours you pick, for full artistic control. Thin Film simulates real interference in a microscopically thin coating, so the colours and their angular sweep are physically derived rather than chosen."
+  },
+  {
+   "name": "_IridFilmNm",
+   "text": "Thickness of the film in nanometres. This is the single control that decides which colours appear: thin films give broad pale sweeps, thicker ones give tighter repeating rainbows. Soap bubbles sit around 300 to 600."
+  },
+  {
+   "name": "_IridFilmIOR",
+   "text": "Refractive index of the film. Higher bends light more inside the coating and shifts the whole palette. Soap and oil are around 1.3 to 1.5."
+  },
+  {
+   "name": "_IridFilmVary",
+   "text": "How much the film thickness drifts across the surface, so the colours swirl like a real film pooling and thinning instead of sitting at one flat hue."
+  },
+  {
+   "name": "_IridFilmScale",
+   "text": "Size of the thickness variation pattern. Low is broad lazy swirls, high is fine marbling."
+  },
+  {
+   "name": "_IridFilmSat",
+   "text": "How saturated the interference colours are. 1 is the physical result; lower desaturates toward a pearly sheen, higher exaggerates it."
+  },
+  {
+   "name": "_IridFilmFresnel",
+   "text": "Concentrates the effect toward grazing angles, where light travels furthest through the film and interference is strongest in reality. 0 applies it evenly across the surface."
+  },
+  {
+   "name": "_IridFilmTintAmt",
+   "text": "How much the interference colours the base surface as well as its highlights. Low keeps it to a sheen on top; high stains the material itself."
+  },
+  {
+   "name": "_IridFilmSpace",
+   "text": "Which space the thickness variation is sampled in. Object Space flows continuously over the whole mesh, so the film has no seams where UV islands meet, and it moves with the avatar. UV0 follows the texture layout instead, which is useful if you want the swirl to line up with painted detail, but it will show hard edges at UV seams."
+  },
+  {
+   "name": "_IridALEnable",
+   "text": "Turns AudioLink reactivity on for the iridescence. Off keeps the colours steady and ignores music entirely."
+  },
+  {
+   "name": "_IridMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_IridMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_IridAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_IridAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_IridVolBoost",
+   "text": "Scales the reaction by overall volume across all bands, so quiet passages react less."
+  },
+  {
+   "name": "_IridVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_IridFilmRamp",
+   "text": "Optional colour palette, read left to right. The interference still decides which parts of the surface shift and how they sweep with viewing angle; the ramp only decides which colours those bands are. Use it to get a gold and teal oil slick, or a pink and green pearl, instead of the natural spectrum."
+  },
+  {
+   "name": "_IridFilmRampAmt",
+   "text": "How far the natural interference colours are replaced by the palette ramp. 0 keeps the physically derived spectrum, 1 uses the ramp entirely."
+  },
+  {
+   "name": "_RefractMode",
+   "text": "Screen Offset pushes the background sideways by the surface angle, which is cheap and easy to art direct. Physical IOR bends the view ray by Snell's law using a real index of refraction, giving correct dispersion, thickness response and roughness scattering."
+  },
+  {
+   "name": "_RefractIOR",
+   "text": "How strongly the glass bends light. Water is about 1.33, window glass 1.5, sapphire 1.77, diamond 2.42. Higher values distort the background more and push the prism fringes further apart."
+  },
+  {
+   "name": "_RefractThickness",
+   "text": "How much glass the light travels through. Thicker glass shifts the background further and absorbs more of the tint colour."
+  },
+  {
+   "name": "_RefractDispersion",
+   "text": "How differently each colour bends. This is what splits white light into a rainbow at the edges, as in a prism. Real crown glass is subtle; large values give an exaggerated jewel look."
+  },
+  {
+   "name": "_RefractRough",
+   "text": "Frosts the glass, scattering what shows through instead of transmitting it sharply."
+  },
+  {
+   "name": "_RefractSamples",
+   "text": "How many taps the roughness blur uses. Higher is smoother but costs more; only raise it if you can see banding in frosted glass."
+  },
+  {
+   "name": "_RefractFresnel",
+   "text": "Fades refraction toward grazing angles, where real glass reflects rather than transmits, letting the surface's own shading take over at the silhouette."
+  },
+  {
+   "name": "_RefractAbsorb",
+   "text": "Colour the glass absorbs as light passes through it, applied more strongly the thicker the glass. This is how coloured glass gets deeper in tone at its thickest points."
   }
  ],
  "lockCritical": [
@@ -3583,6 +4101,77 @@
   "_VRSLGI"
  ],
  "enums": [
+  {
+   "name": "_RefractMode",
+   "options": [
+    "Screen Offset",
+    "Physical IOR"
+   ]
+  },
+  {
+   "name": "_IridFilmSpace",
+   "options": [
+    "Object Space",
+    "UV0"
+   ]
+  },
+  {
+   "name": "_IridMode",
+   "options": [
+    "Gradient",
+    "Thin Film"
+   ]
+  },
+  {
+   "name": "_RoomGlassType",
+   "options": [
+    "Static Imperfection",
+    "Ripple"
+   ]
+  },
+  {
+   "name": "_MorphViewMode",
+   "options": [
+    "Everywhere",
+    "Mirrors & Cameras Only",
+    "Normal View Only"
+   ]
+  },
+  {
+   "name": "_StarViewMode",
+   "options": [
+    "Everywhere",
+    "Mirrors & Cameras Only",
+    "Normal View Only"
+   ]
+  },
+  {
+   "name": "_HoloViewMode",
+   "options": [
+    "Everywhere",
+    "Mirrors & Cameras Only",
+    "Normal View Only"
+   ]
+  },
+  {
+   "name": "_PlasmaViewMode",
+   "options": [
+    "Everywhere",
+    "Mirrors & Cameras Only",
+    "Normal View Only"
+   ]
+  },
+  {
+   "name": "_MorphMode",
+   "options": [
+    "Wave",
+    "Swirl",
+    "Pinch",
+    "Noise",
+    "Jitter",
+    "Texture (Flow Map)"
+   ]
+  },
   {
    "name": "_HoloTransStyle",
    "options": [

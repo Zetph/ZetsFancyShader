@@ -1,6 +1,6 @@
 // ==============================================================================
 // ZetsFancyShader
-// Version: v0.4.1
+// Version: v0.5.0
 // Author: Zetph
 //
 // Welcome to the source code!
@@ -41,12 +41,12 @@ Shader "Zetph/ZetsFancyShader"
         [Enum(None, 0, Red, 8, Green, 4, Blue, 2, Alpha, 1, RGB, 14, RGBA, 15)] [Group(engine_renderstate)] _ColorMask ("Color Mask", Float) = 15
         [Group(engine_renderstate)] _OffsetFactor ("Depth Offset Factor", Range(-5, 5)) = 0
         [Group(engine_renderstate)] _OffsetUnits ("Depth Offset Units", Range(-100, 100)) = 0
-        [Toggle] [GroupToggle(engine_prox)] _ProximityFade ("Enable Camera Proximity Fade", Float) = 0
+        [ToggleUI] [GroupToggle(engine_prox)] _ProximityFade ("Enable Camera Proximity Fade", Float) = 0
         [Group(engine_prox)] [ShowIf(_ProximityFade)] _ProxMin ("Fade Start Distance (m)", Float) = 0.2
         [Group(engine_prox)] [ShowIf(_ProximityFade)] _ProxMax ("Fade End Distance (m)", Float) = 0.6
-        [Toggle] [GroupToggle(engine_alenv)] _ALEnvEnable ("Enable AudioLink Smoothing", Float) = 1
+        [ToggleUI] [GroupToggle(engine_alenv)] _ALEnvEnable ("Enable AudioLink Smoothing", Float) = 1
         [Group(engine_alenv)] [ShowIf(_ALEnvEnable)] _ALEnvRelease ("Release / Tail", Range(0, 1)) = 0.45
-        [Toggle] [GroupToggle(engine_cc)] _UseColorChord ("Enable AudioLink ColorChord", Float) = 0
+        [ToggleUI] [GroupToggle(engine_cc)] _UseColorChord ("Enable AudioLink ColorChord", Float) = 0
         [Enum(Theme 0, 0, Theme 1, 1, Theme 2, 2, Theme 3, 3)] [Group(engine_cc)] [ShowIf(_UseColorChord)] _CC_Em0 ("Theme: Emission 0", Float) = 0
         [Enum(Theme 0, 0, Theme 1, 1, Theme 2, 2, Theme 3, 3)] [Group(engine_cc)] [ShowIf(_UseColorChord)] _CC_Em1 ("Theme: Emission 1", Float) = 1
         [Enum(Theme 0, 0, Theme 1, 1, Theme 2, 2, Theme 3, 3)] [Group(engine_cc)] [ShowIf(_UseColorChord)] _CC_Em2 ("Theme: Emission 2", Float) = 2
@@ -57,21 +57,21 @@ Shader "Zetph/ZetsFancyShader"
         [Enum(Theme 0, 0, Theme 1, 1, Theme 2, 2, Theme 3, 3)] [Group(engine_cc)] [ShowIf(_UseColorChord)] _CC_Break ("Theme: Geometry Break", Float) = 1
         [Enum(Theme 0, 0, Theme 1, 1, Theme 2, 2, Theme 3, 3)] [Group(engine_cc)] [ShowIf(_UseColorChord)] _CC_Speaker ("Theme: Speaker Ripple", Float) = 1
         [Enum(Theme 0, 0, Theme 1, 1, Theme 2, 2, Theme 3, 3)] [Group(engine_cc)] [ShowIf(_UseColorChord)] _CC_Dissolve ("Theme: Dissolve", Float) = 1
-        [Toggle] [GroupToggle(engine_vertal)] _VertALEnable ("Enable AudioLink Vertex FX", Float) = 0
+        [ToggleUI] [GroupToggle(engine_vertal)] _VertALEnable ("Enable AudioLink Vertex FX", Float) = 0
         [NoScaleOffset] [Group(engine_vertal)] [ShowIf(_VertALEnable)] _VertALMask ("Effect Mask (R, white = moves)", 2D) = "white" {}
-        [Toggle] [GroupToggle(engine_vertal_valtrans)] _VertALTransEnable ("Enable Local Translation", Float) = 0
+        [ToggleUI] [GroupToggle(engine_vertal_valtrans)] _VertALTransEnable ("Enable Local Translation", Float) = 0
         [Group(engine_vertal_valtrans)] [ShowIf(_VertALTransEnable)] _VertALTransMin ("Translation Min (m)", Vector) = (0, 0, 0, 0)
         [Group(engine_vertal_valtrans)] [ShowIf(_VertALTransEnable)] _VertALTransMax ("Translation Max (m)", Vector) = (0, 0, 0, 0)
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valtrans)] [ShowIf(_VertALTransEnable)] _VertALTransBandX ("Band X", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valtrans)] [ShowIf(_VertALTransEnable)] _VertALTransBandY ("Band Y", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valtrans)] [ShowIf(_VertALTransEnable)] _VertALTransBandZ ("Band Z", Float) = 0
-        [Toggle] [GroupToggle(engine_vertal_valwtrans)] _VertALWTransEnable ("Enable World Translation", Float) = 0
+        [ToggleUI] [GroupToggle(engine_vertal_valwtrans)] _VertALWTransEnable ("Enable World Translation", Float) = 0
         [Group(engine_vertal_valwtrans)] [ShowIf(_VertALWTransEnable)] _VertALWTransMin ("World Translation Min (m)", Vector) = (0, 0, 0, 0)
         [Group(engine_vertal_valwtrans)] [ShowIf(_VertALWTransEnable)] _VertALWTransMax ("World Translation Max (m)", Vector) = (0, 0, 0, 0)
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valwtrans)] [ShowIf(_VertALWTransEnable)] _VertALWTransBandX ("Band X", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valwtrans)] [ShowIf(_VertALWTransEnable)] _VertALWTransBandY ("Band Y", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valwtrans)] [ShowIf(_VertALWTransEnable)] _VertALWTransBandZ ("Band Z", Float) = 0
-        [Toggle] [GroupToggle(engine_vertal_valrot)] _VertALRotEnable ("Enable Rotation", Float) = 0
+        [ToggleUI] [GroupToggle(engine_vertal_valrot)] _VertALRotEnable ("Enable Rotation", Float) = 0
         [Group(engine_vertal_valrot)] [ShowIf(_VertALRotEnable)] _VertALRot ("Rotation (deg)", Vector) = (0, 0, 0, 0)
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valrot)] [ShowIf(_VertALRotEnable)] _VertALRotBandX ("Band X", Float) = 0
         [Enum(Intensity, 0, Accumulate, 1, Accumulate When Quiet, 2, Ping Pong, 3)] [Group(engine_vertal_valrot)] [ShowIf(_VertALRotEnable)] _VertALRotModeX ("Motion Type X", Float) = 0
@@ -79,14 +79,14 @@ Shader "Zetph/ZetsFancyShader"
         [Enum(Intensity, 0, Accumulate, 1, Accumulate When Quiet, 2, Ping Pong, 3)] [Group(engine_vertal_valrot)] [ShowIf(_VertALRotEnable)] _VertALRotModeY ("Motion Type Y", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valrot)] [ShowIf(_VertALRotEnable)] _VertALRotBandZ ("Band Z", Float) = 0
         [Enum(Intensity, 0, Accumulate, 1, Accumulate When Quiet, 2, Ping Pong, 3)] [Group(engine_vertal_valrot)] [ShowIf(_VertALRotEnable)] _VertALRotModeZ ("Motion Type Z", Float) = 0
-        [Toggle] [GroupToggle(engine_vertal_valspin)] _VertALRotSpdEnable ("Enable Band-Driven Spin", Float) = 0
+        [ToggleUI] [GroupToggle(engine_vertal_valspin)] _VertALRotSpdEnable ("Enable Band-Driven Spin", Float) = 0
         [Group(engine_vertal_valspin)] [ShowIf(_VertALRotSpdEnable)] _VertALRotSpd ("Spin (deg per audio-second)", Vector) = (0, 0, 0, 0)
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valspin)] [ShowIf(_VertALRotSpdEnable)] _VertALRotSpdBand ("Spin Band", Float) = 0
-        [Toggle] [GroupToggle(engine_vertal_valscale)] _VertALScaleEnable ("Enable Scale", Float) = 0
+        [ToggleUI] [GroupToggle(engine_vertal_valscale)] _VertALScaleEnable ("Enable Scale", Float) = 0
         [Group(engine_vertal_valscale)] [ShowIf(_VertALScaleEnable)] _VertALScaleMin ("Scale Min", Vector) = (1, 1, 1, 1)
         [Group(engine_vertal_valscale)] [ShowIf(_VertALScaleEnable)] _VertALScaleMax ("Scale Max", Vector) = (1, 1, 1, 1)
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valscale)] [ShowIf(_VertALScaleEnable)] _VertALScaleBand ("Scale Band", Float) = 0
-        [Toggle] [GroupToggle(engine_vertal_valuv)] _VertALUVEnable ("Enable UV Scroll", Float) = 0
+        [ToggleUI] [GroupToggle(engine_vertal_valuv)] _VertALUVEnable ("Enable UV Scroll", Float) = 0
         [Enum(Offset by Intensity, 0, Scroll by Intensity, 1)] [Group(engine_vertal_valuv)] [ShowIf(_VertALUVEnable)] _VertALUVMode ("UV Mode", Float) = 1
         [Group(engine_vertal_valuv)] [ShowIf(_VertALUVEnable)] _VertALUVSpeed ("UV Direction / Speed (X,Y)", Vector) = (0.25, 0, 0, 0)
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valuv)] [ShowIf(_VertALUVEnable)] _VertALUVBand ("UV Band", Float) = 0
@@ -95,22 +95,22 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base)] _BumpScale ("Normal Strength", Range(0, 2)) = 1
         [ZetRenderMode] [Group(base)] _AlphaMode ("Transparency Mode", Float) = 0
         [Group(base)] [ShowIf(_AlphaMode, 1)] _Cutoff ("Cutout Threshold", Range(0, 1)) = 0.5
-        [Toggle] [Group(base)] [ShowIf(_AlphaMode)] _AlphaSourceEnable ("Use Separate Alpha Map", Float) = 0
+        [ToggleUI] [Group(base)] [ShowIf(_AlphaMode)] _AlphaSourceEnable ("Use Separate Alpha Map", Float) = 0
         [NoScaleOffset] [Group(base)] [ShowIf(_AlphaMode)] [ShowIf(_AlphaSourceEnable)] _AlphaTex ("Alpha / Opacity Map", 2D) = "white" {}
         [Enum(Red, 0, Green, 1, Blue, 2, Alpha, 3)] [Group(base)] [ShowIf(_AlphaMode)] [ShowIf(_AlphaSourceEnable)] _AlphaChannel ("Opacity Channel", Float) = 0
         [HideInInspector] [Group(base)] _SrcBlend ("__src", Float) = 1.0
         [HideInInspector] [Group(base)] _DstBlend ("__dst", Float) = 0.0
         [HideInInspector] [Group(base)] _ZWrite ("__zw", Float) = 1.0
         [HideInInspector] [Group(base)] _AlphaToMask ("__a2c", Float) = 0.0
-        [Toggle] [Group(base)] _ColorAdjustEnable ("Colour Adjust", Float) = 0
+        [ToggleUI] [Group(base)] _ColorAdjustEnable ("Colour Adjust", Float) = 0
         [Group(base)] [ShowIf(_ColorAdjustEnable)] _Saturation ("Saturation", Range(0, 2)) = 1.0
         [Group(base)] [ShowIf(_ColorAdjustEnable)] _Brightness ("Brightness", Range(0, 5)) = 1.0
         [Group(base)] [ShowIf(_ColorAdjustEnable)] _Gamma ("Gamma", Range(0.1, 3)) = 1.0
         [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueShift ("Static Hue Shift", Range(0, 1)) = 0.0
-        [Toggle] [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueShiftAL ("AudioLink Hue Shift", Float) = 0
+        [ToggleUI] [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueShiftAL ("AudioLink Hue Shift", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueBand ("AL Hue Band", Float) = 0
-        [Toggle] [GroupToggle(base_decals)] _DecalsEnable ("Enable Decals", Float) = 0
-        [Toggle] [GroupToggle(base_decals_decal0)] _Decal0Enable ("Enable Decal 0", Float) = 0
+        [ToggleUI] [GroupToggle(base_decals)] _DecalsEnable ("Enable Decals", Float) = 0
+        [ToggleUI] [GroupToggle(base_decals_decal0)] _Decal0Enable ("Enable Decal 0", Float) = 0
         [NoScaleOffset] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Tex ("Decal Image", 2D) = "white" {}
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Color ("Tint", Color) = (1, 1, 1, 1)
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Opacity ("Opacity", Range(0, 1)) = 1
@@ -120,8 +120,8 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Rotation ("Rotation", Range(0, 360)) = 0
         [Enum(Normal, 0, Add, 1, Multiply, 2, Screen, 3)] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Blend ("Blend Mode", Float) = 0
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Emit ("Emission Glow", Range(0, 4)) = 0
-        [Toggle] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Overlay ("Draw On Top (over room/screen)", Float) = 0
-        [Toggle] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Flipbook ("Animated (Flipbook)", Float) = 0
+        [ToggleUI] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Overlay ("Draw On Top (over room/screen)", Float) = 0
+        [ToggleUI] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Flipbook ("Animated (Flipbook)", Float) = 0
         [IntRange] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] [ShowIf(_Decal0Flipbook)] _Decal0FlipCols ("Flipbook Columns", Range(1, 16)) = 4
         [IntRange] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] [ShowIf(_Decal0Flipbook)] _Decal0FlipRows ("Flipbook Rows", Range(1, 16)) = 4
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] [ShowIf(_Decal0Flipbook)] _Decal0FlipFPS ("Flipbook Speed (FPS)", Range(1, 60)) = 12
@@ -135,8 +135,8 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Rotation ("Rotation", Range(0, 360)) = 0
         [Enum(Normal, 0, Add, 1, Multiply, 2, Screen, 3)] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Blend ("Blend Mode", Float) = 0
         [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Emit ("Emission Glow", Range(0, 4)) = 0
-        [Toggle] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Overlay ("Draw On Top (over room/screen)", Float) = 0
-        [Toggle] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Flipbook ("Animated (Flipbook)", Float) = 0
+        [ToggleUI] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Overlay ("Draw On Top (over room/screen)", Float) = 0
+        [ToggleUI] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Flipbook ("Animated (Flipbook)", Float) = 0
         [IntRange] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] [ShowIf(_Decal1Flipbook)] _Decal1FlipCols ("Flipbook Columns", Range(1, 16)) = 4
         [IntRange] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] [ShowIf(_Decal1Flipbook)] _Decal1FlipRows ("Flipbook Rows", Range(1, 16)) = 4
         [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] [ShowIf(_Decal1Flipbook)] _Decal1FlipFPS ("Flipbook Speed (FPS)", Range(1, 60)) = 12
@@ -150,8 +150,8 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Rotation ("Rotation", Range(0, 360)) = 0
         [Enum(Normal, 0, Add, 1, Multiply, 2, Screen, 3)] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Blend ("Blend Mode", Float) = 0
         [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Emit ("Emission Glow", Range(0, 4)) = 0
-        [Toggle] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Overlay ("Draw On Top (over room/screen)", Float) = 0
-        [Toggle] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Flipbook ("Animated (Flipbook)", Float) = 0
+        [ToggleUI] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Overlay ("Draw On Top (over room/screen)", Float) = 0
+        [ToggleUI] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Flipbook ("Animated (Flipbook)", Float) = 0
         [IntRange] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] [ShowIf(_Decal2Flipbook)] _Decal2FlipCols ("Flipbook Columns", Range(1, 16)) = 4
         [IntRange] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] [ShowIf(_Decal2Flipbook)] _Decal2FlipRows ("Flipbook Rows", Range(1, 16)) = 4
         [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] [ShowIf(_Decal2Flipbook)] _Decal2FlipFPS ("Flipbook Speed (FPS)", Range(1, 60)) = 12
@@ -165,30 +165,30 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Rotation ("Rotation", Range(0, 360)) = 0
         [Enum(Normal, 0, Add, 1, Multiply, 2, Screen, 3)] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Blend ("Blend Mode", Float) = 0
         [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Emit ("Emission Glow", Range(0, 4)) = 0
-        [Toggle] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Overlay ("Draw On Top (over room/screen)", Float) = 0
-        [Toggle] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Flipbook ("Animated (Flipbook)", Float) = 0
+        [ToggleUI] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Overlay ("Draw On Top (over room/screen)", Float) = 0
+        [ToggleUI] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Flipbook ("Animated (Flipbook)", Float) = 0
         [IntRange] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] [ShowIf(_Decal3Flipbook)] _Decal3FlipCols ("Flipbook Columns", Range(1, 16)) = 4
         [IntRange] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] [ShowIf(_Decal3Flipbook)] _Decal3FlipRows ("Flipbook Rows", Range(1, 16)) = 4
         [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] [ShowIf(_Decal3Flipbook)] _Decal3FlipFPS ("Flipbook Speed (FPS)", Range(1, 60)) = 12
-        [Toggle] [GroupToggle(base_uvtd)] _UVTileDiscardEnable ("Enable UV Tile Discard", Float) = 0
+        [ToggleUI] [GroupToggle(base_uvtd)] _UVTileDiscardEnable ("Enable UV Tile Discard", Float) = 0
         [Enum(UV0, 0, UV1, 1)] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileDiscardChannel ("UV Channel", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow0_0 ("Discard Tile (0,0)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow0_1 ("Discard Tile (1,0)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow0_2 ("Discard Tile (2,0)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow0_3 ("Discard Tile (3,0)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow1_0 ("Discard Tile (0,1)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow1_1 ("Discard Tile (1,1)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow1_2 ("Discard Tile (2,1)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow1_3 ("Discard Tile (3,1)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow2_0 ("Discard Tile (0,2)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow2_1 ("Discard Tile (1,2)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow2_2 ("Discard Tile (2,2)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow2_3 ("Discard Tile (3,2)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_0 ("Discard Tile (0,3)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_1 ("Discard Tile (1,3)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_2 ("Discard Tile (2,3)", Float) = 0
-        [Toggle] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_3 ("Discard Tile (3,3)", Float) = 0
-        [Toggle] [GroupToggle(base_detail)] _DetailEnable ("Enable Detail Maps", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow0_0 ("Discard Tile (0,0)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow0_1 ("Discard Tile (1,0)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow0_2 ("Discard Tile (2,0)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow0_3 ("Discard Tile (3,0)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow1_0 ("Discard Tile (0,1)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow1_1 ("Discard Tile (1,1)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow1_2 ("Discard Tile (2,1)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow1_3 ("Discard Tile (3,1)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow2_0 ("Discard Tile (0,2)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow2_1 ("Discard Tile (1,2)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow2_2 ("Discard Tile (2,2)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow2_3 ("Discard Tile (3,2)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_0 ("Discard Tile (0,3)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_1 ("Discard Tile (1,3)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_2 ("Discard Tile (2,3)", Float) = 0
+        [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_3 ("Discard Tile (3,3)", Float) = 0
+        [ToggleUI] [GroupToggle(base_detail)] _DetailEnable ("Enable Detail Maps", Float) = 0
         [Group(base_detail)] [ShowIf(_DetailEnable)] _DetailMask ("Detail Mask", 2D) = "white" {}
         [Group(base_detail)] [ShowIf(_DetailEnable)] _DetailTiling ("Detail Tiling (X,Y) + Offset (Z,W)", Vector) = (8, 8, 0, 0)
         [Group(base_detail)] [ShowIf(_DetailEnable)] _DetailAlbedo ("Detail Albedo (grey = neutral)", 2D) = "grey" {}
@@ -207,7 +207,7 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lighting)] _MinBrightness ("Min Light Brightness", Range(0, 1)) = 0.0
         [Group(lighting)] _GrayscaleLighting ("Grayscale Lighting", Range(0, 1)) = 0.0
         [Group(lighting)] _ReceiveShadows ("Receive Casted Shadows", Range(0, 1)) = 1.0
-        [Toggle] [GroupToggle(lighting_sss)] _SSSEnable ("Enable Subsurface Scattering", Float) = 0
+        [ToggleUI] [GroupToggle(lighting_sss)] _SSSEnable ("Enable Subsurface Scattering", Float) = 0
         [Group(lighting_sss)] [ShowIf(_SSSEnable)] _SSSMask ("SSS Mask", 2D) = "white" {}
         [Enum(Custom Color, 0, From Base Color, 1, Skin, 2, Foliage, 3, Marble, 4)] [Group(lighting_sss)] [ShowIf(_SSSEnable)] _SSSTintMode ("Tint Source", Float) = 0
         [HDR] [Group(lighting_sss)] [ShowIf(_SSSEnable)] [ShowIf(_SSSTintMode, 0)] _SSSColor ("Scatter Color", Color) = (1.0, 0.25, 0.1, 1)
@@ -219,33 +219,33 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lighting_sss_ssstrans)] [ShowIf(_SSSEnable)] _SSSTransDistortion ("Normal Distortion", Range(0, 1)) = 0.4
         [Group(lighting_sss_sssworld)] [ShowIf(_SSSEnable)] _SSSAmbient ("Ambient Transmission", Range(0, 1)) = 0.2
         [Group(lighting_sss_sssworld)] [ShowIf(_SSSEnable)] _SSSProbeLight ("Probe Light Transmission", Range(0, 2)) = 1
-        [Toggle] [Group(lighting_sss_sssworld)] [ShowIf(_SSSEnable)] _SSSLTCGI ("LTCGI Transmission", Float) = 0
+        [ToggleUI] [Group(lighting_sss_sssworld)] [ShowIf(_SSSEnable)] _SSSLTCGI ("LTCGI Transmission", Float) = 0
         [Group(lighting_sss_sssworld)] [ShowIf(_SSSEnable)] [ShowIf(_LightVolumes)] _SSSLVDepth ("Volume Sample Depth", Range(0, 0.3)) = 0.05
-        [Toggle] [Group(lighting_reflspec)] _ReflectionsEnable ("Enable Reflection Probes", Float) = 1
+        [ToggleUI] [Group(lighting_reflspec)] _ReflectionsEnable ("Enable Reflection Probes", Float) = 1
         [NoScaleOffset] [Group(lighting_reflspec)] [ShowIf(_ReflectionsEnable)] _BakedCubemap ("Reflection Fallback Cubemap", Cube) = "black" {}
         [HideInInspector] [Group(lighting_reflspec)] _HasBakedCubemap ("", Float) = 0
         [Group(lighting_reflspec)] [ShowIf(_ReflectionsEnable)] _FallbackCubemapStrength ("Fallback Strength (fills dark worlds)", Range(0, 2)) = 1
-        [Toggle] [Group(lighting_reflspec)] [ShowIf(_ReflectionsEnable)] _ForceFallback ("Force Fallback (preview - ignore world probe)", Float) = 0
+        [ToggleUI] [Group(lighting_reflspec)] [ShowIf(_ReflectionsEnable)] _ForceFallback ("Force Fallback (preview - ignore world probe)", Float) = 0
         [Group(lighting_reflspec)] [ShowIf(_ReflectionsEnable)] _ReflStrength ("Reflection Strength", Range(0, 2)) = 1
         [Enum(ZFS Packed, 0, Unity MetalSmooth, 1)] [Group(lighting_reflspec)] _PackMode ("Packed Map Format", Float) = 0
         [NoScaleOffset] [Group(lighting_reflspec)] _PackedMap ("Packed PBR Map (R=Metallic  G=AO  B=Smoothness)", 2D) = "white" {}
-        [Toggle] [Group(lighting_reflspec)] _InvSmooth ("Map uses Roughness (invert smoothness)", Float) = 0
+        [ToggleUI] [Group(lighting_reflspec)] _InvSmooth ("Map uses Roughness (invert smoothness)", Float) = 0
         [Group(lighting_reflspec)] _PackedTiling ("Packed Tiling (X,Y)", Vector) = (1, 1, 0, 0)
         [Group(lighting_reflspec)] _PackedOffset ("Packed Offset (X,Y)", Vector) = (0, 0, 0, 0)
         [Group(lighting_reflspec)] _PackedPan ("Packed Panning (X,Y)", Vector) = (0, 0, 0, 0)
-        [Toggle] [Group(lighting_reflspec)] _PackedStochastic ("Stochastic Sampling", Float) = 0
+        [ToggleUI] [Group(lighting_reflspec)] _PackedStochastic ("Stochastic Sampling", Float) = 0
         [Group(lighting_reflspec)] _Metallic ("Metallic", Range(0, 1)) = 0
         [Group(lighting_reflspec)] _Smoothness ("Smoothness", Range(0, 1)) = 0.5
-        [Toggle] [Group(lighting_reflspec)] _AdvancedRemap ("Advanced Map Remapping", Float) = 0
+        [ToggleUI] [Group(lighting_reflspec)] _AdvancedRemap ("Advanced Map Remapping", Float) = 0
         [Group(lighting_reflspec)] [ShowIf(_AdvancedRemap)] _MetallicMin ("Metallic Floor (map black)", Range(0, 1)) = 0
         [Group(lighting_reflspec)] [ShowIf(_AdvancedRemap)] _SmoothnessMin ("Smoothness Floor (map black)", Range(0, 1)) = 0
         [Group(lighting_reflspec)] _OcclusionStrength ("AO Strength", Range(0, 1)) = 1
-        [Toggle] [Group(lighting_reflspec)] _ReflTintOn ("Tint Reflections", Float) = 0
+        [ToggleUI] [Group(lighting_reflspec)] _ReflTintOn ("Tint Reflections", Float) = 0
         [Group(lighting_reflspec)] [ShowIf(_ReflTintOn)] _ReflTint ("Reflection Tint", Color) = (1, 1, 1, 1)
-        [Toggle] [Group(lighting_reflspec)] _SpecTintOn ("Tint Specular", Float) = 0
+        [ToggleUI] [Group(lighting_reflspec)] _SpecTintOn ("Tint Specular", Float) = 0
         [Group(lighting_reflspec)] [ShowIf(_SpecTintOn)] _SpecTint ("Specular Tint", Color) = (1, 1, 1, 1)
         [ZetMapPacker] [Group(lighting_reflspec)] _MapPackerUI ("Map Packer", Float) = 0
-        [Toggle] [GroupToggle(lighting_reflspec_aniso)] _AnisoEnable ("Enable Anisotropic Highlights", Float) = 0
+        [ToggleUI] [GroupToggle(lighting_reflspec_aniso)] _AnisoEnable ("Enable Anisotropic Highlights", Float) = 0
         [HDR] [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoColor ("Anisotropic Color", Color) = (1, 1, 1, 1)
         [Enum(Tangent, 0, Bitangent, 1)] [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoDir ("Highlight Direction", Float) = 0
         [Enum(Mesh Tangent, 0, Tangent Flow Map, 1, Object Space Map, 2)] [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoDirMode ("Direction Source", Float) = 0
@@ -255,9 +255,9 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoPower ("Highlight Sharpness", Range(0, 10)) = 5.0
         [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoStrength ("Highlight Strength", Range(0, 5)) = 1.0
         [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoMask ("Anisotropic Mask (optional)", 2D) = "white" {}
-        [Toggle] [GroupToggle(lighting_reflspec_stylespec)] _StyleSpecEnable ("Enable Stylized Specular", Float) = 0
+        [ToggleUI] [GroupToggle(lighting_reflspec_stylespec)] _StyleSpecEnable ("Enable Stylized Specular", Float) = 0
         [HDR] [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _StyleSpecTint ("Highlight Tint", Color) = (1, 1, 1, 1)
-        [Toggle] [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _StyleSpecUseLight ("Use Light Color", Float) = 1
+        [ToggleUI] [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _StyleSpecUseLight ("Use Light Color", Float) = 1
         [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _StyleSpecMask ("Highlight Mask (optional)", 2D) = "white" {}
         [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _SS1Size ("Layer 1 Size", Range(0, 1)) = 0.3
         [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _SS1Feather ("Layer 1 Feather", Range(0, 1)) = 0.1
@@ -268,11 +268,11 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _SS3Size ("Layer 3 Size", Range(0, 1)) = 0.07
         [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _SS3Feather ("Layer 3 Feather", Range(0, 1)) = 0.02
         [Group(lighting_reflspec_stylespec)] [ShowIf(_StyleSpecEnable)] _SS3Strength ("Layer 3 Strength", Range(0, 4)) = 0
-        [Toggle] [GroupToggle(lighting_reflspec_spec2)] _Spec2Enable ("Enable 2nd Specular (Clear Coat)", Float) = 0
+        [ToggleUI] [GroupToggle(lighting_reflspec_spec2)] _Spec2Enable ("Enable 2nd Specular (Clear Coat)", Float) = 0
         [HDR] [Group(lighting_reflspec_spec2)] [ShowIf(_Spec2Enable)] _Spec2Color ("2nd Specular Tint", Color) = (1, 1, 1, 1)
         [Group(lighting_reflspec_spec2)] [ShowIf(_Spec2Enable)] _Spec2Smoothness ("2nd Smoothness", Range(0, 1)) = 0.8
         [Group(lighting_reflspec_spec2)] [ShowIf(_Spec2Enable)] _Spec2Mask ("2nd Specular Mask", 2D) = "white" {}
-        [Toggle] [GroupToggle(lighting_matcaps_mc0)] _MatcapEnable ("Enable MatCap 0", Float) = 0
+        [ToggleUI] [GroupToggle(lighting_matcaps_mc0)] _MatcapEnable ("Enable MatCap 0", Float) = 0
         [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapTex ("MatCap 0 Texture", 2D) = "black" {}
         [Enum(Additive, 0, Multiply, 1, Screen, 2)] [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapMode ("Blend Mode", Float) = 0
         [Group(lighting_matcaps_mc0)] [ShowIf(_MatcapEnable)] _MatcapStrength ("Strength (0-100)", Range(0, 100)) = 50
@@ -298,36 +298,36 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lighting_matcaps_mc4)] [ShowIf(_Matcap4Enable)] _Matcap4Strength ("Strength (0-100)", Range(0, 100)) = 50
         [Group(lighting_matcaps_mc4)] [ShowIf(_Matcap4Enable)] _Matcap4Mask ("MatCap 4 Mask", 2D) = "white" {}
         [NoScaleOffset] [Group(emission)] _Em0BgTex ("Infinity Mirror Pattern (shared)", 2D) = "white" {}
-        [Toggle] [GroupToggle(emission_em0)] _Em0Enable ("Enable Emission 0", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em0)] _Em0Enable ("Enable Emission 0", Float) = 0
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Mask ("Emission 0 Mask", 2D) = "white" {}
         [HDR] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Color ("Emission 0 Color", Color) = (0, 1, 1, 1)
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Intensity ("Emission Intensity", Range(0, 10)) = 1
-        [Toggle] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Hue ("AL Hue Shift", Float) = 0
+        [ToggleUI] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Hue ("AL Hue Shift", Float) = 0
         [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Mode ("Audio Mode", Float) = 0
         [NoScaleOffset] [Group(emission_em0)] [ShowIf(_Em0Enable)] [ShowIf(_Em0Mode, 3)] _Em0PathTex ("Path Gradient (black = start)", 2D) = "black" {}
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Base ("Brightness Base", Range(0, 2)) = 0.15
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0EdgeGlow ("Edge Glow", Range(0, 4)) = 0
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0EdgePower ("Edge Sharpness", Range(0.5, 8)) = 3
-        [Toggle] [GroupToggle(emission_em0_em0al)] _Em0ALEnable ("Enable AudioLink Reactivity", Float) = 1
+        [ToggleUI] [GroupToggle(emission_em0_em0al)] _Em0ALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0Band ("Primary AL Band", Float) = 0
         [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0AL ("AL Boost (reactive brightness)", Range(0, 4)) = 1.5
         [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0PulseScale ("Center-Out Ring Spacing", Range(0.1, 10)) = 2.0
         [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0Center ("Projection Center (UV)", Vector) = (0.5, 0.5, 0, 0)
-        [Toggle] [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0VolBoost ("Boost by Overall Volume", Float) = 0
+        [ToggleUI] [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0VolBoost ("Boost by Overall Volume", Float) = 0
         [Group(emission_em0_em0al)] [ShowIf(_Em0VolBoost)] _Em0VolAmt ("Volume Boost Amount", Range(0, 4)) = 1.0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em0_em0al_em0aladj)] [ShowIf(_Em0ALEnable)] _Em0MultBand ("Multiplier Band", Float) = 0
         [Group(emission_em0_em0al_em0aladj)] [ShowIf(_Em0ALEnable)] _Em0MultAmt ("Multiplier Amount", Range(0, 4)) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em0_em0al_em0aladj)] [ShowIf(_Em0ALEnable)] _Em0AddBand ("Additive Band", Float) = 3
         [Group(emission_em0_em0al_em0aladj)] [ShowIf(_Em0ALEnable)] _Em0AddAmt ("Additive Amount", Range(0, 4)) = 0
-        [Toggle] [GroupToggle(emission_em0_em0lb)] _Em0LightBased ("Enable Light-Based Emission", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em0_em0lb)] _Em0LightBased ("Enable Light-Based Emission", Float) = 0
         [Group(emission_em0_em0lb)] [ShowIf(_Em0LightBased)] _Em0MinEmiss ("Min Emission Multiplier (dark)", Range(0, 4)) = 1
         [Group(emission_em0_em0lb)] [ShowIf(_Em0LightBased)] _Em0MaxEmiss ("Max Emission Multiplier (lit)", Range(0, 4)) = 0
         [Group(emission_em0_em0lb)] [ShowIf(_Em0LightBased)] _Em0MinLight ("Min Lighting", Range(0, 1)) = 0
         [Group(emission_em0_em0lb)] [ShowIf(_Em0LightBased)] _Em0MaxLight ("Max Lighting", Range(0, 1)) = 1
-        [Toggle] [GroupToggle(emission_em0_em0blink)] _Em0Blink ("Enable Blinking", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em0_em0blink)] _Em0Blink ("Enable Blinking", Float) = 0
         [Group(emission_em0_em0blink)] [ShowIf(_Em0Blink)] _Em0BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em0_em0blink)] [ShowIf(_Em0Blink)] _Em0BlinkMin ("Blink Minimum", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(emission_em0_em0scan)] _Em0Scan ("Enable Scan / Sweep", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em0_em0scan)] _Em0Scan ("Enable Scan / Sweep", Float) = 0
         [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanDir ("Direction", Float) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanMode ("Motion", Float) = 0
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanSpeed ("Speed", Range(0, 10)) = 1
@@ -336,14 +336,14 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(emission_em0_em0mir)] _Em0Mirror ("Enable Infinity Mirror", Float) = 0
-        [Toggle] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Triplanar ("Use 3D Triplanar Mapping", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em0_em0mir)] _Em0Mirror ("Enable Infinity Mirror", Float) = 0
+        [ToggleUI] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Triplanar ("Use 3D Triplanar Mapping", Float) = 0
         [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Rotation ("Pattern Rotation", Range(0, 360)) = 0
         [HDR] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0BgColor ("Background Tint", Color) = (0.2, 0.2, 0.2, 1)
-        [Toggle] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0ScaleLock ("Uniform Scale (Use X)", Float) = 1
+        [ToggleUI] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0ScaleLock ("Uniform Scale (Use X)", Float) = 1
         [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0BgScale ("Background Scale (X,Y)", Vector) = (1.0, 1.0, 0, 0)
-        [Toggle] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0TileX ("Tile Horizontally (X)", Float) = 1
-        [Toggle] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0TileY ("Tile Vertically (Y)", Float) = 1
+        [ToggleUI] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0TileX ("Tile Horizontally (X)", Float) = 1
+        [ToggleUI] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0TileY ("Tile Vertically (Y)", Float) = 1
         [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Pan ("Background Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
         [IntRange] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Layers ("Infinity Mirror Layers", Range(1, 10)) = 3
         [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Parallax ("Initial Depth (0-100)", Range(0, 100)) = 25
@@ -354,32 +354,32 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Mask ("Emission 1 Mask", 2D) = "white" {}
         [HDR] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Color ("Emission 1 Color", Color) = (0, 1, 1, 1)
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Intensity ("Emission Intensity", Range(0, 10)) = 1
-        [Toggle] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Hue ("AL Hue Shift", Float) = 0
+        [ToggleUI] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Hue ("AL Hue Shift", Float) = 0
         [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Mode ("Audio Mode", Float) = 0
         [NoScaleOffset] [Group(emission_em1)] [ShowIf(_Em1Enable)] [ShowIf(_Em1Mode, 3)] _Em1PathTex ("Path Gradient (black = start)", 2D) = "black" {}
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Base ("Brightness Base", Range(0, 2)) = 0.1
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1EdgeGlow ("Edge Glow", Range(0, 4)) = 0
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1EdgePower ("Edge Sharpness", Range(0.5, 8)) = 3
-        [Toggle] [GroupToggle(emission_em1_em1al)] _Em1ALEnable ("Enable AudioLink Reactivity", Float) = 1
+        [ToggleUI] [GroupToggle(emission_em1_em1al)] _Em1ALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1Band ("Primary AL Band", Float) = 0
         [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1AL ("AL Boost (reactive brightness)", Range(0, 4)) = 1.5
         [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1PulseScale ("Center-Out Ring Spacing", Range(0.1, 10)) = 2.0
         [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1Center ("Projection Center (UV)", Vector) = (0.5, 0.5, 0, 0)
-        [Toggle] [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1VolBoost ("Boost by Overall Volume", Float) = 0
+        [ToggleUI] [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1VolBoost ("Boost by Overall Volume", Float) = 0
         [Group(emission_em1_em1al)] [ShowIf(_Em1VolBoost)] _Em1VolAmt ("Volume Boost Amount", Range(0, 4)) = 1.0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em1_em1al_em1aladj)] [ShowIf(_Em1ALEnable)] _Em1MultBand ("Multiplier Band", Float) = 0
         [Group(emission_em1_em1al_em1aladj)] [ShowIf(_Em1ALEnable)] _Em1MultAmt ("Multiplier Amount", Range(0, 4)) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em1_em1al_em1aladj)] [ShowIf(_Em1ALEnable)] _Em1AddBand ("Additive Band", Float) = 3
         [Group(emission_em1_em1al_em1aladj)] [ShowIf(_Em1ALEnable)] _Em1AddAmt ("Additive Amount", Range(0, 4)) = 0
-        [Toggle] [GroupToggle(emission_em1_em1lb)] _Em1LightBased ("Enable Light-Based Emission", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em1_em1lb)] _Em1LightBased ("Enable Light-Based Emission", Float) = 0
         [Group(emission_em1_em1lb)] [ShowIf(_Em1LightBased)] _Em1MinEmiss ("Min Emission Multiplier (dark)", Range(0, 4)) = 1
         [Group(emission_em1_em1lb)] [ShowIf(_Em1LightBased)] _Em1MaxEmiss ("Max Emission Multiplier (lit)", Range(0, 4)) = 0
         [Group(emission_em1_em1lb)] [ShowIf(_Em1LightBased)] _Em1MinLight ("Min Lighting", Range(0, 1)) = 0
         [Group(emission_em1_em1lb)] [ShowIf(_Em1LightBased)] _Em1MaxLight ("Max Lighting", Range(0, 1)) = 1
-        [Toggle] [GroupToggle(emission_em1_em1blink)] _Em1Blink ("Enable Blinking", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em1_em1blink)] _Em1Blink ("Enable Blinking", Float) = 0
         [Group(emission_em1_em1blink)] [ShowIf(_Em1Blink)] _Em1BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em1_em1blink)] [ShowIf(_Em1Blink)] _Em1BlinkMin ("Blink Minimum", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(emission_em1_em1scan)] _Em1Scan ("Enable Scan / Sweep", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em1_em1scan)] _Em1Scan ("Enable Scan / Sweep", Float) = 0
         [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanDir ("Direction", Float) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanMode ("Motion", Float) = 0
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanSpeed ("Speed", Range(0, 10)) = 1
@@ -388,14 +388,14 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(emission_em1_em1mir)] _Em1Mirror ("Enable Infinity Mirror", Float) = 0
-        [Toggle] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Triplanar ("Use 3D Triplanar Mapping", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em1_em1mir)] _Em1Mirror ("Enable Infinity Mirror", Float) = 0
+        [ToggleUI] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Triplanar ("Use 3D Triplanar Mapping", Float) = 0
         [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Rotation ("Pattern Rotation", Range(0, 360)) = 0
         [HDR] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1BgColor ("Background Tint", Color) = (0.2, 0.2, 0.2, 1)
-        [Toggle] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1ScaleLock ("Uniform Scale (Use X)", Float) = 1
+        [ToggleUI] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1ScaleLock ("Uniform Scale (Use X)", Float) = 1
         [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1BgScale ("Background Scale (X,Y)", Vector) = (1.0, 1.0, 0, 0)
-        [Toggle] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1TileX ("Tile Horizontally (X)", Float) = 1
-        [Toggle] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1TileY ("Tile Vertically (Y)", Float) = 1
+        [ToggleUI] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1TileX ("Tile Horizontally (X)", Float) = 1
+        [ToggleUI] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1TileY ("Tile Vertically (Y)", Float) = 1
         [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Pan ("Background Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
         [IntRange] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Layers ("Infinity Mirror Layers", Range(1, 10)) = 3
         [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Parallax ("Initial Depth (0-100)", Range(0, 100)) = 25
@@ -406,32 +406,32 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Mask ("Emission 2 Mask", 2D) = "white" {}
         [HDR] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Color ("Emission 2 Color", Color) = (1, 0, 1, 1)
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Intensity ("Emission Intensity", Range(0, 10)) = 1
-        [Toggle] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Hue ("AL Hue Shift", Float) = 0
+        [ToggleUI] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Hue ("AL Hue Shift", Float) = 0
         [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Mode ("Audio Mode", Float) = 0
         [NoScaleOffset] [Group(emission_em2)] [ShowIf(_Em2Enable)] [ShowIf(_Em2Mode, 3)] _Em2PathTex ("Path Gradient (black = start)", 2D) = "black" {}
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Base ("Brightness Base", Range(0, 2)) = 0.15
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2EdgeGlow ("Edge Glow", Range(0, 4)) = 0
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2EdgePower ("Edge Sharpness", Range(0.5, 8)) = 3
-        [Toggle] [GroupToggle(emission_em2_em2al)] _Em2ALEnable ("Enable AudioLink Reactivity", Float) = 1
+        [ToggleUI] [GroupToggle(emission_em2_em2al)] _Em2ALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2Band ("Primary AL Band", Float) = 0
         [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2AL ("AL Boost (reactive brightness)", Range(0, 4)) = 1.5
         [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2PulseScale ("Center-Out Ring Spacing", Range(0.1, 10)) = 2.0
         [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2Center ("Projection Center (UV)", Vector) = (0.5, 0.5, 0, 0)
-        [Toggle] [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2VolBoost ("Boost by Overall Volume", Float) = 0
+        [ToggleUI] [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2VolBoost ("Boost by Overall Volume", Float) = 0
         [Group(emission_em2_em2al)] [ShowIf(_Em2VolBoost)] _Em2VolAmt ("Volume Boost Amount", Range(0, 4)) = 1.0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em2_em2al_em2aladj)] [ShowIf(_Em2ALEnable)] _Em2MultBand ("Multiplier Band", Float) = 0
         [Group(emission_em2_em2al_em2aladj)] [ShowIf(_Em2ALEnable)] _Em2MultAmt ("Multiplier Amount", Range(0, 4)) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em2_em2al_em2aladj)] [ShowIf(_Em2ALEnable)] _Em2AddBand ("Additive Band", Float) = 3
         [Group(emission_em2_em2al_em2aladj)] [ShowIf(_Em2ALEnable)] _Em2AddAmt ("Additive Amount", Range(0, 4)) = 0
-        [Toggle] [GroupToggle(emission_em2_em2lb)] _Em2LightBased ("Enable Light-Based Emission", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em2_em2lb)] _Em2LightBased ("Enable Light-Based Emission", Float) = 0
         [Group(emission_em2_em2lb)] [ShowIf(_Em2LightBased)] _Em2MinEmiss ("Min Emission Multiplier (dark)", Range(0, 4)) = 1
         [Group(emission_em2_em2lb)] [ShowIf(_Em2LightBased)] _Em2MaxEmiss ("Max Emission Multiplier (lit)", Range(0, 4)) = 0
         [Group(emission_em2_em2lb)] [ShowIf(_Em2LightBased)] _Em2MinLight ("Min Lighting", Range(0, 1)) = 0
         [Group(emission_em2_em2lb)] [ShowIf(_Em2LightBased)] _Em2MaxLight ("Max Lighting", Range(0, 1)) = 1
-        [Toggle] [GroupToggle(emission_em2_em2blink)] _Em2Blink ("Enable Blinking", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em2_em2blink)] _Em2Blink ("Enable Blinking", Float) = 0
         [Group(emission_em2_em2blink)] [ShowIf(_Em2Blink)] _Em2BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em2_em2blink)] [ShowIf(_Em2Blink)] _Em2BlinkMin ("Blink Minimum", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(emission_em2_em2scan)] _Em2Scan ("Enable Scan / Sweep", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em2_em2scan)] _Em2Scan ("Enable Scan / Sweep", Float) = 0
         [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanDir ("Direction", Float) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanMode ("Motion", Float) = 0
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanSpeed ("Speed", Range(0, 10)) = 1
@@ -440,14 +440,14 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(emission_em2_em2mir)] _Em2Mirror ("Enable Infinity Mirror", Float) = 0
-        [Toggle] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Triplanar ("Use 3D Triplanar Mapping", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em2_em2mir)] _Em2Mirror ("Enable Infinity Mirror", Float) = 0
+        [ToggleUI] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Triplanar ("Use 3D Triplanar Mapping", Float) = 0
         [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Rotation ("Pattern Rotation", Range(0, 360)) = 0
         [HDR] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2BgColor ("Background Tint", Color) = (0.2, 0.2, 0.2, 1)
-        [Toggle] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2ScaleLock ("Uniform Scale (Use X)", Float) = 1
+        [ToggleUI] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2ScaleLock ("Uniform Scale (Use X)", Float) = 1
         [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2BgScale ("Background Scale (X,Y)", Vector) = (1.0, 1.0, 0, 0)
-        [Toggle] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2TileX ("Tile Horizontally (X)", Float) = 1
-        [Toggle] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2TileY ("Tile Vertically (Y)", Float) = 1
+        [ToggleUI] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2TileX ("Tile Horizontally (X)", Float) = 1
+        [ToggleUI] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2TileY ("Tile Vertically (Y)", Float) = 1
         [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Pan ("Background Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
         [IntRange] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Layers ("Infinity Mirror Layers", Range(1, 10)) = 3
         [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Parallax ("Initial Depth (0-100)", Range(0, 100)) = 25
@@ -458,32 +458,32 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Mask ("Emission 3 Mask", 2D) = "white" {}
         [HDR] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Color ("Emission 3 Color", Color) = (1, 1, 0, 1)
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Intensity ("Emission Intensity", Range(0, 10)) = 1
-        [Toggle] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Hue ("AL Hue Shift", Float) = 0
+        [ToggleUI] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Hue ("AL Hue Shift", Float) = 0
         [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Mode ("Audio Mode", Float) = 0
         [NoScaleOffset] [Group(emission_em3)] [ShowIf(_Em3Enable)] [ShowIf(_Em3Mode, 3)] _Em3PathTex ("Path Gradient (black = start)", 2D) = "black" {}
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Base ("Brightness Base", Range(0, 2)) = 0.15
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3EdgeGlow ("Edge Glow", Range(0, 4)) = 0
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3EdgePower ("Edge Sharpness", Range(0.5, 8)) = 3
-        [Toggle] [GroupToggle(emission_em3_em3al)] _Em3ALEnable ("Enable AudioLink Reactivity", Float) = 1
+        [ToggleUI] [GroupToggle(emission_em3_em3al)] _Em3ALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3Band ("Primary AL Band", Float) = 0
         [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3AL ("AL Boost (reactive brightness)", Range(0, 4)) = 1.5
         [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3PulseScale ("Center-Out Ring Spacing", Range(0.1, 10)) = 2.0
         [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3Center ("Projection Center (UV)", Vector) = (0.5, 0.5, 0, 0)
-        [Toggle] [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3VolBoost ("Boost by Overall Volume", Float) = 0
+        [ToggleUI] [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3VolBoost ("Boost by Overall Volume", Float) = 0
         [Group(emission_em3_em3al)] [ShowIf(_Em3VolBoost)] _Em3VolAmt ("Volume Boost Amount", Range(0, 4)) = 1.0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em3_em3al_em3aladj)] [ShowIf(_Em3ALEnable)] _Em3MultBand ("Multiplier Band", Float) = 0
         [Group(emission_em3_em3al_em3aladj)] [ShowIf(_Em3ALEnable)] _Em3MultAmt ("Multiplier Amount", Range(0, 4)) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em3_em3al_em3aladj)] [ShowIf(_Em3ALEnable)] _Em3AddBand ("Additive Band", Float) = 3
         [Group(emission_em3_em3al_em3aladj)] [ShowIf(_Em3ALEnable)] _Em3AddAmt ("Additive Amount", Range(0, 4)) = 0
-        [Toggle] [GroupToggle(emission_em3_em3lb)] _Em3LightBased ("Enable Light-Based Emission", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em3_em3lb)] _Em3LightBased ("Enable Light-Based Emission", Float) = 0
         [Group(emission_em3_em3lb)] [ShowIf(_Em3LightBased)] _Em3MinEmiss ("Min Emission Multiplier (dark)", Range(0, 4)) = 1
         [Group(emission_em3_em3lb)] [ShowIf(_Em3LightBased)] _Em3MaxEmiss ("Max Emission Multiplier (lit)", Range(0, 4)) = 0
         [Group(emission_em3_em3lb)] [ShowIf(_Em3LightBased)] _Em3MinLight ("Min Lighting", Range(0, 1)) = 0
         [Group(emission_em3_em3lb)] [ShowIf(_Em3LightBased)] _Em3MaxLight ("Max Lighting", Range(0, 1)) = 1
-        [Toggle] [GroupToggle(emission_em3_em3blink)] _Em3Blink ("Enable Blinking", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em3_em3blink)] _Em3Blink ("Enable Blinking", Float) = 0
         [Group(emission_em3_em3blink)] [ShowIf(_Em3Blink)] _Em3BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em3_em3blink)] [ShowIf(_Em3Blink)] _Em3BlinkMin ("Blink Minimum", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(emission_em3_em3scan)] _Em3Scan ("Enable Scan / Sweep", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em3_em3scan)] _Em3Scan ("Enable Scan / Sweep", Float) = 0
         [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanDir ("Direction", Float) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanMode ("Motion", Float) = 0
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanSpeed ("Speed", Range(0, 10)) = 1
@@ -492,304 +492,396 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(emission_em3_em3mir)] _Em3Mirror ("Enable Infinity Mirror", Float) = 0
-        [Toggle] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Triplanar ("Use 3D Triplanar Mapping", Float) = 0
+        [ToggleUI] [GroupToggle(emission_em3_em3mir)] _Em3Mirror ("Enable Infinity Mirror", Float) = 0
+        [ToggleUI] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Triplanar ("Use 3D Triplanar Mapping", Float) = 0
         [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Rotation ("Pattern Rotation", Range(0, 360)) = 0
         [HDR] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3BgColor ("Background Tint", Color) = (0.2, 0.2, 0.2, 1)
-        [Toggle] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3ScaleLock ("Uniform Scale (Use X)", Float) = 1
+        [ToggleUI] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3ScaleLock ("Uniform Scale (Use X)", Float) = 1
         [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3BgScale ("Background Scale (X,Y)", Vector) = (1.0, 1.0, 0, 0)
-        [Toggle] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3TileX ("Tile Horizontally (X)", Float) = 1
-        [Toggle] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3TileY ("Tile Vertically (Y)", Float) = 1
+        [ToggleUI] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3TileX ("Tile Horizontally (X)", Float) = 1
+        [ToggleUI] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3TileY ("Tile Vertically (Y)", Float) = 1
         [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Pan ("Background Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
         [IntRange] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Layers ("Infinity Mirror Layers", Range(1, 10)) = 3
         [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Parallax ("Initial Depth (0-100)", Range(0, 100)) = 25
         [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3LayerDist ("Distance Between Layers (0-100)", Range(0, 100)) = 25
         [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3NearBright ("Min-Depth Brightness", Range(0, 2)) = 1.0
         [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3FarBright ("Max-Depth Brightness", Range(0, 2)) = 0.3
-        [Toggle] [GroupToggle(specialfx_room)] _RoomEnable ("Enable Interior Mapping", Float) = 0
-        [NoScaleOffset] [Group(specialfx_room)] [ShowIf(_RoomEnable)] _RoomCube ("Room Cubemap", Cube) = "black" {}
-        [NoScaleOffset] [Group(specialfx_room)] [ShowIf(_RoomEnable)] _RoomMask ("Window Mask", 2D) = "white" {}
-        [HDR] [Group(specialfx_room)] [ShowIf(_RoomEnable)] _RoomColor ("Room Tint", Color) = (1, 1, 1, 1)
-        [Group(specialfx_room)] [ShowIf(_RoomEnable)] _RoomDepth ("Room Depth", Range(0.1, 4)) = 1
-        [Group(specialfx_room)] [ShowIf(_RoomEnable)] _RoomTile ("Room Tiling", Range(1, 8)) = 1
-        [Group(specialfx_room_roommotion)] [ShowIf(_RoomEnable)] _RoomScrollX ("Spin Horizontal", Range(-2, 2)) = 0
-        [Group(specialfx_room_roommotion)] [ShowIf(_RoomEnable)] _RoomScrollY ("Spin Vertical", Range(-2, 2)) = 0
-        [Group(specialfx_room_roommotion)] [ShowIf(_RoomEnable)] _RoomSlideX ("Slide Horizontal", Range(-2, 2)) = 0
-        [Group(specialfx_room_roommotion)] [ShowIf(_RoomEnable)] _RoomSlideY ("Slide Vertical", Range(-2, 2)) = 0
-        [Group(specialfx_room_roomglass)] [ShowIf(_RoomEnable)] _RoomEdge ("Window Edge", Range(0.002, 0.5)) = 0.05
-        [Group(specialfx_room_roomglass)] [ShowIf(_RoomEnable)] _RoomGlassWarp ("Glass Ripple", Range(0, 1)) = 0
-        [Group(specialfx_room_roomglass)] [ShowIf(_RoomEnable)] _RoomGlassChroma ("Glass Chromatic", Range(0, 1)) = 0
-        [Enum(None, 0, Fog, 1, Dream Haze, 2)] [Group(specialfx_room_roomatmo)] [ShowIf(_RoomEnable)] _RoomDepthMode ("Depth Atmosphere", Float) = 1
-        [Group(specialfx_room_roomatmo)] [ShowIf(_RoomEnable)] _RoomFade ("Atmosphere Amount", Range(0, 1)) = 0.3
-        [HDR] [Group(specialfx_room_roomatmo)] [ShowIf(_RoomEnable)] _RoomHazeColor ("Haze Color", Color) = (0.5, 0.7, 1.0, 1)
-        [Group(specialfx_room_roomatmo)] [ShowIf(_RoomEnable)] _RoomSoften ("Softness", Range(0, 1)) = 0
-        [Toggle] [Group(specialfx_room_roomal)] [ShowIf(_RoomEnable)] _RoomALEnable ("AudioLink Reactive", Float) = 0
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_room_roomal)] [ShowIf(_RoomEnable)] [ShowIf(_RoomALEnable)] _RoomBand ("AL Band", Float) = 3
-        [Group(specialfx_room_roomal)] [ShowIf(_RoomEnable)] [ShowIf(_RoomALEnable)] _RoomAL ("AL Boost", Range(0, 8)) = 2
-        [Toggle] [GroupToggle(specialfx_refract)] _RefractEnable ("Enable Refraction", Float) = 0
-        [NoScaleOffset] [Group(specialfx_refract)] [ShowIf(_RefractEnable)] _RefractMask ("Refraction Mask", 2D) = "white" {}
-        [Group(specialfx_refract)] [ShowIf(_RefractEnable)] _RefractStrength ("Distortion Strength", Range(0, 1)) = 0.15
-        [Group(specialfx_refract)] [ShowIf(_RefractEnable)] _RefractCA ("Chromatic Aberration", Range(0, 1)) = 0.2
-        [HDR] [Group(specialfx_refract)] [ShowIf(_RefractEnable)] _RefractTint ("Glass Tint", Color) = (1, 1, 1, 1)
-        [Group(specialfx_refract)] [ShowIf(_RefractEnable)] _RefractBlend ("Refraction Amount", Range(0, 1)) = 1
-        [NoScaleOffset] [Group(specialfx_refract_refractshimmer)] [ShowIf(_RefractEnable)] _RefractMap ("Shimmer Map (optional)", 2D) = "bump" {}
-        [Group(specialfx_refract_refractshimmer)] [ShowIf(_RefractEnable)] _RefractTile ("Shimmer Tiling", Range(1, 16)) = 4
-        [Group(specialfx_refract_refractshimmer)] [ShowIf(_RefractEnable)] _RefractScroll ("Shimmer Speed", Range(0, 2)) = 0.3
-        [Toggle] [Group(specialfx_refract_refractal)] [ShowIf(_RefractEnable)] _RefractALEnable ("AudioLink Reactive", Float) = 0
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_refract_refractal)] [ShowIf(_RefractEnable)] [ShowIf(_RefractALEnable)] _RefractBand ("AL Band", Float) = 0
-        [Group(specialfx_refract_refractal)] [ShowIf(_RefractEnable)] [ShowIf(_RefractALEnable)] _RefractAL ("AL Boost", Range(0, 8)) = 3
-        [Toggle] [GroupToggle(specialfx_screen)] _ScreenEnable ("Enable Screen Display", Float) = 0
-        [NoScaleOffset] [Group(specialfx_screen)] [ShowIf(_ScreenEnable)] _ScreenMask ("Screen Mask", 2D) = "white" {}
-        [Enum(Oscilloscope, 0, EQ Bars, 1)] [Group(specialfx_screen)] [ShowIf(_ScreenEnable)] _ScreenMode ("Screen Mode", Float) = 0
-        [HDR] [Group(specialfx_screen)] [ShowIf(_ScreenEnable)] _ScreenLineColor ("Wave Color", Color) = (0, 1, 1, 1)
-        [Group(specialfx_screen)] [ShowIf(_ScreenEnable)] _ScreenWaveAmp ("Wave Amplitude", Range(0, 0.5)) = 0.22
-        [Group(specialfx_screen)] [ShowIf(_ScreenEnable)] _ScreenWaveSamples ("Waveform Samples", Float) = 512
-        [Group(specialfx_screen)] [ShowIf(_ScreenEnable)] _ScreenLineWidth ("Line Width", Range(0.001, 0.1)) = 0.02
-        [Group(specialfx_screen_scrbackdrop)] [ShowIf(_ScreenEnable)] _ScreenArt ("Screen Art", 2D) = "black" {}
-        [Group(specialfx_screen_scrbackdrop)] [ShowIf(_ScreenEnable)] _ScreenArtStrength ("Screen Art Strength", Range(0, 2)) = 0.4
-        [Group(specialfx_screen_scrbackdrop)] [ShowIf(_ScreenEnable)] _ScreenBackdrop ("Backdrop", 2D) = "white" {}
-        [HDR] [Group(specialfx_screen_scrbackdrop)] [ShowIf(_ScreenEnable)] _ScreenBGColor ("Background Tint", Color) = (0.02, 0.06, 0.08, 1)
-        [Toggle] [Group(specialfx_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridProc ("Procedural Grid", Float) = 1
-        [Group(specialfx_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridCells ("Grid Cells Across", Float) = 12
-        [Group(specialfx_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridLineW ("Grid Line Width", Range(0.005, 0.2)) = 0.04
-        [Group(specialfx_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridMinor ("Grid Minor Lines", Range(0, 1)) = 0.35
-        [Group(specialfx_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridTex ("Grid Texture", 2D) = "black" {}
-        [HDR] [Group(specialfx_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridColor ("Grid Color", Color) = (0.2, 0.5, 0.5, 1)
-        [Group(specialfx_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridStrength ("Grid Strength", Range(0, 1)) = 0.5
-        [Group(specialfx_screen_scrlcd)] [ShowIf(_ScreenEnable)] _ScreenLCDTex ("LCD Subpixel Tile", 2D) = "white" {}
-        [Group(specialfx_screen_scrlcd)] [ShowIf(_ScreenEnable)] _ScreenLCDStrength ("LCD Strength", Range(0, 1)) = 0
-        [Group(specialfx_screen_scrlcd)] [ShowIf(_ScreenEnable)] _ScreenScanline ("Scanline Strength", Range(0, 1)) = 0.25
-        [Group(specialfx_screen_scrlcd)] [ShowIf(_ScreenEnable)] _ScreenScanCount ("Scanline Count", Float) = 64
-        [Toggle] [Group(specialfx_screen_scrbsod)] [ShowIf(_ScreenEnable)] _ScreenBSOD ("BSOD Mode", Float) = 0
-        [Toggle] [Group(specialfx_screen_scrbsod)] [ShowIf(_ScreenEnable)] _ScreenBSODNoAL ("Crash When No AudioLink", Float) = 0
-        [Group(specialfx_screen_scrbsod)] [ShowIf(_ScreenEnable)] _ScreenBSODTex ("Crash Image", 2D) = "black" {}
-        [Toggle] [GroupToggle(specialfx_rim)] _RimEnable ("Enable Fresnel Rim", Float) = 0
-        [Enum(Off, 0, Always On, 1, Audio Reactive, 2)] [Group(specialfx_rim)] [ShowIf(_RimEnable)] _RimState ("Rim Mode", Float) = 1
-        [HDR] [Group(specialfx_rim)] [ShowIf(_RimEnable)] _RimColor ("Rim Color", Color) = (0, 1, 1, 1)
-        [Toggle] [Group(specialfx_rim)] [ShowIf(_RimEnable)] _RimHueShift ("AL Hue Shift", Float) = 0
-        [Group(specialfx_rim_rimadv)] [ShowIf(_RimEnable)] _RimWidth ("Rim Width", Range(0, 1)) = 0.35
-        [Group(specialfx_rim_rimadv)] [ShowIf(_RimEnable)] _RimSoft ("Rim Softness", Range(0.001, 0.5)) = 0.06
-        [Group(specialfx_rim_rimadv)] [ShowIf(_RimEnable)] _RimBase ("Rim Intensity (always on)", Range(0, 2)) = 0.15
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_rim_rimadv)] [ShowIf(_RimEnable)] _RimBand ("Rim AL Band", Float) = 0
-        [Group(specialfx_rim_rimadv)] [ShowIf(_RimEnable)] _RimAL ("Rim AL Boost", Range(0, 4)) = 1.5
-        [Toggle] [GroupToggle(specialfx_speaker)] _SpeakerEnable ("Enable Speaker Ripple", Float) = 0
-        [Group(specialfx_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerMask ("Speaker Gradient Mask", 2D) = "black" {}
-        [Group(specialfx_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerMaskBlur ("Mask Smoothing", Range(0, 1)) = 0.3
-        [HDR] [Group(specialfx_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerColor ("Speaker Wave Color", Color) = (0, 1, 1, 1)
-        [Enum(Off, 0, Always On, 1, Audio Reactive, 2)] [Group(specialfx_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerState ("Ripple Mode", Float) = 1
-        [Toggle] [Group(specialfx_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerHueShift ("AL Hue Shift", Float) = 0
-        [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerIntensity ("Forward Projection (m)", Range(0, 1)) = 0.15
-        [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerExpansion ("Dome Lift", Range(0, 1)) = 0.1
-        [IntRange] [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerRings ("Number of Rings (Max 6)", Range(1, 6)) = 4
-        [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerSpeed ("Ripple Speed", Range(0, 5)) = 2.0
-        [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerRingThickness ("Ring Thickness", Range(0.002, 0.06)) = 0.02
-        [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerRingSoftness ("Ring Softness", Range(0.0005, 0.025)) = 0.01
-        [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerThreshold ("Beat Threshold", Range(0, 1)) = 0.3
-        [Enum(Outward, 0, Inward, 1)] [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerDirection ("Ripple Direction", Float) = 0
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerBand ("Speaker AL Band", Float) = 0
-        [Toggle] [GroupToggle(specialfx_eq)] _EQEnable ("Enable Live EQ Visualizer", Float) = 0
-        [Group(specialfx_eq)] [ShowIf(_EQEnable)] _EQMask ("EQ Screen Mask", 2D) = "black" {}
-        [HDR] [Group(specialfx_eq)] [ShowIf(_EQEnable)] _EQColor ("EQ Bar Color", Color) = (0, 1, 1, 1)
-        [IntRange] [Group(specialfx_eq)] [ShowIf(_EQEnable)] _EQColumns ("Number of EQ Bars", Range(2, 32)) = 8
-        [Group(specialfx_eq)] [ShowIf(_EQEnable)] _EQGain ("Bar Gain", Range(0.5, 16)) = 4
-        [Group(specialfx_eq)] [ShowIf(_EQEnable)] _EQCurve ("Bar Curve", Range(0.25, 2)) = 0.7
-        [Toggle] [GroupToggle(specialfx_irid)] _IridEnable ("Enable Iridescence", Float) = 0
-        [Group(specialfx_irid)] [ShowIf(_IridEnable)] _IridMask ("Iridescence Mask", 2D) = "white" {}
-        [HDR] [Group(specialfx_irid)] [ShowIf(_IridEnable)] _IridColor1 ("Iridescence Phase 1", Color) = (1, 0, 0, 1)
-        [HDR] [Group(specialfx_irid)] [ShowIf(_IridEnable)] _IridColor2 ("Iridescence Phase 2", Color) = (0, 1, 0, 1)
-        [HDR] [Group(specialfx_irid)] [ShowIf(_IridEnable)] _IridColor3 ("Iridescence Phase 3", Color) = (0, 0, 1, 1)
-        [Group(specialfx_irid_iridadv)] [ShowIf(_IridEnable)] _IridThickness ("Film Thickness (0-100)", Range(0, 100)) = 50
-        [Group(specialfx_irid_iridadv)] [ShowIf(_IridEnable)] _IridSpeed ("Passive Shift Speed (-50 to 50)", Range(-50, 50)) = 10
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_irid_iridadv)] [ShowIf(_IridEnable)] _IridBand ("Iridescence AL Band", Float) = 1
-        [Group(specialfx_irid_iridadv)] [ShowIf(_IridEnable)] _IridAL ("AL Phase Reactivity (0-100)", Range(0, 100)) = 20
-        [Toggle] [GroupToggle(specialfx_dissolve)] _DissolveEnable ("Enable Data-Burn Dissolve", Float) = 0
-        [HDR] [Group(specialfx_dissolve)] [ShowIf(_DissolveEnable)] _DissolveColor ("Burn Edge Color", Color) = (1, 0.2, 0, 1)
-        [Toggle] [Group(specialfx_dissolve)] [ShowIf(_DissolveEnable)] _DissolveHueShift ("AL Hue Shift", Float) = 0
-        [Group(specialfx_dissolve)] [ShowIf(_DissolveEnable)] _DissolveTex ("Dissolve Noise Pattern", 2D) = "white" {}
-        [Group(specialfx_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveAmount ("Base Dissolve Amount (0-100)", Range(0, 100)) = 0
-        [Group(specialfx_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveAL ("Audio Reactivity (0-100)", Range(0, 100)) = 30
-        [Group(specialfx_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveWidth ("Edge Glow Width (0-100)", Range(0, 100)) = 15
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveBand ("Burn AL Band", Float) = 0
-        [Toggle] [GroupToggle(specialfx_outline)] _OutlineEnable ("Enable Glitch Outline", Float) = 0
-        [Group(specialfx_outline)] [ShowIf(_OutlineEnable)] _OutlineMask ("Outline Target Mask", 2D) = "black" {}
-        [Enum(Off, 0, Always On, 1, Audio Reactive, 2)] [Group(specialfx_outline)] [ShowIf(_OutlineEnable)] _OutlineState ("Outline Mode", Float) = 1
-        [HDR] [Group(specialfx_outline)] [ShowIf(_OutlineEnable)] _OutlineColor ("Outline Effect Color", Color) = (0, 1, 1, 1)
-        [Toggle] [Group(specialfx_outline)] [ShowIf(_OutlineEnable)] _OutlineHueShift ("AL Hue Shift", Float) = 0
-        [Group(specialfx_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineFloat ("Hologram Hover Height (0-100)", Range(0, 100)) = 20
-        [Group(specialfx_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineRGBSplit ("RGB Split Amount (0-100)", Range(0, 100)) = 30
-        [Group(specialfx_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineSpread ("Outline Spread Width (0-100)", Range(0, 100)) = 25
-        [Group(specialfx_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineSlices ("Outline Block Density", Float) = 50.0
-        [Group(specialfx_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineSpeed ("Outline Jitter Speed", Range(0, 50)) = 15.0
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineBand ("Outline AL Band", Float) = 2
-        [Group(specialfx_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineAL ("Outline AL Boost", Range(0, 4)) = 1.5
-        [Toggle] [GroupToggle(specialfx_outlinestd)] _OutlineStdEnable ("Enable Standard Outline", Float) = 0
-        [HDR] [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdColor ("Outline Color", Color) = (0, 0, 0, 1)
-        [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdWidth ("Outline Width", Range(0, 1)) = 0.15
-        [Enum(World metres, 0, Screen constant, 1)] [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdWidthMode ("Width Mode", Float) = 0
-        [NoScaleOffset] [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdMask ("Outline Mask (white = outline)", 2D) = "white" {}
-        [Toggle] [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdVColorMask ("Also Mask by Vertex Color", Float) = 0
-        [Enum(Red, 0, Green, 1, Blue, 2, Alpha, 3)] [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdVColorMask)] _OutlineStdVColorChannel ("Vertex Color Channel", Float) = 0
-        [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdTexTint ("Texture Tint", Range(0, 1)) = 0
-        [Toggle] [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdLit ("Lit by Scene Light", Float) = 0
-        [Toggle] [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdDistFade ("Distance Falloff [EXPERIMENTAL]", Float) = 0
-        [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdDistFade)] _OutlineStdFadeNear ("Full Width Within (m)", Range(0, 10)) = 1
-        [Group(specialfx_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdDistFade)] _OutlineStdFadeFar ("Gone Beyond (m)", Range(0, 20)) = 5
-        [Toggle] [GroupToggle(specialfx_stars)] _StarEnable ("Enable Constellation FX", Float) = 0
-        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarMask ("Constellation Mask (optional)", 2D) = "white" {}
-        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _ConstellationBlend ("Blend Mode", Float) = 0
-        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarUVSource ("UV Source", Float) = 0
-        [Group(specialfx_stars)] [ShowIf(_StarEnable)] _ConstellationEmission ("Emission Strength", Range(0, 8)) = 1
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarBand ("Stars AL Band", Float) = 2
-        [Enum(Base Color, 0, ColorChord, 1, Random Per Star, 2)] [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarColorMode ("Star Color Mode", Float) = 0
-        [HDR] [Group(specialfx_stars)] [ShowIf(_StarEnable)] _StarColor ("Star Base Color", Color) = (1, 1, 1, 1)
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarSaturation ("Star Color Saturation", Range(0, 3)) = 1.5
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarAL ("Star AL Pop Boost (0-10)", Range(0, 10)) = 3.0
-        [IntRange] [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarLayers ("Constellation Layers", Range(1, 5)) = 3
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarDensity ("Star Density", Range(0, 100)) = 50
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarSize ("Star Size", Range(0, 100)) = 25
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarScatter ("Star Scatter", Range(0, 1)) = 0.7
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarSoftness ("Star Softness", Range(0, 100)) = 35
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarTwinkle ("Twinkle Amount", Range(0, 100)) = 50
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarTwinkleSpeed ("Twinkle Speed", Range(0, 100)) = 30
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarSpeed ("Global Drift Speed", Range(0, 100)) = 15
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarDrift ("Chaotic Jitter", Range(0, 100)) = 25
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarParallax ("Parallax Depth", Range(0, 100)) = 30
-        [Group(specialfx_stars_staradv)] [ShowIf(_StarEnable)] _StarGlassWarp ("Glass Warp", Range(0, 1)) = 0
-        [Toggle] [GroupToggle(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineEnable ("Enable Constellation Lines", Float) = 0
-        [Enum(Line Color, 0, Star Color, 1)] [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineColorMode ("Line Color Mode", Float) = 0
-        [HDR] [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineColor ("Line Color", Color) = (0.6, 0.8, 1.0, 1)
-        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineStrength ("Line Brightness", Range(0, 4)) = 1
-        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineThickness ("Line Thickness", Range(0, 100)) = 25
-        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineMaxLen ("Max Connection Length", Range(0, 100)) = 55
-        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineFade ("Length Falloff", Range(0, 100)) = 50
-        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineDepthFade ("Depth Fade", Range(0, 100)) = 40
-        [Group(specialfx_stars_lines)] [ShowIf(_StarEnable)] _StarLineSpeed ("Line Motion", Range(0, 100)) = 30
-        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaColorMode ("Nebula Color Mode", Float) = 0
-        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _StarBgColor ("Nebula Base Color", Color) = (0.05, 0.0, 0.1, 1)
-        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaBright ("Nebula Brightness", Range(0, 3)) = 1.0
-        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaPopColor ("Nebula AL Pop Color", Color) = (0.5, 0.0, 1.0, 1)
-        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor0 ("Gradient Color 1", Color) = (0.05, 0.05, 0.4, 1)
-        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor1 ("Gradient Color 2", Color) = (0.35, 0.1, 0.6, 1)
-        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor2 ("Gradient Color 3", Color) = (0.8, 0.2, 0.7, 1)
-        [HDR] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor3 ("Gradient Color 4", Color) = (1.0, 0.5, 0.8, 1)
-        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradPos1 ("Color 2 Position", Range(0, 1)) = 0.33
-        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradPos2 ("Color 3 Position", Range(0, 1)) = 0.66
-        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 4)] _NebGradTex ("Gradient Ramp", 2D) = "white" {}
-        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _NebulaAL ("Nebula Pop Transition Sensitivity", Range(0, 10)) = 2.0
-        [Toggle] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] _RaymarchEnable ("Enable Raymarched Nebula", Float) = 0
-        [IntRange] [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_RaymarchEnable)] _RaymarchSteps ("Raymarch Quality", Range(8, 128)) = 32
-        [Group(specialfx_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_RaymarchEnable)] _RaymarchDensity ("Fog Density", Range(0, 10)) = 2.0
-        [Toggle] [GroupToggle(specialfx_holo)] _HoloEnable ("Enable Hologram", Float) = 0
-        [HDR] [Group(specialfx_holo)] [ShowIf(_HoloEnable)] _HoloColor ("Holo Color", Color) = (0.0, 0.9, 1.0, 1)
-        [Group(specialfx_holo)] [ShowIf(_HoloEnable)] _HoloTintAmount ("Tint Amount", Range(0, 1)) = 0.7
-        [Group(specialfx_holo)] [ShowIf(_HoloEnable)] _HoloTransStyle ("Transparency Style", Float) = 0
-        [Group(specialfx_holo)] [ShowIf(_HoloEnable)] _HoloOpacity ("Base Opacity", Range(0, 1)) = 0.5
-        [Group(specialfx_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanDensity ("Scanline Density", Range(0, 200)) = 60
-        [Group(specialfx_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanSpeed ("Scanline Speed", Range(0, 20)) = 3
-        [Group(specialfx_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanSharpness ("Scanline Sharpness", Range(1, 16)) = 4
-        [Group(specialfx_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanStrength ("Scanline Strength", Range(0, 4)) = 1
-        [Group(specialfx_holo_rim)] [ShowIf(_HoloEnable)] _HoloRimStrength ("Rim Strength", Range(0, 4)) = 1.5
-        [Group(specialfx_holo_rim)] [ShowIf(_HoloEnable)] _HoloRimPower ("Rim Power", Range(0.5, 8)) = 3
-        [Group(specialfx_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepStrength ("Sweep Strength", Range(0, 4)) = 1
-        [Group(specialfx_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepSpeed ("Sweep Speed", Range(0, 10)) = 1.5
-        [Group(specialfx_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepWidth ("Sweep Width", Range(0.001, 0.5)) = 0.05
-        [Group(specialfx_holo_glitch)] [ShowIf(_HoloEnable)] _HoloFlicker ("Flicker", Range(0, 1)) = 0.15
-        [Group(specialfx_holo_glitch)] [ShowIf(_HoloEnable)] _HoloGlitchAmount ("Glitch Amount", Range(0, 1)) = 0.2
-        [Group(specialfx_holo_glitch)] [ShowIf(_HoloEnable)] _HoloGlitchSpeed ("Glitch Speed", Range(0, 10)) = 2
-        [Toggle] [GroupToggle(specialfx_plasma)] _PlasmaEnable ("Enable Plasma Hits", Float) = 0
-        [IntRange] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaSites ("Hit Sites", Range(1, 8)) = 8
-        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaSpread ("Hit Spread", Range(0.1, 3)) = 0.9
-        [Enum(Random Per Site, 0, Fixed Color, 1, Per Hit, 2)] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaColorMode ("Color Mode", Float) = 0
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 1)] _PlasmaColor ("Fixed Color", Color) = (0.0, 0.8, 1.0, 1)
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] _PlasmaColor1 ("Hit 1 Color", Color) = (1.0, 0.2, 0.2, 1)
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 2, ge)] _PlasmaColor2 ("Hit 2 Color", Color) = (1.0, 0.6, 0.1, 1)
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 3, ge)] _PlasmaColor3 ("Hit 3 Color", Color) = (0.9, 1.0, 0.2, 1)
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 4, ge)] _PlasmaColor4 ("Hit 4 Color", Color) = (0.2, 1.0, 0.4, 1)
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 5, ge)] _PlasmaColor5 ("Hit 5 Color", Color) = (0.2, 0.9, 1.0, 1)
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 6, ge)] _PlasmaColor6 ("Hit 6 Color", Color) = (0.3, 0.4, 1.0, 1)
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 7, ge)] _PlasmaColor7 ("Hit 7 Color", Color) = (0.7, 0.3, 1.0, 1)
-        [HDR] [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 8, ge)] _PlasmaColor8 ("Hit 8 Color", Color) = (1.0, 0.3, 0.8, 1)
-        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaGlow ("Glow Strength", Range(0, 8)) = 2
-        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRate ("Hit Rate", Range(0.2, 8)) = 2
-        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaThreshold ("Audio Threshold", Range(0, 1)) = 0.3
-        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRippleDist ("Hit Reach", Range(0.03, 1.5)) = 0.4
-        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRingWidth ("Ring Width", Range(0.01, 0.5)) = 0.08
-        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaHitSize ("Hit Flash Size", Range(0.01, 0.5)) = 0.12
-        [Group(specialfx_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaDisplace ("Displacement", Range(0, 0.3)) = 0.05
-        [Toggle] [GroupToggle(specialfx_break)] _BreakEnable ("Enable Geometry Break", Float) = 0
-        [Group(specialfx_break)] [ShowIf(_BreakEnable)] _MaskTex ("Effect Mask (white = breaks)", 2D) = "white" {}
-        [HDR] [Group(specialfx_break)] [ShowIf(_BreakEnable)] _EmissionColor ("Break Glow", Color) = (0, 1, 1, 1)
-        [Enum(Full Energy, 0, Glowing Fragments, 1)] [Group(specialfx_break)] [ShowIf(_BreakEnable)] _BreakStyle ("Break Style (preset)", Float) = 0
-        [Toggle] [Group(specialfx_break)] [ShowIf(_BreakEnable)] _BreakManual ("Manual Glow Override", Float) = 1
-        [Group(specialfx_break)] [ShowIf(_BreakEnable)] _BreakGlow ("Surface Glow Strength", Range(0, 1)) = 1
-        [Group(specialfx_break)] [ShowIf(_BreakEnable)] [ShowIf(_BreakManual)] _BreakCoreGlow ("Gap Fill Glow (inner core)", Range(0, 1)) = 1
-        [Group(specialfx_break)] [ShowIf(_BreakEnable)] [ShowIf(_BreakManual)] _BreakFade ("Break Fade (transparent gap)", Range(0, 1)) = 0
-        [Toggle] [Group(specialfx_break)] [ShowIf(_BreakEnable)] _BreakHueShift ("AL Hue Shift", Float) = 0
-        [Enum(Pixel Grid, 0, Splinter Wave, 1)] [Group(specialfx_break)] [ShowIf(_BreakEnable)] _BreakMode ("Effect Mode", Float) = 1
-        [Enum(Audio Beat, 0, Slow Float, 1)] [Group(specialfx_break)] [ShowIf(_BreakEnable)] _BreakDrive ("Break Trigger", Float) = 0
-        [Group(specialfx_break)] [ShowIf(_BreakDrive)] _FloatSpeed ("Float Cycle Speed", Range(0, 3)) = 0.4
-        [Group(specialfx_break)] [ShowIf(_BreakDrive)] _FloatReach ("Float Reach (peak break)", Range(0, 1)) = 0.7
-        [Group(specialfx_break)] [ShowIf(_BreakDrive)] _FloatStagger ("Float Stagger (low = in sync)", Range(0, 1)) = 0.3
-        [Group(specialfx_break)] [ShowIf(_BreakDrive)] _FloatAudio ("Float Audio Nudge", Range(0, 1)) = 0
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _Band ("Break AL Band", Float) = 0
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _Threshold ("Trigger Threshold", Range(0, 1)) = 0.1
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _GridSize ("Pixel Grid Density (Pixel Grid mode)", Range(8, 128)) = 48
-        [IntRange] [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _Tessellation ("Tessellation", Range(1, 12)) = 4
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _TessNear ("Tess Full Detail Within (m)", Range(0, 20)) = 2
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _TessFar ("Tess Off Beyond (m)", Range(0, 30)) = 5
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _WaveBottom ("Wave Start (Splinter, m)", Range(-3, 4)) = 0.0
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _WaveTop ("Wave End (Splinter, m)", Range(-3, 4)) = 1.6
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _RiseHeight ("Rise Height (m)", Range(0, 1)) = 0.25
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _Spread ("Pop Outward", Range(0, 0.5)) = 0.05
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _Jitter ("Float Drift", Range(0, 0.3)) = 0.03
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _Shrink ("Shrink Amount", Range(0, 1)) = 0.9
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _Tumble ("Shard Tumble", Range(0, 10)) = 3
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _EdgeWidth ("Edge Glow Width", Range(0, 100)) = 15
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _EdgeGap ("Separation Gap", Range(0, 0.5)) = 0.12
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _HeatGlow ("Pre-Break Heat", Range(0, 3)) = 0.8
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _CoreTiling ("Core Pattern Tiling", Range(0.1, 8)) = 1
-        [Group(specialfx_break_breakadv)] [ShowIf(_BreakEnable)] _CoreDepth ("Core Parallax Depth", Range(0, 100)) = 25
-        [Group(specialfx_break)] [ShowIf(_BreakEnable)] _CoreTex ("Inner Core Pattern", 2D) = "white" {}
-        [Toggle] [GroupToggle(specialfx_glitter)] _GlitterEnable ("Enable Glitter", Float) = 0
-        [HDR] [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterColor ("Sparkle Color", Color) = (1, 1, 1, 1)
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterMask ("Glitter Mask", 2D) = "white" {}
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterDensity ("Density", Range(0, 1)) = 0.5
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterSize ("Flake Size", Range(0, 1)) = 0.3
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterBrightness ("Brightness", Range(0, 10)) = 2
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterAmount ("Sparkle Amount", Range(0, 1)) = 0.5
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterViewRange ("Viewable Angle", Range(0, 1)) = 0.3
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterSpeed ("Twinkle Speed", Range(0, 20)) = 6
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterFlow ("Drift Direction (XY)", Vector) = (0, 0, 0, 0)
-        [Enum(UV, 0, World Triplanar, 1)] [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterProjection ("Projection", Float) = 0
-        [Toggle] [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterLit ("Lit by World Lighting", Float) = 0
-        [Toggle] [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] _GlitterALEnable ("AudioLink Reactive", Float) = 0
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] [ShowIf(_GlitterALEnable)] _GlitterBand ("AL Band", Float) = 3
-        [Group(specialfx_glitter)] [ShowIf(_GlitterEnable)] [ShowIf(_GlitterALEnable)] _GlitterAL ("AL Sparkle Boost", Range(0, 10)) = 3
-        [Toggle] [GroupToggle(specialfx_glitch)] _GlitchEnable ("Enable Mesh Glitch", Float) = 0
-        [Group(specialfx_glitch)] [ShowIf(_GlitchEnable)] _GlitchMask ("Glitch Area Mask", 2D) = "white" {}
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchBand ("Glitch AL Band", Float) = 0
-        [Group(specialfx_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchThreshold ("Glitch Threshold", Range(0, 1)) = 0.35
-        [Group(specialfx_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchIntensity ("Displacement (m)", Range(0, 0.2)) = 0.04
-        [Group(specialfx_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchSlices ("Block Density", Float) = 30
-        [Group(specialfx_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchRGBSplit ("RGB Split (UV)", Range(0, 0.05)) = 0.008
-        [Group(specialfx_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchHue ("Neon Intensity", Range(0, 3.2)) = 0
-        [Group(specialfx_height)] _HeightMap ("Height Map (B&W)", 2D) = "black" {}
-        [Toggle] [Group(specialfx_height)] _HeightToNormalEnable ("Convert Height to Bump Normals", Float) = 0
-        [Group(specialfx_height)] [ShowIf(_HeightToNormalEnable)] _HeightStrength ("Recess / Bump Depth", Range(0, 5)) = 1.0
-        [Toggle] [Group(specialfx_height)] _ParallaxEnable ("Enable Parallax Heightmapping", Float) = 0
-        [Group(specialfx_height)] [ShowIf(_ParallaxEnable)] _ParallaxMask ("Parallax Mask", 2D) = "white" {}
-        [Group(specialfx_height)] [ShowIf(_ParallaxEnable)] _ParallaxStrength ("Strength", Range(0, 0.2)) = 0.02
-        [Group(specialfx_height)] [ShowIf(_ParallaxEnable)] _ParallaxOffset ("Offset (Height Bias)", Range(-1, 1)) = 0
-        [Group(specialfx_height)] [ShowIf(_ParallaxEnable)] _ParallaxMipBias ("Mip Bias", Range(-2, 2)) = 0
+        [ToggleUI] [GroupToggle(specialfx_style_room)] _RoomEnable ("Enable Interior Mapping", Float) = 0
+        [NoScaleOffset] [Group(specialfx_style_room)] [ShowIf(_RoomEnable)] _RoomCube ("Room Cubemap", Cube) = "black" {}
+        [NoScaleOffset] [Group(specialfx_style_room)] [ShowIf(_RoomEnable)] _RoomMask ("Window Mask", 2D) = "white" {}
+        [HDR] [Group(specialfx_style_room)] [ShowIf(_RoomEnable)] _RoomColor ("Room Tint", Color) = (1, 1, 1, 1)
+        [Group(specialfx_style_room)] [ShowIf(_RoomEnable)] _RoomDepth ("Room Depth", Range(0.1, 4)) = 1
+        [Group(specialfx_style_room)] [ShowIf(_RoomEnable)] _RoomTile ("Room Tiling", Range(1, 8)) = 1
+        [Group(specialfx_style_room_roomvary)] [ShowIf(_RoomEnable)] _RoomVariety ("Room Variety", Range(0, 1)) = 0.8
+        [Group(specialfx_style_room_roomvary)] [ShowIf(_RoomEnable)] _RoomVaryTint ("Tint Variation", Range(0, 1)) = 0.3
+        [Group(specialfx_style_room_roomvary)] [ShowIf(_RoomEnable)] _RoomVaryDepth ("Depth Variation", Range(0, 1)) = 0.25
+        [NoScaleOffset] [Group(specialfx_style_room_roomfurn)] [ShowIf(_RoomEnable)] _RoomFurnTex ("Furniture Layer (RGBA)", 2D) = "black" {}
+        [Group(specialfx_style_room_roomfurn)] [ShowIf(_RoomEnable)] _RoomFurnDepth ("Furniture Distance", Range(0, 1)) = 0.6
+        [Group(specialfx_style_room_roomfurn)] [ShowIf(_RoomEnable)] _RoomFurnScale ("Furniture Scale", Range(0.2, 3)) = 1
+        [Group(specialfx_style_room_roomfurn)] [ShowIf(_RoomEnable)] _RoomFurnVariety ("Furniture Variety", Range(0, 1)) = 0.7
+        [ToggleUI] [GroupToggle(specialfx_style_room_roomlight)] _RoomLightEnable ("Enable Room Lights", Float) = 0
+        [Group(specialfx_style_room_roomlight)] [ShowIf(_RoomLightEnable)] _RoomLitChance ("Lit Window Chance", Range(0, 1)) = 0.55
+        [HDR] [Group(specialfx_style_room_roomlight)] [ShowIf(_RoomLightEnable)] _RoomLightColor ("Interior Light", Color) = (1.0, 0.85, 0.55, 1)
+        [Group(specialfx_style_room_roomlight)] [ShowIf(_RoomLightEnable)] _RoomLightStrength ("Light Strength", Range(0, 8)) = 1.5
+        [Group(specialfx_style_room_roomlight)] [ShowIf(_RoomLightEnable)] _RoomFlicker ("Flicker", Range(0, 1)) = 0.15
+        [Group(specialfx_style_room_roomlight)] [ShowIf(_RoomLightEnable)] _RoomSwitching ("Switching Speed", Range(0, 1)) = 0.1
+        [Group(specialfx_style_room_roommotion)] [ShowIf(_RoomEnable)] _RoomScrollX ("Spin Horizontal", Range(-2, 2)) = 0
+        [Group(specialfx_style_room_roommotion)] [ShowIf(_RoomEnable)] _RoomScrollY ("Spin Vertical", Range(-2, 2)) = 0
+        [Group(specialfx_style_room_roommotion)] [ShowIf(_RoomEnable)] _RoomSlideX ("Slide Horizontal", Range(-2, 2)) = 0
+        [Group(specialfx_style_room_roommotion)] [ShowIf(_RoomEnable)] _RoomSlideY ("Slide Vertical", Range(-2, 2)) = 0
+        [Group(specialfx_style_room_roomglass)] [ShowIf(_RoomEnable)] _RoomEdge ("Window Edge", Range(0.002, 0.5)) = 0.05
+        [Group(specialfx_style_room_roomglass)] [ShowIf(_RoomEnable)] _RoomGlassType ("Glass Type", Float) = 0
+        [Group(specialfx_style_room_roomglass)] [ShowIf(_RoomEnable)] _RoomGlassWarp ("Glass Distortion", Range(0, 1)) = 0
+        [Group(specialfx_style_room_roomglass)] [ShowIf(_RoomEnable)] [ShowIf(_RoomGlassType, 0)] _RoomGlassScale ("Imperfection Scale", Range(1, 60)) = 14
+        [Group(specialfx_style_room_roomglass)] [ShowIf(_RoomEnable)] [ShowIf(_RoomGlassType, 0)] _RoomGlassStreak ("Vertical Streaking", Range(0, 1)) = 0.5
+        [Group(specialfx_style_room_roomglass)] [ShowIf(_RoomEnable)] [ShowIf(_RoomGlassType, 1)] _RoomGlassSpeed ("Ripple Speed", Range(0, 4)) = 1
+        [Group(specialfx_style_room_roomglass)] [ShowIf(_RoomEnable)] _RoomGlassChroma ("Glass Chromatic", Range(0, 1)) = 0
+        [Enum(None, 0, Fog, 1, Dream Haze, 2)] [Group(specialfx_style_room_roomatmo)] [ShowIf(_RoomEnable)] _RoomDepthMode ("Depth Atmosphere", Float) = 1
+        [Group(specialfx_style_room_roomatmo)] [ShowIf(_RoomEnable)] _RoomFade ("Atmosphere Amount", Range(0, 1)) = 0.3
+        [HDR] [Group(specialfx_style_room_roomatmo)] [ShowIf(_RoomEnable)] _RoomHazeColor ("Haze Color", Color) = (0.5, 0.7, 1.0, 1)
+        [Group(specialfx_style_room_roomatmo)] [ShowIf(_RoomEnable)] _RoomSoften ("Softness", Range(0, 1)) = 0
+        [ToggleUI] [Group(specialfx_style_room_roomal)] [ShowIf(_RoomEnable)] _RoomALEnable ("AudioLink Reactive", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_room_roomal)] [ShowIf(_RoomEnable)] [ShowIf(_RoomALEnable)] _RoomBand ("AL Band", Float) = 3
+        [Group(specialfx_style_room_roomal)] [ShowIf(_RoomEnable)] [ShowIf(_RoomALEnable)] _RoomAL ("AL Boost", Range(0, 8)) = 2
+        [ToggleUI] [GroupToggle(specialfx_style_refract)] _RefractEnable ("Enable Refraction", Float) = 0
+        [NoScaleOffset] [Group(specialfx_style_refract)] [ShowIf(_RefractEnable)] _RefractMask ("Refraction Mask", 2D) = "white" {}
+        [Group(specialfx_style_refract)] [ShowIf(_RefractEnable)] _RefractStrength ("Distortion Strength", Range(0, 1)) = 0.15
+        [Group(specialfx_style_refract)] [ShowIf(_RefractEnable)] _RefractMode ("Refraction Model", Float) = 0
+        [Group(specialfx_style_refract)] [ShowIf(_RefractEnable)] [ShowIf(_RefractMode, 0)] _RefractCA ("Chromatic Aberration", Range(0, 1)) = 0.2
+        [Group(specialfx_style_refract_refractphys)] [ShowIf(_RefractMode, 1)] _RefractIOR ("Index of Refraction", Range(1, 2.5)) = 1.45
+        [Group(specialfx_style_refract_refractphys)] [ShowIf(_RefractMode, 1)] _RefractThickness ("Glass Thickness", Range(0, 2)) = 0.5
+        [Group(specialfx_style_refract_refractphys)] [ShowIf(_RefractMode, 1)] _RefractDispersion ("Dispersion", Range(0, 0.3)) = 0.05
+        [Group(specialfx_style_refract_refractphys)] [ShowIf(_RefractMode, 1)] _RefractRough ("Surface Roughness", Range(0, 1)) = 0
+        [IntRange] [Group(specialfx_style_refract_refractphys)] [ShowIf(_RefractMode, 1)] _RefractSamples ("Blur Samples", Range(1, 12)) = 6
+        [Group(specialfx_style_refract_refractphys)] [ShowIf(_RefractMode, 1)] _RefractFresnel ("Fresnel Falloff", Range(0, 1)) = 0.5
+        [HDR] [Group(specialfx_style_refract_refractphys)] [ShowIf(_RefractMode, 1)] _RefractAbsorb ("Absorption Tint", Color) = (1, 1, 1, 1)
+        [HDR] [Group(specialfx_style_refract)] [ShowIf(_RefractEnable)] _RefractTint ("Glass Tint", Color) = (1, 1, 1, 1)
+        [Group(specialfx_style_refract)] [ShowIf(_RefractEnable)] _RefractBlend ("Refraction Amount", Range(0, 1)) = 1
+        [NoScaleOffset] [Group(specialfx_style_refract_refractshimmer)] [ShowIf(_RefractEnable)] _RefractMap ("Shimmer Map (optional)", 2D) = "bump" {}
+        [Group(specialfx_style_refract_refractshimmer)] [ShowIf(_RefractEnable)] _RefractTile ("Shimmer Tiling", Range(1, 16)) = 4
+        [Group(specialfx_style_refract_refractshimmer)] [ShowIf(_RefractEnable)] _RefractScroll ("Shimmer Speed", Range(0, 2)) = 0.3
+        [ToggleUI] [Group(specialfx_style_refract_refractal)] [ShowIf(_RefractEnable)] _RefractALEnable ("AudioLink Reactive", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_refract_refractal)] [ShowIf(_RefractEnable)] [ShowIf(_RefractALEnable)] _RefractBand ("AL Band", Float) = 0
+        [Group(specialfx_style_refract_refractal)] [ShowIf(_RefractEnable)] [ShowIf(_RefractALEnable)] _RefractAL ("AL Boost", Range(0, 8)) = 3
+        [ToggleUI] [GroupToggle(specialfx_audio_screen)] _ScreenEnable ("Enable Screen Display", Float) = 0
+        [NoScaleOffset] [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenMask ("Screen Mask", 2D) = "white" {}
+        [Enum(Oscilloscope, 0, EQ Bars, 1)] [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenMode ("Screen Mode", Float) = 0
+        [HDR] [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenLineColor ("Wave Color", Color) = (0, 1, 1, 1)
+        [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenWaveAmp ("Wave Amplitude", Range(0, 0.5)) = 0.22
+        [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenWaveSamples ("Waveform Samples", Float) = 512
+        [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenLineWidth ("Line Width", Range(0.001, 0.1)) = 0.02
+        [Group(specialfx_audio_screen_scrbackdrop)] [ShowIf(_ScreenEnable)] _ScreenArt ("Screen Art", 2D) = "black" {}
+        [Group(specialfx_audio_screen_scrbackdrop)] [ShowIf(_ScreenEnable)] _ScreenArtStrength ("Screen Art Strength", Range(0, 2)) = 0.4
+        [Group(specialfx_audio_screen_scrbackdrop)] [ShowIf(_ScreenEnable)] _ScreenBackdrop ("Backdrop", 2D) = "white" {}
+        [HDR] [Group(specialfx_audio_screen_scrbackdrop)] [ShowIf(_ScreenEnable)] _ScreenBGColor ("Background Tint", Color) = (0.02, 0.06, 0.08, 1)
+        [ToggleUI] [Group(specialfx_audio_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridProc ("Procedural Grid", Float) = 1
+        [Group(specialfx_audio_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridCells ("Grid Cells Across", Float) = 12
+        [Group(specialfx_audio_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridLineW ("Grid Line Width", Range(0.005, 0.2)) = 0.04
+        [Group(specialfx_audio_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridMinor ("Grid Minor Lines", Range(0, 1)) = 0.35
+        [Group(specialfx_audio_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridTex ("Grid Texture", 2D) = "black" {}
+        [HDR] [Group(specialfx_audio_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridColor ("Grid Color", Color) = (0.2, 0.5, 0.5, 1)
+        [Group(specialfx_audio_screen_scrgrid)] [ShowIf(_ScreenEnable)] _ScreenGridStrength ("Grid Strength", Range(0, 1)) = 0.5
+        [Group(specialfx_audio_screen_scrlcd)] [ShowIf(_ScreenEnable)] _ScreenLCDTex ("LCD Subpixel Tile", 2D) = "white" {}
+        [Group(specialfx_audio_screen_scrlcd)] [ShowIf(_ScreenEnable)] _ScreenLCDStrength ("LCD Strength", Range(0, 1)) = 0
+        [Group(specialfx_audio_screen_scrlcd)] [ShowIf(_ScreenEnable)] _ScreenScanline ("Scanline Strength", Range(0, 1)) = 0.25
+        [Group(specialfx_audio_screen_scrlcd)] [ShowIf(_ScreenEnable)] _ScreenScanCount ("Scanline Count", Float) = 64
+        [ToggleUI] [Group(specialfx_audio_screen_scrbsod)] [ShowIf(_ScreenEnable)] _ScreenBSOD ("BSOD Mode", Float) = 0
+        [ToggleUI] [Group(specialfx_audio_screen_scrbsod)] [ShowIf(_ScreenEnable)] _ScreenBSODNoAL ("Crash When No AudioLink", Float) = 0
+        [Group(specialfx_audio_screen_scrbsod)] [ShowIf(_ScreenEnable)] _ScreenBSODTex ("Crash Image", 2D) = "black" {}
+        [ToggleUI] [GroupToggle(specialfx_style_rim)] _RimEnable ("Enable Fresnel Rim", Float) = 0
+        [Enum(Off, 0, Always On, 1, Audio Reactive, 2)] [Group(specialfx_style_rim)] [ShowIf(_RimEnable)] _RimState ("Rim Mode", Float) = 1
+        [HDR] [Group(specialfx_style_rim)] [ShowIf(_RimEnable)] _RimColor ("Rim Color", Color) = (0, 1, 1, 1)
+        [ToggleUI] [Group(specialfx_style_rim)] [ShowIf(_RimEnable)] _RimHueShift ("AL Hue Shift", Float) = 0
+        [Group(specialfx_style_rim_rimadv)] [ShowIf(_RimEnable)] _RimWidth ("Rim Width", Range(0, 1)) = 0.35
+        [Group(specialfx_style_rim_rimadv)] [ShowIf(_RimEnable)] _RimSoft ("Rim Softness", Range(0.001, 0.5)) = 0.06
+        [Group(specialfx_style_rim_rimadv)] [ShowIf(_RimEnable)] _RimBase ("Rim Intensity (always on)", Range(0, 2)) = 0.15
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_rim_rimadv)] [ShowIf(_RimEnable)] _RimBand ("Rim AL Band", Float) = 0
+        [Group(specialfx_style_rim_rimadv)] [ShowIf(_RimEnable)] _RimAL ("Rim AL Boost", Range(0, 4)) = 1.5
+        [ToggleUI] [GroupToggle(specialfx_audio_speaker)] _SpeakerEnable ("Enable Speaker Ripple", Float) = 0
+        [Group(specialfx_audio_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerMask ("Speaker Gradient Mask", 2D) = "black" {}
+        [Group(specialfx_audio_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerMaskBlur ("Mask Smoothing", Range(0, 1)) = 0.3
+        [HDR] [Group(specialfx_audio_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerColor ("Speaker Wave Color", Color) = (0, 1, 1, 1)
+        [Enum(Off, 0, Always On, 1, Audio Reactive, 2)] [Group(specialfx_audio_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerState ("Ripple Mode", Float) = 1
+        [ToggleUI] [Group(specialfx_audio_speaker)] [ShowIf(_SpeakerEnable)] _SpeakerHueShift ("AL Hue Shift", Float) = 0
+        [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerIntensity ("Forward Projection (m)", Range(0, 1)) = 0.15
+        [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerExpansion ("Dome Lift", Range(0, 1)) = 0.1
+        [IntRange] [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerRings ("Number of Rings (Max 6)", Range(1, 6)) = 4
+        [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerSpeed ("Ripple Speed", Range(0, 5)) = 2.0
+        [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerRingThickness ("Ring Thickness", Range(0.002, 0.06)) = 0.02
+        [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerRingSoftness ("Ring Softness", Range(0.0005, 0.025)) = 0.01
+        [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerThreshold ("Beat Threshold", Range(0, 1)) = 0.3
+        [Enum(Outward, 0, Inward, 1)] [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerDirection ("Ripple Direction", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_audio_speaker_spkadv)] [ShowIf(_SpeakerEnable)] _SpeakerBand ("Speaker AL Band", Float) = 0
+        [ToggleUI] [GroupToggle(specialfx_audio_eq)] _EQEnable ("Enable Live EQ Visualizer", Float) = 0
+        [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQIntensity ("Intensity", Range(0, 1)) = 1
+        [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQMask ("EQ Screen Mask", 2D) = "black" {}
+        [HDR] [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQColor ("EQ Bar Color", Color) = (0, 1, 1, 1)
+        [IntRange] [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQColumns ("Number of EQ Bars", Range(2, 32)) = 8
+        [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQGain ("Bar Gain", Range(0.5, 16)) = 4
+        [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQCurve ("Bar Curve", Range(0.25, 2)) = 0.7
+        [ToggleUI] [GroupToggle(specialfx_style_irid)] _IridEnable ("Enable Iridescence", Float) = 0
+        [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] _IridMask ("Iridescence Mask", 2D) = "white" {}
+        [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] _IridMode ("Iridescence Model", Float) = 0
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmNm ("Film Thickness (nm)", Range(80, 1200)) = 380
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmIOR ("Film Refractive Index", Range(1.05, 3)) = 1.4
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmVary ("Thickness Variation", Range(0, 1)) = 0.25
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmSpace ("Variation Space", Float) = 0
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmScale ("Variation Scale", Range(0.5, 30)) = 6
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmSat ("Interference Saturation", Range(0, 2)) = 1
+        [NoScaleOffset] [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmRamp ("Palette Ramp (optional)", 2D) = "white" {}
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmRampAmt ("Palette Amount", Range(0, 1)) = 0
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmFresnel ("Edge Weighting", Range(0, 1)) = 0.6
+        [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmTintAmt ("Apply to Base Color", Range(0, 1)) = 0.7
+        [HDR] [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] [ShowIf(_IridMode, 0)] _IridColor1 ("Iridescence Phase 1", Color) = (1, 0, 0, 1)
+        [HDR] [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] [ShowIf(_IridMode, 0)] _IridColor2 ("Iridescence Phase 2", Color) = (0, 1, 0, 1)
+        [HDR] [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] [ShowIf(_IridMode, 0)] _IridColor3 ("Iridescence Phase 3", Color) = (0, 0, 1, 1)
+        [Group(specialfx_style_irid_iridadv)] [ShowIf(_IridEnable)] [ShowIf(_IridMode, 0)] _IridThickness ("Phase Spread (0-100)", Range(0, 100)) = 50
+        [Group(specialfx_style_irid_iridadv)] [ShowIf(_IridEnable)] _IridSpeed ("Passive Shift Speed (-50 to 50)", Range(-50, 50)) = 10
+        [ToggleUI] [GroupToggle(specialfx_style_irid_iridal)] [ShowIf(_IridEnable)] _IridALEnable ("Enable AudioLink Reactivity", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_irid_iridal)] [ShowIf(_IridALEnable)] _IridBand ("Primary AL Band", Float) = 1
+        [Group(specialfx_style_irid_iridal)] [ShowIf(_IridALEnable)] _IridAL ("AL Phase Reactivity (0-100)", Range(0, 100)) = 20
+        [ToggleUI] [Group(specialfx_style_irid_iridal)] [ShowIf(_IridALEnable)] _IridVolBoost ("Boost by Overall Volume", Float) = 0
+        [Group(specialfx_style_irid_iridal)] [ShowIf(_IridVolBoost)] _IridVolAmt ("Volume Boost Amount", Range(0, 4)) = 1.0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_irid_iridal_adj)] [ShowIf(_IridALEnable)] _IridMultBand ("Multiplier Band", Float) = 0
+        [Group(specialfx_style_irid_iridal_adj)] [ShowIf(_IridALEnable)] _IridMultAmt ("Multiplier Amount", Range(0, 4)) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_irid_iridal_adj)] [ShowIf(_IridALEnable)] _IridAddBand ("Additive Band", Float) = 3
+        [Group(specialfx_style_irid_iridal_adj)] [ShowIf(_IridALEnable)] _IridAddAmt ("Additive Amount", Range(0, 4)) = 0
+        [ToggleUI] [GroupToggle(specialfx_geo_dissolve)] _DissolveEnable ("Enable Data-Burn Dissolve", Float) = 0
+        [HDR] [Group(specialfx_geo_dissolve)] [ShowIf(_DissolveEnable)] _DissolveColor ("Burn Edge Color", Color) = (1, 0.2, 0, 1)
+        [ToggleUI] [Group(specialfx_geo_dissolve)] [ShowIf(_DissolveEnable)] _DissolveHueShift ("AL Hue Shift", Float) = 0
+        [Group(specialfx_geo_dissolve)] [ShowIf(_DissolveEnable)] _DissolveTex ("Dissolve Noise Pattern", 2D) = "white" {}
+        [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveAmount ("Base Dissolve Amount (0-100)", Range(0, 100)) = 0
+        [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveAL ("Audio Reactivity (0-100)", Range(0, 100)) = 30
+        [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveWidth ("Edge Glow Width (0-100)", Range(0, 100)) = 15
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveBand ("Burn AL Band", Float) = 0
+        [ToggleUI] [GroupToggle(specialfx_style_outline)] _OutlineEnable ("Enable Glitch Outline", Float) = 0
+        [Group(specialfx_style_outline)] [ShowIf(_OutlineEnable)] _OutlineMask ("Outline Target Mask", 2D) = "black" {}
+        [Enum(Off, 0, Always On, 1, Audio Reactive, 2)] [Group(specialfx_style_outline)] [ShowIf(_OutlineEnable)] _OutlineState ("Outline Mode", Float) = 1
+        [HDR] [Group(specialfx_style_outline)] [ShowIf(_OutlineEnable)] _OutlineColor ("Outline Effect Color", Color) = (0, 1, 1, 1)
+        [ToggleUI] [Group(specialfx_style_outline)] [ShowIf(_OutlineEnable)] _OutlineHueShift ("AL Hue Shift", Float) = 0
+        [Group(specialfx_style_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineFloat ("Hologram Hover Height (0-100)", Range(0, 100)) = 20
+        [Group(specialfx_style_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineRGBSplit ("RGB Split Amount (0-100)", Range(0, 100)) = 30
+        [Group(specialfx_style_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineSpread ("Outline Spread Width (0-100)", Range(0, 100)) = 25
+        [Group(specialfx_style_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineSlices ("Outline Block Density", Float) = 50.0
+        [Group(specialfx_style_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineSpeed ("Outline Jitter Speed", Range(0, 50)) = 15.0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineBand ("Outline AL Band", Float) = 2
+        [Group(specialfx_style_outline_outadv)] [ShowIf(_OutlineEnable)] _OutlineAL ("Outline AL Boost", Range(0, 4)) = 1.5
+        [ToggleUI] [GroupToggle(specialfx_style_outlinestd)] _OutlineStdEnable ("Enable Standard Outline", Float) = 0
+        [HDR] [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdColor ("Outline Color", Color) = (0, 0, 0, 1)
+        [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdWidth ("Outline Width", Range(0, 1)) = 0.15
+        [Enum(World metres, 0, Screen constant, 1)] [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdWidthMode ("Width Mode", Float) = 0
+        [NoScaleOffset] [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdMask ("Outline Mask (white = outline)", 2D) = "white" {}
+        [ToggleUI] [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdVColorMask ("Also Mask by Vertex Color", Float) = 0
+        [Enum(Red, 0, Green, 1, Blue, 2, Alpha, 3)] [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdVColorMask)] _OutlineStdVColorChannel ("Vertex Color Channel", Float) = 0
+        [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdTexTint ("Texture Tint", Range(0, 1)) = 0
+        [ToggleUI] [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdLit ("Lit by Scene Light", Float) = 0
+        [ToggleUI] [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdDistFade ("Distance Falloff [EXPERIMENTAL]", Float) = 0
+        [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdDistFade)] _OutlineStdFadeNear ("Full Width Within (m)", Range(0, 10)) = 1
+        [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdDistFade)] _OutlineStdFadeFar ("Gone Beyond (m)", Range(0, 20)) = 5
+        [ToggleUI] [GroupToggle(specialfx_style_stars)] _StarEnable ("Enable Constellation FX", Float) = 0
+        [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarMask ("Constellation Mask (optional)", 2D) = "white" {}
+        [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _ConstellationBlend ("Blend Mode", Float) = 0
+        [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarUVSource ("UV Source", Float) = 0
+        [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _ConstellationEmission ("Emission Strength", Range(0, 8)) = 1
+
+        [Enum(Base Color, 0, ColorChord, 1, Random Per Star, 2)] [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarColorMode ("Star Color Mode", Float) = 0
+        [HDR] [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarColor ("Star Base Color", Color) = (1, 1, 1, 1)
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarSaturation ("Star Color Saturation", Range(0, 3)) = 1.5
+        [ToggleUI] [GroupToggle(specialfx_style_stars_staral)] [ShowIf(_StarEnable)] _StarALEnable ("Enable AudioLink Reactivity", Float) = 1
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_stars_staral)] [ShowIf(_StarALEnable)] _StarBand ("Primary AL Band", Float) = 2
+        [Group(specialfx_style_stars_staral)] [ShowIf(_StarALEnable)] _StarAL ("Star AL Pop Boost (0-10)", Range(0, 10)) = 3.0
+        [ToggleUI] [Group(specialfx_style_stars_staral)] [ShowIf(_StarALEnable)] _StarVolBoost ("Boost by Overall Volume", Float) = 0
+        [Group(specialfx_style_stars_staral)] [ShowIf(_StarVolBoost)] _StarVolAmt ("Volume Boost Amount", Range(0, 4)) = 1.0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_stars_staral_adj)] [ShowIf(_StarALEnable)] _StarMultBand ("Multiplier Band", Float) = 0
+        [Group(specialfx_style_stars_staral_adj)] [ShowIf(_StarALEnable)] _StarMultAmt ("Multiplier Amount", Range(0, 4)) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_stars_staral_adj)] [ShowIf(_StarALEnable)] _StarAddBand ("Additive Band", Float) = 3
+        [Group(specialfx_style_stars_staral_adj)] [ShowIf(_StarALEnable)] _StarAddAmt ("Additive Amount", Range(0, 4)) = 0
+        [IntRange] [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarLayers ("Constellation Layers", Range(1, 5)) = 3
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarDensity ("Star Density", Range(0, 100)) = 50
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarSize ("Star Size", Range(0, 100)) = 25
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarScatter ("Star Scatter", Range(0, 1)) = 0.7
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarSoftness ("Star Softness", Range(0, 100)) = 35
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarTwinkle ("Twinkle Amount", Range(0, 100)) = 50
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarTwinkleSpeed ("Twinkle Speed", Range(0, 100)) = 30
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarSpeed ("Global Drift Speed", Range(0, 100)) = 15
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarDrift ("Chaotic Jitter", Range(0, 100)) = 25
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarParallax ("Parallax Depth", Range(0, 100)) = 30
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarGlassWarp ("Glass Warp", Range(0, 1)) = 0
+        [ToggleUI] [GroupToggle(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineEnable ("Enable Constellation Lines", Float) = 0
+        [Enum(Line Color, 0, Star Color, 1)] [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineColorMode ("Line Color Mode", Float) = 0
+        [HDR] [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineColor ("Line Color", Color) = (0.6, 0.8, 1.0, 1)
+        [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineStrength ("Line Brightness", Range(0, 4)) = 1
+        [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineThickness ("Line Thickness", Range(0, 100)) = 25
+        [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineMaxLen ("Max Connection Length", Range(0, 100)) = 55
+        [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineFade ("Length Falloff", Range(0, 100)) = 50
+        [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineDepthFade ("Depth Fade", Range(0, 100)) = 40
+        [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineSpeed ("Line Motion", Range(0, 100)) = 30
+        [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] _NebulaColorMode ("Nebula Color Mode", Float) = 0
+        [HDR] [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] _StarBgColor ("Nebula Base Color", Color) = (0.05, 0.0, 0.1, 1)
+        [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] _NebulaBright ("Nebula Brightness", Range(0, 3)) = 1.0
+        [HDR] [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] _NebulaPopColor ("Nebula AL Pop Color", Color) = (0.5, 0.0, 1.0, 1)
+        [HDR] [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor0 ("Gradient Color 1", Color) = (0.05, 0.05, 0.4, 1)
+        [HDR] [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor1 ("Gradient Color 2", Color) = (0.35, 0.1, 0.6, 1)
+        [HDR] [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor2 ("Gradient Color 3", Color) = (0.8, 0.2, 0.7, 1)
+        [HDR] [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradColor3 ("Gradient Color 4", Color) = (1.0, 0.5, 0.8, 1)
+        [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradPos1 ("Color 2 Position", Range(0, 1)) = 0.33
+        [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 3)] _NebGradPos2 ("Color 3 Position", Range(0, 1)) = 0.66
+        [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_NebulaColorMode, 4)] _NebGradTex ("Gradient Ramp", 2D) = "white" {}
+        [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] _NebulaAL ("Nebula Pop Transition Sensitivity", Range(0, 10)) = 2.0
+        [ToggleUI] [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] _RaymarchEnable ("Enable Raymarched Nebula", Float) = 0
+        [IntRange] [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_RaymarchEnable)] _RaymarchSteps ("Raymarch Quality", Range(8, 128)) = 32
+        [Group(specialfx_style_stars_nebula)] [ShowIf(_StarEnable)] [ShowIf(_RaymarchEnable)] _RaymarchDensity ("Fog Density", Range(0, 10)) = 2.0
+        [ToggleUI] [GroupToggle(specialfx_style_holo)] _HoloEnable ("Enable Hologram", Float) = 0
+        [Group(specialfx_style_holo)] [ShowIf(_HoloEnable)] _HoloIntensity ("Intensity", Range(0, 1)) = 1
+        [HDR] [Group(specialfx_style_holo)] [ShowIf(_HoloEnable)] _HoloColor ("Holo Color", Color) = (0.0, 0.9, 1.0, 1)
+        [Group(specialfx_style_holo)] [ShowIf(_HoloEnable)] _HoloTintAmount ("Tint Amount", Range(0, 1)) = 0.7
+        [Group(specialfx_style_holo)] [ShowIf(_HoloEnable)] _HoloTransStyle ("Transparency Style", Float) = 0
+        [Group(specialfx_style_holo)] [ShowIf(_HoloEnable)] _HoloOpacity ("Base Opacity", Range(0, 1)) = 0.5
+        [Group(specialfx_style_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanDensity ("Scanline Density", Range(0, 200)) = 60
+        [Group(specialfx_style_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanSpeed ("Scanline Speed", Range(0, 20)) = 3
+        [Group(specialfx_style_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanSharpness ("Scanline Sharpness", Range(1, 16)) = 4
+        [Group(specialfx_style_holo_scan)] [ShowIf(_HoloEnable)] _HoloScanStrength ("Scanline Strength", Range(0, 4)) = 1
+        [Group(specialfx_style_holo_rim)] [ShowIf(_HoloEnable)] _HoloRimStrength ("Rim Strength", Range(0, 4)) = 1.5
+        [Group(specialfx_style_holo_rim)] [ShowIf(_HoloEnable)] _HoloRimPower ("Rim Power", Range(0.5, 8)) = 3
+        [Group(specialfx_style_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepStrength ("Sweep Strength", Range(0, 4)) = 1
+        [Group(specialfx_style_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepSpeed ("Sweep Speed", Range(0, 10)) = 1.5
+        [Group(specialfx_style_holo_sweep)] [ShowIf(_HoloEnable)] _HoloSweepWidth ("Sweep Width", Range(0.001, 0.5)) = 0.05
+        [Group(specialfx_style_holo_glitch)] [ShowIf(_HoloEnable)] _HoloFlicker ("Flicker", Range(0, 1)) = 0.15
+        [Group(specialfx_style_holo_glitch)] [ShowIf(_HoloEnable)] _HoloGlitchAmount ("Glitch Amount", Range(0, 1)) = 0.2
+        [Group(specialfx_style_holo_glitch)] [ShowIf(_HoloEnable)] _HoloGlitchSpeed ("Glitch Speed", Range(0, 10)) = 2
+        [ToggleUI] [GroupToggle(specialfx_audio_plasma)] _PlasmaEnable ("Enable Plasma Hits", Float) = 0
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaIntensity ("Intensity", Range(0, 1)) = 1
+        [IntRange] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaSites ("Hit Sites", Range(1, 8)) = 8
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaSpread ("Hit Spread", Range(0.1, 3)) = 0.9
+        [Enum(Random Per Site, 0, Fixed Color, 1, Per Hit, 2)] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaColorMode ("Color Mode", Float) = 0
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 1)] _PlasmaColor ("Fixed Color", Color) = (0.0, 0.8, 1.0, 1)
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] _PlasmaColor1 ("Hit 1 Color", Color) = (1.0, 0.2, 0.2, 1)
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 2, ge)] _PlasmaColor2 ("Hit 2 Color", Color) = (1.0, 0.6, 0.1, 1)
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 3, ge)] _PlasmaColor3 ("Hit 3 Color", Color) = (0.9, 1.0, 0.2, 1)
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 4, ge)] _PlasmaColor4 ("Hit 4 Color", Color) = (0.2, 1.0, 0.4, 1)
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 5, ge)] _PlasmaColor5 ("Hit 5 Color", Color) = (0.2, 0.9, 1.0, 1)
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 6, ge)] _PlasmaColor6 ("Hit 6 Color", Color) = (0.3, 0.4, 1.0, 1)
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 7, ge)] _PlasmaColor7 ("Hit 7 Color", Color) = (0.7, 0.3, 1.0, 1)
+        [HDR] [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] [ShowIf(_PlasmaColorMode, 2)] [ShowIf(_PlasmaSites, 8, ge)] _PlasmaColor8 ("Hit 8 Color", Color) = (1.0, 0.3, 0.8, 1)
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaGlow ("Glow Strength", Range(0, 8)) = 2
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRate ("Hit Rate", Range(0.2, 8)) = 2
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaThreshold ("Audio Threshold", Range(0, 1)) = 0.3
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRippleDist ("Hit Reach", Range(0.03, 1.5)) = 0.4
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaRingWidth ("Ring Width", Range(0.01, 0.5)) = 0.08
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaHitSize ("Hit Flash Size", Range(0.01, 0.5)) = 0.12
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaDisplace ("Displacement", Range(0, 0.3)) = 0.05
+        [ToggleUI] [GroupToggle(specialfx_style_retro)] _RetroEnable ("Enable Retro / PS1", Float) = 0
+        [ToggleUI] [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] _RetroSnap ("Vertex Snap", Float) = 1
+        [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] [ShowIf(_RetroSnap)] _RetroSnapRes ("Snap Resolution", Range(16, 640)) = 320
+        [ToggleUI] [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] _RetroAffine ("Affine Texture Warp", Float) = 0
+        [ToggleUI] [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] _RetroPixelate ("Texture Pixelation", Float) = 0
+        [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] [ShowIf(_RetroPixelate)] _RetroPixelRes ("Pixel Density", Range(16, 512)) = 128
+        [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] _RetroLevels ("Color Levels", Range(2, 64)) = 32
+        [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] _RetroDither ("Dither", Range(0, 1)) = 1
+        [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] _RetroScanlines ("Scanline Intensity", Range(0, 1)) = 0
+        [Group(specialfx_style_retro)] [ShowIf(_RetroEnable)] [ShowIf(_RetroScanlines)] _RetroScanCount ("Scanline Count", Range(30, 600)) = 240
+        [ToggleUI] [GroupToggle(specialfx_style_morph)] _MorphEnable ("Enable UV Morph", Float) = 0
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphIntensity ("Intensity", Range(0, 1)) = 1
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphMode ("Morph Pattern", Float) = 0
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphStrength ("Distortion Amount", Range(0, 0.5)) = 0.05
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphFlowMap ("Flow Map (RG = direction)", 2D) = "grey" {}
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphScale ("Pattern Scale", Range(0.5, 30)) = 6
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphTiling ("Pattern Tiling / Offset", Vector) = (1, 1, 0, 0)
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphMask ("Morph Mask (optional)", 2D) = "white" {}
+        [ToggleUI] [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphMaskInvert ("Invert Mask", Float) = 0
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphSpeed ("Speed", Range(0, 8)) = 1
+        [ToggleUI] [GroupToggle(specialfx_style_morph_morphal)] _MorphAudio ("Enable AudioLink Reactivity", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_morph_morphal)] [ShowIf(_MorphAudio)] _MorphBand ("Primary AL Band", Float) = 0
+        [Group(specialfx_style_morph_morphal)] [ShowIf(_MorphAudio)] _MorphALBoost ("AL Distortion Boost", Range(0, 8)) = 2
+        [Group(specialfx_style_morph_morphal)] [ShowIf(_MorphAudio)] _MorphALSpeed ("AL Speed Boost", Range(0, 8)) = 0
+        [ToggleUI] [Group(specialfx_style_morph_morphal)] [ShowIf(_MorphAudio)] _MorphVolBoost ("Boost by Overall Volume", Float) = 0
+        [Group(specialfx_style_morph_morphal)] [ShowIf(_MorphVolBoost)] _MorphVolAmt ("Volume Boost Amount", Range(0, 4)) = 1.0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_morph_morphal_adj)] [ShowIf(_MorphAudio)] _MorphMultBand ("Multiplier Band", Float) = 0
+        [Group(specialfx_style_morph_morphal_adj)] [ShowIf(_MorphAudio)] _MorphMultAmt ("Multiplier Amount", Range(0, 4)) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_morph_morphal_adj)] [ShowIf(_MorphAudio)] _MorphAddBand ("Additive Band", Float) = 3
+        [Group(specialfx_style_morph_morphal_adj)] [ShowIf(_MorphAudio)] _MorphAddAmt ("Additive Amount", Range(0, 4)) = 0
+        [Group(specialfx_audio_plasma)] [ShowIf(_PlasmaEnable)] _PlasmaViewMode ("Show In", Float) = 0
+        [Group(specialfx_style_holo)] [ShowIf(_HoloEnable)] _HoloViewMode ("Show In", Float) = 0
+        [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarViewMode ("Show In", Float) = 0
+        [Group(specialfx_style_morph)] [ShowIf(_MorphEnable)] _MorphViewMode ("Show In", Float) = 0
+        [ToggleUI] [GroupToggle(specialfx_view_viewvis)] _ViewVisEnable ("Enable View Visibility", Float) = 0
+        [ToggleUI] [Group(specialfx_view_viewvis)] [ShowIf(_ViewVisEnable)] _ViewVisDirect ("Visible Normally", Float) = 1
+        [ToggleUI] [Group(specialfx_view_viewvis)] [ShowIf(_ViewVisEnable)] _ViewVisMirror ("Visible in Mirror", Float) = 1
+        [ToggleUI] [Group(specialfx_view_viewvis)] [ShowIf(_ViewVisEnable)] _ViewVisCamera ("Visible in Camera", Float) = 1
+        [ToggleUI] [GroupToggle(specialfx_geo_break)] _BreakEnable ("Enable Geometry Break", Float) = 0
+        [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _MaskTex ("Effect Mask (white = breaks)", 2D) = "white" {}
+        [HDR] [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _EmissionColor ("Break Glow", Color) = (0, 1, 1, 1)
+        [Enum(Full Energy, 0, Glowing Fragments, 1)] [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _BreakStyle ("Break Style (preset)", Float) = 0
+        [ToggleUI] [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _BreakManual ("Manual Glow Override", Float) = 1
+        [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _BreakGlow ("Surface Glow Strength", Range(0, 1)) = 1
+        [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] [ShowIf(_BreakManual)] _BreakCoreGlow ("Gap Fill Glow (inner core)", Range(0, 1)) = 1
+        [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] [ShowIf(_BreakManual)] _BreakFade ("Break Fade (transparent gap)", Range(0, 1)) = 0
+        [ToggleUI] [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _BreakHueShift ("AL Hue Shift", Float) = 0
+        [Enum(Pixel Grid, 0, Splinter Wave, 1)] [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _BreakMode ("Effect Mode", Float) = 1
+        [Enum(Audio Beat, 0, Slow Float, 1)] [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _BreakDrive ("Break Trigger", Float) = 0
+        [Group(specialfx_geo_break)] [ShowIf(_BreakDrive)] _FloatSpeed ("Float Cycle Speed", Range(0, 3)) = 0.4
+        [Group(specialfx_geo_break)] [ShowIf(_BreakDrive)] _FloatReach ("Float Reach (peak break)", Range(0, 1)) = 0.7
+        [Group(specialfx_geo_break)] [ShowIf(_BreakDrive)] _FloatStagger ("Float Stagger (low = in sync)", Range(0, 1)) = 0.3
+        [Group(specialfx_geo_break)] [ShowIf(_BreakDrive)] _FloatAudio ("Float Audio Nudge", Range(0, 1)) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _Band ("Break AL Band", Float) = 0
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _Threshold ("Trigger Threshold", Range(0, 1)) = 0.1
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _GridSize ("Pixel Grid Density (Pixel Grid mode)", Range(8, 128)) = 48
+        [IntRange] [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _Tessellation ("Tessellation", Range(1, 12)) = 4
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _TessNear ("Tess Full Detail Within (m)", Range(0, 20)) = 2
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _TessFar ("Tess Off Beyond (m)", Range(0, 30)) = 5
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _WaveBottom ("Wave Start (Splinter, m)", Range(-3, 4)) = 0.0
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _WaveTop ("Wave End (Splinter, m)", Range(-3, 4)) = 1.6
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _RiseHeight ("Rise Height (m)", Range(0, 1)) = 0.25
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _Spread ("Pop Outward", Range(0, 0.5)) = 0.05
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _Jitter ("Float Drift", Range(0, 0.3)) = 0.03
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _Shrink ("Shrink Amount", Range(0, 1)) = 0.9
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _Tumble ("Shard Tumble", Range(0, 10)) = 3
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _EdgeWidth ("Edge Glow Width", Range(0, 100)) = 15
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _EdgeGap ("Separation Gap", Range(0, 0.5)) = 0.12
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _HeatGlow ("Pre-Break Heat", Range(0, 3)) = 0.8
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _CoreTiling ("Core Pattern Tiling", Range(0.1, 8)) = 1
+        [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _CoreDepth ("Core Parallax Depth", Range(0, 100)) = 25
+        [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _CoreTex ("Inner Core Pattern", 2D) = "white" {}
+        [ToggleUI] [GroupToggle(specialfx_style_glitter)] _GlitterEnable ("Enable Glitter", Float) = 0
+        [HDR] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterColor ("Sparkle Color", Color) = (1, 1, 1, 1)
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterMask ("Glitter Mask", 2D) = "white" {}
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterDensity ("Density", Range(0, 1)) = 0.5
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterSize ("Flake Size", Range(0, 1)) = 0.3
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterBrightness ("Brightness", Range(0, 10)) = 2
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterAmount ("Sparkle Amount", Range(0, 1)) = 0.5
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterViewRange ("Viewable Angle", Range(0, 1)) = 0.3
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterSpeed ("Twinkle Speed", Range(0, 20)) = 6
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterFlow ("Drift Direction (XY)", Vector) = (0, 0, 0, 0)
+        [Enum(UV, 0, World Triplanar, 1)] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterProjection ("Projection", Float) = 0
+        [ToggleUI] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterLit ("Lit by World Lighting", Float) = 0
+        [ToggleUI] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterALEnable ("AudioLink Reactive", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] [ShowIf(_GlitterALEnable)] _GlitterBand ("AL Band", Float) = 3
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] [ShowIf(_GlitterALEnable)] _GlitterAL ("AL Sparkle Boost", Range(0, 10)) = 3
+        [ToggleUI] [GroupToggle(specialfx_geo_glitch)] _GlitchEnable ("Enable Mesh Glitch", Float) = 0
+        [Group(specialfx_geo_glitch)] [ShowIf(_GlitchEnable)] _GlitchMask ("Glitch Area Mask", 2D) = "white" {}
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchBand ("Glitch AL Band", Float) = 0
+        [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchThreshold ("Glitch Threshold", Range(0, 1)) = 0.35
+        [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchIntensity ("Displacement (m)", Range(0, 0.2)) = 0.04
+        [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchSlices ("Block Density", Float) = 30
+        [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchRGBSplit ("RGB Split (UV)", Range(0, 0.05)) = 0.008
+        [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchHue ("Neon Intensity", Range(0, 3.2)) = 0
+        [Group(specialfx_style_height)] _HeightMap ("Height Map (B&W)", 2D) = "black" {}
+        [ToggleUI] [Group(specialfx_style_height)] _HeightToNormalEnable ("Convert Height to Bump Normals", Float) = 0
+        [Group(specialfx_style_height)] [ShowIf(_HeightToNormalEnable)] _HeightStrength ("Recess / Bump Depth", Range(0, 5)) = 1.0
+        [ToggleUI] [Group(specialfx_style_height)] _ParallaxEnable ("Enable Parallax Heightmapping", Float) = 0
+        [Group(specialfx_style_height)] [ShowIf(_ParallaxEnable)] _ParallaxMask ("Parallax Mask", 2D) = "white" {}
+        [Group(specialfx_style_height)] [ShowIf(_ParallaxEnable)] _ParallaxStrength ("Strength", Range(0, 0.2)) = 0.02
+        [Group(specialfx_style_height)] [ShowIf(_ParallaxEnable)] _ParallaxOffset ("Offset (Height Bias)", Range(-1, 1)) = 0
+        [Group(specialfx_style_height)] [ShowIf(_ParallaxEnable)] _ParallaxMipBias ("Mip Bias", Range(-2, 2)) = 0
         [Toggle(LTCGI)] [GroupToggle(ltcgi)] _LTCGI ("LTCGI System", Float) = 0
         [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGIStrength ("LTCGI Strength", Range(0, 2)) = 1
-        [Toggle] [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGITintOn ("Tint LTCGI", Float) = 0
+        [ToggleUI] [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGITintOn ("Tint LTCGI", Float) = 0
         [Group(ltcgi)] [ShowIf(_LTCGI)] [ShowIf(_LTCGITintOn)] _LTCGIDiffuseTint ("LTCGI Diffuse Tint", Color) = (1, 1, 1, 1)
         [Group(ltcgi)] [ShowIf(_LTCGI)] [ShowIf(_LTCGITintOn)] _LTCGISpecularTint ("LTCGI Specular Tint", Color) = (1, 1, 1, 1)
         [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGIOcclusion ("LTCGI Occlusion", Range(0, 1)) = 1
         [Toggle(ZET_LIGHT_VOLUMES)] [GroupToggle(lightvolumes)] _LightVolumes ("Light Volumes System", Float) = 1
         [Group(lightvolumes)] [ShowIf(_LightVolumes)] _LightVolumesStrength ("Light Volumes Strength", Range(0, 2)) = 1
-        [Toggle] [Group(lightvolumes)] [ShowIf(_LightVolumes)] _LightVolumesSpec ("Light Volume Speculars", Float) = 1
+        [ToggleUI] [Group(lightvolumes)] [ShowIf(_LightVolumes)] _LightVolumesSpec ("Light Volume Speculars", Float) = 1
         [Group(lightvolumes)] [ShowIf(_LightVolumes)] _LVPointShading ("Point Light Shaping", Range(0, 4)) = 1
         // --- VRSL GI -------------------------------------------------------
         // No package required. The world publishes _Udon_VRSL_GI_LightTexture as
@@ -798,10 +890,10 @@ Shader "Zetph/ZetsFancyShader"
         // light count reads 0, and the loop never runs.
         [Toggle(ZET_VRSLGI)] [GroupToggle(vrslgi)] _VRSLGI ("VRSL GI System", Float) = 0
         [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIStrength ("VRSL GI Strength", Range(0, 4)) = 1
-        [Toggle] [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecular ("VRSL GI Speculars", Float) = 1
+        [ToggleUI] [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecular ("VRSL GI Speculars", Float) = 1
         [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecularMult ("Specular Multiplier", Range(0, 4)) = 1
         [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecularClamp ("Specular Clamp", Range(0, 8)) = 2
-        [Toggle] [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIToon ("Toon Falloff", Float) = 0
+        [ToggleUI] [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIToon ("Toon Falloff", Float) = 0
         [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIOcclusion ("Apply AO", Range(0, 1)) = 1
 
         // Debug views. Drives an //ifex, so Off strips every line of this from a
@@ -964,12 +1056,15 @@ Shader "Zetph/ZetsFancyShader"
             Texture2D _MatcapTex; Texture2D _MatcapMask;
             Texture2D _MaskTex;
             Texture2D _NebGradTex;
+            Texture2D _MorphMask;
+            Texture2D _MorphFlowMap;
             Texture2D _Em0Mask;
             Texture2D _Em0BgTex;
             Texture2D _OutlineMask;
             Texture2D _OutlineStdMask;
             Texture2D _StarMask;
             Texture2D _IridMask;
+            Texture2D _IridFilmRamp;
             Texture2D _EQMask;
             Texture2D _GlitchMask;
             Texture2D _SpeakerMask;
@@ -999,6 +1094,7 @@ Shader "Zetph/ZetsFancyShader"
             // still exceed the cap - Unity will say so; turn something off.
             TextureCube _RoomCube;
             Texture2D _RoomMask;
+            Texture2D _RoomFurnTex;
             Texture2D _RefractMask;
             Texture2D _RefractMap;
             Texture2D _ScreenMask;
@@ -1035,7 +1131,7 @@ Shader "Zetph/ZetsFancyShader"
             float _VertALRotSpdEnable; float4 _VertALRotSpd; float _VertALRotSpdBand;
             float _VertALScaleEnable; float4 _VertALScaleMin; float4 _VertALScaleMax; float _VertALScaleBand;
             float _VertALUVEnable; float _VertALUVMode; float4 _VertALUVSpeed; float _VertALUVBand;
-            float _RoomEnable; float4 _RoomColor; float _RoomDepth; float _RoomTile; float _RoomFade; float _RoomDepthMode; float4 _RoomHazeColor; float _RoomSoften; float _RoomGlassWarp; float _RoomGlassChroma; float _RoomScrollX; float _RoomScrollY; float _RoomSlideX; float _RoomSlideY; float _RoomEdge; float _RoomALEnable; float _RoomBand; float _RoomAL; float _RefractEnable; float _RefractStrength; float _RefractCA; float4 _RefractTint; float _RefractBlend; float _RefractTile; float _RefractScroll; float _RefractALEnable; float _RefractBand; float _RefractAL; float _ScreenEnable; float _ScreenMode; float4 _ScreenLineColor; float _ScreenWaveAmp; float _ScreenWaveSamples; float _ScreenLineWidth; float _ScreenArtStrength; float4 _ScreenArt_ST; float4 _ScreenBackdrop_ST; float4 _ScreenBGColor; float _ScreenGridProc; float _ScreenGridCells; float _ScreenGridLineW; float _ScreenGridMinor; float4 _ScreenGridTex_ST; float4 _ScreenGridColor; float _ScreenGridStrength; float4 _ScreenLCDTex_ST; float _ScreenLCDStrength; float _ScreenScanline; float _ScreenScanCount; float _ScreenBSOD; float _ScreenBSODNoAL; float4 _ScreenBSODTex_ST;
+            float _RoomEnable; float4 _RoomColor; float _RoomDepth; float _RoomTile; float _RoomVariety; float _RoomVaryTint; float _RoomVaryDepth; float _RoomFurnDepth; float _RoomFurnScale; float _RoomFurnVariety; float _RoomLightEnable; float _RoomLitChance; float4 _RoomLightColor; float _RoomLightStrength; float _RoomFlicker; float _RoomSwitching; float _RoomFade; float _RoomDepthMode; float4 _RoomHazeColor; float _RoomSoften; float _RoomGlassWarp; float _RoomGlassType; float _RoomGlassScale; float _RoomGlassStreak; float _RoomGlassSpeed; float _RoomGlassChroma; float _RoomScrollX; float _RoomScrollY; float _RoomSlideX; float _RoomSlideY; float _RoomEdge; float _RoomALEnable; float _RoomBand; float _RoomAL; float _RefractEnable; float _RefractStrength; float _RefractCA; float _RefractMode; float _RefractIOR; float _RefractThickness; float _RefractDispersion; float _RefractRough; float _RefractSamples; float _RefractFresnel; float4 _RefractAbsorb; float4 _RefractTint; float _RefractBlend; float _RefractTile; float _RefractScroll; float _RefractALEnable; float _RefractBand; float _RefractAL; float _ScreenEnable; float _ScreenMode; float4 _ScreenLineColor; float _ScreenWaveAmp; float _ScreenWaveSamples; float _ScreenLineWidth; float _ScreenArtStrength; float4 _ScreenArt_ST; float4 _ScreenBackdrop_ST; float4 _ScreenBGColor; float _ScreenGridProc; float _ScreenGridCells; float _ScreenGridLineW; float _ScreenGridMinor; float4 _ScreenGridTex_ST; float4 _ScreenGridColor; float _ScreenGridStrength; float4 _ScreenLCDTex_ST; float _ScreenLCDStrength; float _ScreenScanline; float _ScreenScanCount; float _ScreenBSOD; float _ScreenBSODNoAL; float4 _ScreenBSODTex_ST;
             float _CC_Em0;
             float _CC_Em1;
             float _CC_Em2;
@@ -1100,6 +1196,11 @@ Shader "Zetph/ZetsFancyShader"
             float _HeightToNormalEnable;
             float _HeightStrength;
             float _IridEnable;
+            float _IridALEnable; float _IridVolBoost; float _IridVolAmt;
+            float _IridMultBand; float _IridMultAmt; float _IridAddBand; float _IridAddAmt;
+            float _IridFilmRampAmt;
+            float _IridMode; float _IridFilmSpace; float _IridFilmNm; float _IridFilmIOR; float _IridFilmVary;
+            float _IridFilmScale; float _IridFilmSat; float _IridFilmFresnel; float _IridFilmTintAmt;
             float _IridThickness;
             float _IridSpeed;
             float _IridBand;
@@ -1129,6 +1230,7 @@ Shader "Zetph/ZetsFancyShader"
             float _DissolveBand;
             float4 _DissolveColor;
             float _EQEnable;
+            float _EQIntensity;
             float _EQColumns;
             float _EQGain;
             float _EQCurve;
@@ -1456,7 +1558,8 @@ Shader "Zetph/ZetsFancyShader"
             float _NebulaColorMode;
             float4 _NebGradColor0; float4 _NebGradColor1; float4 _NebGradColor2; float4 _NebGradColor3;
             float _NebGradPos1; float _NebGradPos2;
-            float _StarAL;
+            float _StarAL; float _StarALEnable; float _StarMultBand; float _StarMultAmt;
+            float _StarAddBand; float _StarAddAmt; float _StarVolBoost; float _StarVolAmt;
             float _NebulaAL;
             float _StarSoftness;
             float _StarDrift;
@@ -1474,11 +1577,20 @@ Shader "Zetph/ZetsFancyShader"
             float _HoloScanDensity; float _HoloScanSpeed; float _HoloScanSharpness; float _HoloScanStrength;
             float _HoloRimStrength; float _HoloRimPower;
             float _HoloSweepStrength; float _HoloSweepSpeed; float _HoloSweepWidth;
-            float _HoloFlicker; float _HoloGlitchAmount; float _HoloGlitchSpeed;
+            float _HoloFlicker; float _HoloGlitchAmount; float _HoloGlitchSpeed; float _HoloIntensity;
             float _PlasmaEnable; float _PlasmaSites; float _PlasmaSpread; float _PlasmaColorMode; float4 _PlasmaColor;
             float4 _PlasmaColor1; float4 _PlasmaColor2; float4 _PlasmaColor3; float4 _PlasmaColor4;
             float4 _PlasmaColor5; float4 _PlasmaColor6; float4 _PlasmaColor7; float4 _PlasmaColor8;
-            float _PlasmaGlow; float _PlasmaRate; float _PlasmaThreshold; float _PlasmaRippleDist; float _PlasmaRingWidth; float _PlasmaHitSize; float _PlasmaDisplace;
+            float _PlasmaGlow; float _PlasmaIntensity; float _PlasmaRate; float _PlasmaThreshold; float _PlasmaRippleDist; float _PlasmaRingWidth; float _PlasmaHitSize; float _PlasmaDisplace;
+            float _RetroEnable; float _RetroSnap; float _RetroSnapRes; float _RetroPixelate; float _RetroPixelRes;
+            float _RetroLevels; float _RetroDither; float _RetroScanlines; float _RetroScanCount; float _RetroAffine;
+            float _ViewVisEnable; float _ViewVisDirect; float _ViewVisMirror; float _ViewVisCamera;
+            float _PlasmaViewMode; float _HoloViewMode; float _StarViewMode; float _MorphViewMode;
+            float _MorphEnable; float _MorphIntensity; float _MorphMode; float _MorphStrength;
+            float _MorphScale; float _MorphSpeed; float _MorphAudio; float _MorphBand;
+            float4 _MorphTiling; float _MorphMaskInvert; float _MorphALBoost; float _MorphALSpeed;
+            float _MorphMultBand; float _MorphMultAmt; float _MorphAddBand; float _MorphAddAmt;
+            float _MorphVolBoost; float _MorphVolAmt;
             float _StarLineEnable; float _StarLineColorMode; float4 _StarLineColor;
             float _StarLineStrength; float _StarLineThickness; float _StarLineMaxLen;
             float _StarLineFade; float _StarLineDepthFade; float _StarLineSpeed;
@@ -1567,8 +1679,19 @@ Shader "Zetph/ZetsFancyShader"
             // Holographic overlay: object-space scanlines, rim glow, a travelling sweep
             // bar, flicker, glitch tearing, mono tint, and see-through (true alpha or
             // ordered dither). Applied to the finished colour just before fog.
+            float _VRChatMirrorMode;
+            float _VRChatCameraMode;
+            // Which view is this? Returns 1 when the current view is allowed by a
+            // per-effect mode: 0 = everywhere, 1 = mirrors and cameras only (hidden on your
+            // real body), 2 = normal view only (hidden in mirrors and photos).
+            float ZetViewFactor(float mode) {
+                if (mode < 0.5) return 1.0;
+                bool reflected = (_VRChatMirrorMode > 0.5) || (_VRChatCameraMode > 0.5);
+                if (mode < 1.5) return reflected ? 1.0 : 0.0;
+                return reflected ? 0.0 : 1.0;
+            }
             void ZetApplyHologram(inout half3 col, inout half alpha, float3 wPos, float3 wNrm, float2 sp) {
-                if (_HoloEnable < 0.5) return;
+                if (_HoloEnable < 0.5 || ZetViewFactor(_HoloViewMode) < 0.5) return;
                 float3 objPos = mul(unity_WorldToObject, float4(wPos, 1.0)).xyz;   // avatar's own space
                 float3 vdir = normalize(_WorldSpaceCameraPos - wPos);
                 half3 nrm = normalize(wNrm);
@@ -1595,14 +1718,17 @@ Shader "Zetph/ZetsFancyShader"
                 float flick = 1.0 - _HoloFlicker * 0.5 * (0.5 + 0.5 * sin(t * 30.0 + sin(t * 7.0) * 3.0));
 
                 // Collapse toward the holo colour, then add holographic light.
+                half3 col0 = col;
                 half lum = dot(col, half3(0.299, 0.587, 0.114));
-                col = lerp(col, lum * _HoloColor.rgb, _HoloTintAmount);
-                col = col * flick + _HoloColor.rgb * (scan + sweep + rim);
+                half3 hcolC = lerp(col, lum * _HoloColor.rgb, _HoloTintAmount);
+                hcolC = hcolC * flick + _HoloColor.rgb * (scan + sweep + rim);
+                col = lerp(col0, hcolC, _HoloIntensity);   // Intensity fades the whole overlay
 
-                // See-through: bright bands read as more solid.
+                // See-through: bright bands read as more solid; Intensity fades toward opaque.
                 float holoA = saturate(_HoloOpacity + scan + sweep + rim);
-                if (_HoloTransStyle < 0.5) alpha *= holoA;              // true alpha (needs a Transparent mode)
-                else if (holoA < ZetBayer4(sp)) clip(-1);              // dither (works in Opaque or Cutout)
+                float useA = lerp(1.0, holoA, _HoloIntensity);
+                if (_HoloTransStyle < 0.5) alpha *= useA;               // true alpha (needs a Transparent mode)
+                else if (useA < ZetBayer4(sp)) clip(-1);               // dither (works in Opaque or Cutout)
             }
             // v64e: stateless fast-attack / smooth-release envelope. 2 taps:
             // raw band + AudioLink's pre-filtered row (column = Release knob).
@@ -1631,6 +1757,26 @@ Shader "Zetph/ZetsFancyShader"
                 // v64f: route through the restored envelope (the filtered-row
                 // read here had the same running-average-floor flaw).
                 return saturate(ALEnv(band));
+            }
+            // Shared AudioLink signal chain, matching the emission layers' behaviour so
+            // every AL-driven effect exposes the same controls: a primary band, an optional
+            // multiplier band, an additive band, and an overall volume boost. Returns 0 when
+            // AudioLink is absent or the effect's AL section is switched off, so callers can
+            // add it on top of their own base amount.
+            float ZetALSignal(float enable, float band, float multBand, float multAmt,
+                              float addBand, float addAmt, float volBoost, float volAmt) {
+                if (enable < 0.5 || !AudioLinkIsAvailable()) return 0.0;
+                float sig = ALEnv((uint)band);
+                sig *= (1.0 + ALEnv((uint)multBand) * multAmt);
+                sig += ALEnv((uint)addBand) * addAmt;
+                if (volBoost > 0.5) {
+                    float vol = (AudioLinkData(ALPASS_AUDIOLINK + uint2(0, 0)).r
+                               + AudioLinkData(ALPASS_AUDIOLINK + uint2(0, 1)).r
+                               + AudioLinkData(ALPASS_AUDIOLINK + uint2(0, 2)).r
+                               + AudioLinkData(ALPASS_AUDIOLINK + uint2(0, 3)).r) * 0.25;
+                    sig *= (1.0 + vol * volAmt);
+                }
+                return sig;
             }
             // Motion value with Poiyomi-style modes. Accumulate modes read
             // Chronotensity (band energy pre-integrated by AudioLink) so motion
@@ -1785,7 +1931,7 @@ Shader "Zetph/ZetsFancyShader"
                     float e = (i & 3) == 0 ? e0 : (i & 3) == 1 ? e1 : (i & 3) == 2 ? e2 : e3;
                     disp += ZetPlasmaHit(zp, i, e, d, ph, seed);
                 }
-                zp += zn * disp * _PlasmaDisplace;
+                zp += zn * disp * _PlasmaDisplace * _PlasmaIntensity;
             }
             void ZetApplyPlasma(inout half3 col, float3 wPos) {
                 if (_PlasmaEnable < 0.5 || !AudioLinkIsAvailable()) return;
@@ -1803,7 +1949,71 @@ Shader "Zetph/ZetsFancyShader"
                             : (_PlasmaColorMode < 1.5) ? _PlasmaColor.rgb : ZetPlasmaSlot(i);
                     add += c * (f + flash);
                 }
-                col += add * _PlasmaGlow;
+                col += add * _PlasmaGlow * _PlasmaIntensity * ZetViewFactor(_PlasmaViewMode);
+            }
+            // --- Retro / PS1: vertex snap, colour quantise + dither, scanlines --------
+            // Snaps the on-screen vertex position to a low virtual resolution for the PS1
+            // affine wobble. Runs at the very end of the vertex path so it doesn't disturb
+            // lighting or the plasma displacement.
+            float4 ZetVertexSnap(float4 clip) {
+                if (_RetroEnable < 0.5 || _RetroSnap < 0.5) return clip;
+                float2 half_res = float2(_RetroSnapRes, _RetroSnapRes * 0.75) * 0.5;
+                float2 ndc = clip.xy / clip.w;
+                ndc = floor(ndc * half_res + 0.5) / half_res;
+                clip.xy = ndc * clip.w;
+                return clip;
+            }
+            // Posterises the finished colour to a few levels per channel with a 4x4 ordered
+            // dither to soften the banding, then optional CRT scanlines. Applied last, so it
+            // flattens every other effect too, which is the authentic PS1 behaviour.
+            void ZetApplyRetro(inout half3 col, float2 sp) {
+                if (_RetroEnable < 0.5) return;
+                float levels = max(_RetroLevels, 2.0);
+                half3 c = saturate(col + (ZetBayer4(sp) - 0.5) * (_RetroDither / levels));
+                col = floor(c * (levels - 1.0) + 0.5) / (levels - 1.0);
+                if (_RetroScanlines > 0.001) {
+                    float sy = sp.y * _RetroScanCount / max(_ScreenParams.y, 1.0);
+                    float scan = 0.5 + 0.5 * cos(sy * 6.28318);
+                    col *= 1.0 - _RetroScanlines * (1.0 - scan);
+                }
+            }
+            // VRChat view globals (set by the game; 0 = normal). Mirror mode is non-zero in
+            // a mirror; camera mode is non-zero in a photo / stream camera.
+            // Per-view visibility: clip the surface when the current view is switched off,
+            // so a material can be shown or hidden independently in normal view, mirrors,
+            // and cameras. Normal covers both the wearer's own view and other players.
+            void ZetViewVisClip() {
+                if (_ViewVisEnable < 0.5) return;
+                bool inMirror = _VRChatMirrorMode > 0.5;
+                bool inCamera = _VRChatCameraMode > 0.5;
+                float show;
+                if (inMirror || inCamera) {
+                    // A mirror seen through a camera sets both flags at once, so decide from
+                    // whichever views are active and show it if either one allows it, rather
+                    // than letting one take priority and override the other.
+                    show = max(inMirror ? _ViewVisMirror : 0.0, inCamera ? _ViewVisCamera : 0.0);
+                } else {
+                    show = _ViewVisDirect;
+                }
+                if (show < 0.5) clip(-1);
+            }
+            // Thin-film interference, the physics behind soap bubbles, oil films and beetle
+            // shells. Light reflecting off the top of the film and off the bottom travels
+            // different distances; where that difference is a whole number of wavelengths the
+            // two reinforce, where it is a half they cancel. Because the condition depends on
+            // wavelength, different colours peak at different angles, which is what makes the
+            // hue sweep as the surface tilts rather than merely cycling through a gradient.
+            half3 ZetThinFilm(float cosI, float thicknessNm, float ior) {
+                // Refraction into the film (Snell), then the optical path difference of the
+                // two reflections. The film is denser than air, so the top reflection flips
+                // phase by half a wavelength; that is the +PI below.
+                float sinI2 = saturate(1.0 - cosI * cosI);
+                float sinT2 = sinI2 / max(ior * ior, 1e-4);
+                float cosT = sqrt(saturate(1.0 - sinT2));
+                float opd = 2.0 * ior * thicknessNm * cosT;          // nanometres
+                const half3 lambda = half3(650.0, 550.0, 450.0);      // R, G, B in nm
+                half3 phase = (6.2831853 * opd) / lambda + 3.1415927;
+                return saturate(0.5 + 0.5 * cos(phase));
             }
             float hash31(float3 p3) {
                 p3  = frac(p3 * 0.1031);
@@ -1816,6 +2026,52 @@ Shader "Zetph/ZetsFancyShader"
                                  lerp(hash31(i + float3(0,1,0)), hash31(i + float3(1,1,0)), f.x), f.y),
                             lerp(lerp(hash31(i + float3(0,0,1)), hash31(i + float3(1,0,1)), f.x),
                                  lerp(hash31(i + float3(0,1,1)), hash31(i + float3(1,1,1)), f.x), f.y), f.z);
+            }
+            // UV Morph: warps the texture coordinates before anything samples them, so the
+            // whole surface swims, ripples, or twists. Applied at the top of the fragment,
+            // so albedo, normals, emission and every other UV0 map distort together.
+            float2 ZetMorphUV(float2 uv) {
+                if (_MorphEnable < 0.5 || ZetViewFactor(_MorphViewMode) < 0.5) return uv;
+                float amt = _MorphStrength * _MorphIntensity;
+                // Audio adds on top of the base strength rather than replacing it, so the
+                // morph keeps its set amount in silence and deepens on the beat. Speed can
+                // ride the same signal, so the warp visibly quickens with the music.
+                float mAL = ZetALSignal(_MorphAudio, _MorphBand, _MorphMultBand, _MorphMultAmt,
+                                        _MorphAddBand, _MorphAddAmt, _MorphVolBoost, _MorphVolAmt);
+                amt *= 1.0 + mAL * _MorphALBoost;
+                if (amt < 0.00001) return uv;
+                // Mask confines the morph to painted areas; sampled on the untouched UV so
+                // the mask itself never swims with the effect it is gating.
+                float m = _MorphMask.SampleLevel(sampler_LinearRepeat, uv, 0).r;
+                if (_MorphMaskInvert > 0.5) m = 1.0 - m;
+                amt *= m;
+                if (amt < 0.00001) return uv;
+                float t = _Time.y * _MorphSpeed * (1.0 + mAL * _MorphALSpeed);
+                float2 p = uv * _MorphScale * _MorphTiling.xy + _MorphTiling.zw;
+                float2 off;
+                if (_MorphMode < 0.5) {                       // Wave: smooth cross-ripple
+                    off = float2(sin(p.y + t), cos(p.x + t * 1.3));
+                } else if (_MorphMode < 1.5) {                // Swirl: rotate around the centre
+                    float2 d = uv - 0.5;
+                    float r = length(d);
+                    float a = sin(r * _MorphScale - t) * (1.0 - saturate(r * 2.0));
+                    float cs = cos(a), sn = sin(a);
+                    return 0.5 + float2(d.x * cs - d.y * sn, d.x * sn + d.y * cs);
+                } else if (_MorphMode < 2.5) {                // Pinch: pull toward the centre
+                    float2 d = uv - 0.5;
+                    return 0.5 + d * (1.0 + sin(t) * amt * 4.0);
+                } else if (_MorphMode < 3.5) {                // Noise: organic drifting warp
+                    off = float2(noise3D(float3(p, t)), noise3D(float3(p.yx + 31.7, t))) * 2.0 - 1.0;
+                } else if (_MorphMode < 4.5) {                // Jitter: blocky glitch offsets
+                    float2 cell = floor(p) + floor(t * 6.0);
+                    off = (hash2D(cell) * 2.0 - 1.0);
+                } else {                                      // Texture: user-authored flow map
+                    // RG of the map is the push direction (0.5 = neutral), scrolled by Speed
+                    // so a still image still animates.
+                    float2 fuv = p * 0.1 + float2(t * 0.05, t * 0.03);
+                    off = _MorphFlowMap.SampleLevel(sampler_LinearRepeat, fuv, 0).rg * 2.0 - 1.0;
+                }
+                return uv + off * amt;
             }
             // ---- Parallax Occlusion Mapping (raymarched height -> UV displacement) ----
             float2 ParallaxOcclusion(Texture2D hmap, SamplerState samp, float2 uv, float2 dir, float strength, float offset, float mipBias)
@@ -2088,6 +2344,7 @@ Shader "Zetph/ZetsFancyShader"
                 #ifdef VERTEXLIGHT_ON
                 float3 vLights : TEXCOORD8;
                 #endif
+                noperspective float2 uvAffine : TEXCOORD9;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             v2g vert(appdata v) {
@@ -2180,8 +2437,8 @@ Shader "Zetph/ZetsFancyShader"
                     [unroll] for (int k = 0; k < 3; k++) {
                         g2f o; UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                         float3 p = i[k].objPos.xyz - i[k].normal * 0.005;
-                        o.pos = UnityObjectToClipPos(float4(p, 1));
-                        o.uv = i[k].uv; o.fx = float4(-1.0, heat, 0, 0.0);
+                        o.pos = ZetVertexSnap(UnityObjectToClipPos(float4(p, 1)));
+                        o.uv = i[k].uv; o.uvAffine = o.uv; o.fx = float4(-1.0, heat, 0, 0.0);
                         o.wNrm = UnityObjectToWorldNormal(i[k].normal);
                         o.wTan = float4(UnityObjectToWorldDir(i[k].tangent.xyz), i[k].tangent.w);
                         o.wPos = mul(unity_ObjectToWorld, float4(p, 1)).xyz;
@@ -2207,6 +2464,9 @@ Shader "Zetph/ZetsFancyShader"
                 float3 upO = normalize(mul((float3x3)unity_WorldToObject, float3(0, 1, 0)));
                 float3 driftO = normalize(mul((float3x3)unity_WorldToObject, float3(sin(phase), 0, cos(phase))));
                 float3 offset = upO * (t * _RiseHeight * (0.5 + rnd)) + faceNrm * (t * _Spread) + driftO * (_Jitter * t);
+                // Volumetric smoke: carry the whole triangle along the flow field as a puff.
+                // Staggered start times make the body come apart progressively rather than
+                // all at once; puffs then swell and fade as they disperse.
                 float3 axis = normalize(float3(hash2(uvCenter + 1.7), hash2(uvCenter + 3.9), hash2(uvCenter + 7.3)) - 0.5 + 1e-4);
                 float ang = (rnd * 2.0 - 1.0) * _Tumble * t;
                 float gap = _EdgeGap * smoothstep(0.0, 0.15, t);
@@ -2224,8 +2484,8 @@ Shader "Zetph/ZetsFancyShader"
                         float3 glitchDir = normalize(float3(hash2(seed + 1.2)*2-1, hash2(seed + 3.4)*2-1, hash2(seed + 5.6)*2-1));
                         p += glitchDir * _GlitchIntensity * glitchAmt * active;
                     }
-                    o.pos = UnityObjectToClipPos(float4(p, 1));
-                    o.uv = i[j].uv; o.fx = float4(t, heat, glitchAmt, 0.0);
+                    o.pos = ZetVertexSnap(UnityObjectToClipPos(float4(p, 1)));
+                    o.uv = i[j].uv; o.uvAffine = o.uv; o.fx = float4(t, heat, glitchAmt, 0.0);
                     o.wNrm = UnityObjectToWorldNormal(rotAround(i[j].normal, axis, ang));
                     o.wTan = float4(UnityObjectToWorldDir(rotAround(i[j].tangent.xyz, axis, ang)), i[j].tangent.w);
                     o.wPos = mul(unity_ObjectToWorld, float4(p, 1)).xyz;
@@ -2335,8 +2595,8 @@ Shader "Zetph/ZetsFancyShader"
                                 // do not re-couple these.
                                 p += n * rPhase * _SpeakerIntensity; 
                                 p += n * (rPhase * rPhase * _SpeakerExpansion); 
-                                o.pos = UnityObjectToClipPos(float4(p, 1)); 
-                                o.uv = i[idx].uv; 
+                                o.pos = ZetVertexSnap(UnityObjectToClipPos(float4(p, 1))); 
+                                o.uv = i[idx].uv; o.uvAffine = o.uv; 
                                 // fx: y = birth flash, z = beat strength, w = phase + 1
                                 o.fx = float4(0, ringFlash[rr], ringAud[rr], rPhase + 1.0); 
                                 
@@ -2440,6 +2700,10 @@ Shader "Zetph/ZetsFancyShader"
 
             fixed4 fragBase(g2f i, fixed facing : VFACE) : SV_Target {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                ZetViewVisClip();
+                if (_RetroEnable > 0.5 && _RetroAffine > 0.5) i.uv = i.uvAffine;
+                i.uv = ZetMorphUV(i.uv);
+                if (_RetroEnable > 0.5 && _RetroPixelate > 0.5) i.uv = (floor(i.uv * _RetroPixelRes) + 0.5) / _RetroPixelRes;
                 bool alAvail = AudioLinkIsAvailable();
                 if (i.fx.w > 0.5) { 
                     float rPhase = i.fx.w - 1.0;
@@ -2494,9 +2758,14 @@ Shader "Zetph/ZetsFancyShader"
                     float dNoise = _DissolveTex.Sample(sampler_LinearRepeat, i.uv).r; 
                     float alD = alAvail ? ALEnv((uint)_DissolveBand) : 0.0;
                     float dLevel = saturate((_DissolveAmount * 0.01) + (alD * (_DissolveAL * 0.01)));
-                    clip(dNoise - dLevel); 
-                    float edgeW = (_DissolveWidth * 0.001) * (1.0 + alD * 2.0);
-                    float isEdge = 1.0 - smoothstep(dLevel, dLevel + edgeW, dNoise);
+                    // Widen the threshold past both ends of the noise range so 0 leaves the
+                    // surface fully intact and 100 always clears it, whatever the texture's
+                    // own min and max happen to be. Without this the effect jumps in partway
+                    // and can never finish on a texture that never reaches pure black/white.
+                    float edgeW = (_DissolveWidth * 0.01) * (1.0 + alD * 2.0);
+                    float dCut = dLevel * (1.0 + edgeW * 2.0) - edgeW;
+                    clip(dNoise - dCut);
+                    float isEdge = (dLevel > 0.0001) ? (1.0 - smoothstep(dCut, dCut + edgeW, dNoise)) : 0.0;
                     half3 final_c_dissolve = c_dissolve;
                     if (_DissolveHueShift > 0.5) final_c_dissolve = hueShift(final_c_dissolve, (alAvail ? alD : _Time.y * 0.5) * 6.28318);
                     burnGlow = final_c_dissolve * isEdge; 
@@ -2657,16 +2926,53 @@ Shader "Zetph/ZetsFancyShader"
                 if (_IridEnable > 0.5) {
                     float iridMask = _IridMask.Sample(sampler_LinearClamp, i.uv).r;
                     if (iridMask > 0.001) {
-                        float alIrid = alAvail ? ALEnv((uint)_IridBand) : 0.0;
+                        float alIrid = ZetALSignal(_IridALEnable, _IridBand, _IridMultBand, _IridMultAmt,
+                                                   _IridAddBand, _IridAddAmt, _IridVolBoost, _IridVolAmt);
                         float ndv = saturate(dot(n, viewDir));
-                        float phase = frac((1.0 - ndv) * (_IridThickness * 0.1) + _Time.y * (_IridSpeed * 0.1) + (alIrid * (_IridAL * 0.05)));
-                        
-                        float p = phase * 3.0;
-                        half3 iridColor = lerp(_IridColor1.rgb, _IridColor2.rgb, saturate(p));
-                        iridColor = lerp(iridColor, _IridColor3.rgb, saturate(p - 1.0));
-                        iridColor = lerp(iridColor, _IridColor1.rgb, saturate(p - 2.0));
-                        albedo.rgb = lerp(albedo.rgb, albedo.rgb * iridColor * 2.0, 0.7 * iridMask); 
-                        specCol = lerp(specCol, iridColor, 0.8 * iridMask); 
+                        if (_IridMode > 0.5) {
+                            // Physical thin film. Thickness drifts across the surface and over
+                            // time, since a perfectly even film gives one flat colour whereas a
+                            // real one swirls as the film thins and pools.
+                            float thick = _IridFilmNm;
+                            if (_IridFilmVary > 0.001) {
+                                // Object space by default: UV islands are cut apart in UV
+                                // space, so sampling the variation there makes the film jump
+                                // at every seam. Object space is continuous across the whole
+                                // mesh, so the swirl flows over seams without a break.
+                                float tvT = _Time.y * (_IridSpeed * 0.02);
+                                float3 tvP = (_IridFilmSpace < 0.5)
+                                    ? mul(unity_WorldToObject, float4(i.wPos, 1.0)).xyz * _IridFilmScale + tvT
+                                    : float3(i.uv * _IridFilmScale, tvT);
+                                float tn = noise3D(tvP);
+                                thick *= 1.0 + (tn - 0.5) * 2.0 * _IridFilmVary;
+                            }
+                            thick *= 1.0 + alIrid * (_IridAL * 0.01);
+                            half3 film = ZetThinFilm(max(ndv, 1e-3), thick, _IridFilmIOR);
+                            film = lerp(half3(dot(film, half3(0.333, 0.333, 0.333)).xxx), film, _IridFilmSat);
+                            // Palette ramp: the interference still decides where each band
+                            // falls and how it sweeps with angle, the ramp only decides which
+                            // colours those bands are. Keeps the physics, gives art control.
+                            [branch] if (_IridFilmRampAmt > 0.001) {
+                                // Position along the ramp from the spectral balance of the
+                                // interference, so the sweep order is preserved.
+                                float hueT = saturate(0.5 + (film.r - film.b) * 0.5 + (film.g - film.r) * 0.25);
+                                half3 ramp = _IridFilmRamp.SampleLevel(sampler_LinearClamp, float2(hueT, 0.5), 0).rgb;
+                                film = lerp(film, ramp, _IridFilmRampAmt);
+                            }
+                            // Interference is strongest at grazing angles, where the path
+                            // through the film is longest, so weight it like a Fresnel term.
+                            float w = lerp(1.0, pow(1.0 - ndv, 2.0), _IridFilmFresnel) * iridMask;
+                            albedo.rgb = lerp(albedo.rgb, albedo.rgb * film * 2.0, w * _IridFilmTintAmt);
+                            specCol = lerp(specCol, film, saturate(w));
+                        } else {
+                            float phase = frac((1.0 - ndv) * (_IridThickness * 0.1) + _Time.y * (_IridSpeed * 0.1) + (alIrid * (_IridAL * 0.05)));
+                            float p = phase * 3.0;
+                            half3 iridColor = lerp(_IridColor1.rgb, _IridColor2.rgb, saturate(p));
+                            iridColor = lerp(iridColor, _IridColor3.rgb, saturate(p - 1.0));
+                            iridColor = lerp(iridColor, _IridColor1.rgb, saturate(p - 2.0));
+                            albedo.rgb = lerp(albedo.rgb, albedo.rgb * iridColor * 2.0, 0.7 * iridMask);
+                            specCol = lerp(specCol, iridColor, 0.8 * iridMask);
+                        }
                     }
                 }
                 half aoRaw = (_PackMode > 0.5) ? 1.0 : packed.g;   // Unity MetallicSmoothness has no AO channel
@@ -3022,41 +3328,146 @@ Shader "Zetph/ZetsFancyShader"
                         off += dn * (_RefractStrength * 0.05);
                         if (_RefractALEnable > 0.5 && alAvail) off *= 1.0 + ALEnv((uint)_RefractBand) * _RefractAL;
                         float2 suv = i.pos.xy / _ScreenParams.xy;
-                        float ca = _RefractCA * 0.5;
                         half3 refr;
-                        refr.r = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + off * (1.0 + ca)).r;
-                        refr.g = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + off).g;
-                        refr.b = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + off * (1.0 - ca)).b;
-                        col.rgb = lerp(col.rgb, refr * _RefractTint.rgb, rfMask * _RefractBlend);
+                        float rfBlend = _RefractBlend;
+                        if (_RefractMode > 0.5) {
+                            // Physical model. Snell's law bends the view ray as it enters the
+                            // glass; how far it bends depends on the index of refraction, and
+                            // that index differs slightly per wavelength. That difference is
+                            // dispersion, and it is why a prism splits white light: red bends
+                            // least, blue most, so each channel samples a different place.
+                            float3 vdirW = -viewDir;
+                            float ndv = saturate(dot(N, viewDir));
+                            float3 rR = refract(vdirW, N, 1.0 / max(_RefractIOR - _RefractDispersion, 1.0));
+                            float3 rG = refract(vdirW, N, 1.0 / max(_RefractIOR, 1.0));
+                            float3 rB = refract(vdirW, N, 1.0 / max(_RefractIOR + _RefractDispersion, 1.0));
+                            // Thicker glass means a longer path inside, so a larger shift.
+                            float k = _RefractThickness * 0.25 * (1.0 + _RefractStrength);
+                            float2 oR = mul((float3x3)UNITY_MATRIX_V, rR).xy * k + off;
+                            float2 oG = mul((float3x3)UNITY_MATRIX_V, rG).xy * k + off;
+                            float2 oB = mul((float3x3)UNITY_MATRIX_V, rB).xy * k + off;
+                            // Roughness blur: a rough surface scatters the transmitted ray, so
+                            // several taps on a spiral stand in for that spread.
+                            int nS = max((int)_RefractSamples, 1);
+                            float rad = _RefractRough * 0.03;
+                            half3 acc = 0;
+                            [loop] for (int rs = 0; rs < 12; rs++) {
+                                if (rs >= nS) break;
+                                float fi = (float)rs;
+                                float ang = fi * 2.39996;                     // golden angle spiral
+                                float rr = rad * sqrt((fi + 0.5) / (float)nS);
+                                float2 jt = float2(cos(ang), sin(ang)) * rr;
+                                acc.r += UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + oR + jt).r;
+                                acc.g += UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + oG + jt).g;
+                                acc.b += UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + oB + jt).b;
+                            }
+                            refr = acc / (float)nS;
+                            // Beer-Lambert style absorption: thicker glass tints more.
+                            refr *= lerp(half3(1, 1, 1), _RefractAbsorb.rgb, saturate(_RefractThickness * 0.5));
+                            // Grazing angles reflect rather than transmit, so refraction fades
+                            // at the silhouette and the surface's own shading shows through.
+                            rfBlend *= lerp(1.0, ndv, _RefractFresnel);
+                        } else {
+                            float ca = _RefractCA * 0.5;
+                            refr.r = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + off * (1.0 + ca)).r;
+                            refr.g = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + off).g;
+                            refr.b = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_ZetGrabTex, suv + off * (1.0 - ca)).b;
+                        }
+                        col.rgb = lerp(col.rgb, refr * _RefractTint.rgb, rfMask * rfBlend);
                     }
                 }
 //endex
                 if (_RoomEnable > 0.5) {
                     float rMask = smoothstep(0.5 - _RoomEdge, 0.5 + _RoomEdge, _RoomMask.Sample(sampler_MainTex, i.uv).r);
                     if (rMask > 0.001) {
-                        float2 cell = frac(i.uv * _RoomTile + float2(_RoomSlideX, _RoomSlideY) * (_Time.y * 0.1));
+                        float2 ruv = i.uv * _RoomTile + float2(_RoomSlideX, _RoomSlideY) * (_Time.y * 0.1);
+                        float2 cell = frac(ruv);
+                        // Per-window identity: without this every window shows the same room,
+                        // which is the giveaway that it is a trick. Each cell gets its own
+                        // rotation, mirroring, tint, depth and light state.
+                        float2 cellId = floor(ruv);
+                        float rh0 = hash2(cellId + 0.37);
+                        float rh1 = hash2(cellId + 5.11);
+                        float rh2 = hash2(cellId + 9.73);
+                        float rh3 = hash2(cellId + 13.9);
                         float3 ro = float3(cell, 0.0);
                         float3 rd;
                         rd.x = dot(-viewDir, T);
                         rd.y = dot(-viewDir, B);
-                        rd.z = max(dot(viewDir, N), 0.02) / max(_RoomDepth, 0.05);
+                        // Depth varies per window so the row of rooms is not one flat depth.
+                        float roomDepth = _RoomDepth * (1.0 + (rh2 - 0.5) * _RoomVaryDepth);
+                        rd.z = max(dot(viewDir, N), 0.02) / max(roomDepth, 0.05);
                         float3 boxMax = float3(rd.x > 0.0 ? 1.0 : 0.0, rd.y > 0.0 ? 1.0 : 0.0, 1.0);
                         float3 tt = (boxMax - ro) / rd;
                         float tmin = min(min(tt.x, tt.y), tt.z);
                         float3 hit = ro + rd * tmin;
                         float3 dir = hit - 0.5;
+                        // Quarter-turn steps plus mirroring reuse one cubemap as many rooms.
+                        if (_RoomVariety > 0.001) {
+                            float turns = floor(rh0 * 4.0) * 1.5708 * step(0.0001, _RoomVariety);
+                            float ct = cos(turns), st = sin(turns);
+                            dir.xz = float2(dir.x * ct - dir.z * st, dir.x * st + dir.z * ct);
+                            if (rh1 < _RoomVariety * 0.5) dir.x = -dir.x;
+                        }
                         float ax = _Time.y * _RoomScrollX, ay = _Time.y * _RoomScrollY;
                         float cx = cos(ax), sx = sin(ax); dir.xz = float2(dir.x * cx - dir.z * sx, dir.x * sx + dir.z * cx);
                         float cy = cos(ay), sy = sin(ay); dir.yz = float2(dir.y * cy - dir.z * sy, dir.y * sy + dir.z * cy);
                         float depthT = saturate(hit.z);
                         float mip = _RoomSoften * lerp(2.0, 6.0, depthT);
-                        dir.xy += float2(sin(cell.y * 25.0 + _Time.y * 2.0), cos(cell.x * 25.0 + _Time.y * 1.7)) * (_RoomGlassWarp * 0.03);
+                        // Glass distortion. Static Imperfection is fixed in the surface: the
+                        // pane's own flaws, which do not move, so the view through them shifts
+                        // only as you move. Ripple animates, for water and aquarium glass.
+                        [branch] if (_RoomGlassWarp > 0.001) {
+                            float2 warp;
+                            if (_RoomGlassType < 0.5) {
+                                // Sampled on the un-tiled surface UV so flaws belong to the
+                                // pane rather than repeating identically in every window.
+                                float2 gp = i.uv * _RoomGlassScale;
+                                gp.y *= lerp(1.0, 0.25, _RoomGlassStreak);   // squash into vertical draws
+                                float n1 = noise3D(float3(gp, 0.0));
+                                float n2 = noise3D(float3(gp.yx + 41.7, 0.0));
+                                warp = float2(n1, n2) * 2.0 - 1.0;
+                            } else {
+                                float rt = _Time.y * _RoomGlassSpeed;
+                                warp = float2(sin(cell.y * 25.0 + rt * 2.0), cos(cell.x * 25.0 + rt * 1.7));
+                            }
+                            dir.xy += warp * (_RoomGlassWarp * 0.03);
+                        }
                         float rgca = _RoomGlassChroma * 0.03;
                         half3 room;
                         room.r = _RoomCube.SampleLevel(sampler_LinearClamp, dir + float3(rgca, 0, 0), mip).r;
                         room.g = _RoomCube.SampleLevel(sampler_LinearClamp, dir, mip).g;
                         room.b = _RoomCube.SampleLevel(sampler_LinearClamp, dir - float3(rgca, 0, 0), mip).b;
                         room *= _RoomColor.rgb;
+                        // Per-window tint drift, so rooms differ in colour temperature.
+                        if (_RoomVaryTint > 0.001) {
+                            half3 vt = half3(0.5 + rh0, 0.5 + rh1, 0.5 + rh2);
+                            room *= lerp(half3(1, 1, 1), vt, _RoomVaryTint);
+                        }
+                        // Furniture: a billboard plane suspended inside the box at its own
+                        // depth. Because the ray is intersected against that plane separately,
+                        // it parallaxes against the back wall as you move, which is what sells
+                        // the interior as having real space rather than a painted backdrop.
+                        [branch] if (_RoomFurnDepth > 0.001) {
+                            float fz = saturate(_RoomFurnDepth);
+                            float tf = (fz - ro.z) / max(rd.z, 1e-4);
+                            if (tf > 0.0 && tf < tmin) {
+                                float2 fp = (ro.xy + rd.xy * tf - 0.5) / max(_RoomFurnScale, 0.05) + 0.5;
+                                float2 foff = float2(floor(rh1 * 4.0), floor(rh2 * 4.0)) * _RoomFurnVariety;
+                                float4 furn = _RoomFurnTex.SampleLevel(sampler_LinearClamp, frac(fp * 0.999 + foff), mip);
+                                float inside = step(0.0, fp.x) * step(fp.x, 1.0) * step(0.0, fp.y) * step(fp.y, 1.0);
+                                room = lerp(room, furn.rgb * _RoomColor.rgb, furn.a * inside);
+                                depthT = lerp(depthT, fz, furn.a * inside);
+                            }
+                        }
+                        // Interior lights: each window is independently lit or dark, switching
+                        // over time and flickering, so a facade reads as occupied.
+                        [branch] if (_RoomLightEnable > 0.5) {
+                            float phase = floor(_Time.y * _RoomSwitching * 0.2 + rh3 * 20.0);
+                            float lit = step(hash2(cellId + phase * 3.7), _RoomLitChance);
+                            float flick = 1.0 - _RoomFlicker * (0.5 + 0.5 * sin(_Time.y * (7.0 + rh0 * 9.0) + rh1 * 6.2832));
+                            room += _RoomLightColor.rgb * _RoomLightStrength * lit * flick * (1.0 - depthT * 0.5);
+                        }
                         if (_RoomDepthMode > 1.5) room = lerp(room, _RoomHazeColor.rgb, depthT * _RoomFade);
                         else if (_RoomDepthMode > 0.5) room *= lerp(1.0, 1.0 - _RoomFade, depthT);
                         if (_RoomALEnable > 0.5 && alAvail) room *= 1.0 + ALEnv((uint)_RoomBand) * _RoomAL;
@@ -3185,7 +3596,8 @@ Shader "Zetph/ZetsFancyShader"
                     float starMask = _StarMask.Sample(sampler_LinearClamp, i.uv).r;
                     if (starMask > 0.001) 
                     {
-                        float alS = alAvail ? ALEnv((uint)_StarBand) : 0.0;
+                        float alS = ZetALSignal(_StarALEnable, _StarBand, _StarMultBand, _StarMultAmt,
+                                                _StarAddBand, _StarAddAmt, _StarVolBoost, _StarVolAmt);
                         // UV source: UV0 (mesh), Panosphere (view ray, reads as real sky), or
                         // Polar. The mask stays on UV0, so it still confines the effect to a region.
                         float2 uvSrc = i.uv;
@@ -3313,7 +3725,7 @@ Shader "Zetph/ZetsFancyShader"
                             
                             starAccum += finalStarColor * star * (starHash * 2.0) * twinkle * occlusion;
                         }
-                        col.rgb = lerp(col.rgb, ZetPhotoBlend(col.rgb, starAccum * _ConstellationEmission, _ConstellationBlend), starMask * proxAlpha);
+                        col.rgb = lerp(col.rgb, ZetPhotoBlend(col.rgb, starAccum * _ConstellationEmission, _ConstellationBlend), starMask * proxAlpha * ZetViewFactor(_StarViewMode));
                     }
                 }
                 
@@ -3332,7 +3744,7 @@ Shader "Zetph/ZetsFancyShader"
                         half gap = step(frac(uvEQ.x * cols), 0.8);
                         
                         half3 finalEQColor = _EQColor.rgb * barMask * gap;
-                        col.rgb += finalEQColor * eqMask * proxAlpha;
+                        col.rgb += finalEQColor * eqMask * proxAlpha * _EQIntensity;
                     }
                 }
                 if (_RimEnable > 0.5 && _RimState > 0.5) {
@@ -3387,6 +3799,7 @@ Shader "Zetph/ZetsFancyShader"
                 half3 hcol = col.rgb;
                 ZetApplyPlasma(hcol, i.wPos);
                 ZetApplyHologram(hcol, outAlpha, i.wPos, i.wNrm, i.pos.xy);
+                ZetApplyRetro(hcol, i.pos.xy);
                 col.rgb = hcol;
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return fixed4(col.rgb, outAlpha);
@@ -3448,6 +3861,8 @@ Shader "Zetph/ZetsFancyShader"
             }
             fixed4 fragOL(v2fOL i) : SV_Target {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                ZetViewVisClip();
+                if (_RetroEnable > 0.5 && _RetroPixelate > 0.5) i.uv = (floor(i.uv * _RetroPixelRes) + 0.5) / _RetroPixelRes;
                 clip(_OutlineStdEnable - 0.5);
                 fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uv);
                 if (_AlphaMode > 0.5) clip(GetOpacity(albedo.a, i.uv) - _Cutoff);   // respect cutout/transparent shape
@@ -3515,6 +3930,7 @@ Shader "Zetph/ZetsFancyShader"
                 #ifdef VERTEXLIGHT_ON
                 float3 vLights : TEXCOORD8;
                 #endif
+                noperspective float2 uvAffine : TEXCOORD9;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             v2g vert(appdata v) {
@@ -3609,6 +4025,9 @@ Shader "Zetph/ZetsFancyShader"
                 float3 upO = normalize(mul((float3x3)unity_WorldToObject, float3(0, 1, 0)));
                 float3 driftO = normalize(mul((float3x3)unity_WorldToObject, float3(sin(phase), 0, cos(phase))));
                 float3 offset = upO * (t * _RiseHeight * (0.5 + rnd)) + faceNrm * (t * _Spread) + driftO * (_Jitter * t);
+                // Volumetric smoke: carry the whole triangle along the flow field as a puff.
+                // Staggered start times make the body come apart progressively rather than
+                // all at once; puffs then swell and fade as they disperse.
                 float3 axis = normalize(float3(hash2(uvCenter + 1.7), hash2(uvCenter + 3.9), hash2(uvCenter + 7.3)) - 0.5 + 1e-4);
                 float ang = (rnd * 2.0 - 1.0) * _Tumble * t;
                 float gap = _EdgeGap * smoothstep(0.0, 0.15, t);
@@ -3625,8 +4044,8 @@ Shader "Zetph/ZetsFancyShader"
                         float3 glitchDir = normalize(float3(hash2(seed + 1.2)*2-1, hash2(seed + 3.4)*2-1, hash2(seed + 5.6)*2-1));
                         p += glitchDir * _GlitchIntensity * glitchAmt * active;
                     }
-                    o.pos = UnityObjectToClipPos(float4(p, 1));
-                    o.uv = i[j].uv; o.fx = float4(t, heat, glitchAmt, 0.0);
+                    o.pos = ZetVertexSnap(UnityObjectToClipPos(float4(p, 1)));
+                    o.uv = i[j].uv; o.uvAffine = o.uv; o.fx = float4(t, heat, glitchAmt, 0.0);
                     o.wNrm = UnityObjectToWorldNormal(rotAround(i[j].normal, axis, ang));
                     o.wTan = float4(UnityObjectToWorldDir(rotAround(i[j].tangent.xyz, axis, ang)), i[j].tangent.w);
                     o.wPos = mul(unity_ObjectToWorld, float4(p, 1)).xyz;
@@ -3653,6 +4072,10 @@ Shader "Zetph/ZetsFancyShader"
             }
             fixed4 fragAdd(g2f i, fixed facing : VFACE) : SV_Target {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                ZetViewVisClip();
+                if (_RetroEnable > 0.5 && _RetroAffine > 0.5) i.uv = i.uvAffine;
+                i.uv = ZetMorphUV(i.uv);
+                if (_RetroEnable > 0.5 && _RetroPixelate > 0.5) i.uv = (floor(i.uv * _RetroPixelRes) + 0.5) / _RetroPixelRes;
 //ifex _DebugView==0
                 // ForwardAdd blends additively over the base pass, so every extra
                 // realtime light would wash colour across a debug view that is
@@ -3665,7 +4088,9 @@ Shader "Zetph/ZetsFancyShader"
                 if (_DissolveEnable > 0.5) {
                     float dNoise = _DissolveTex.Sample(sampler_LinearRepeat, i.uv).r;
                     float alD = alAvail ? ALEnv((uint)_DissolveBand) : 0.0;
-                    clip(dNoise - saturate((_DissolveAmount * 0.01) + (alD * (_DissolveAL * 0.01)))); 
+                    float dLevelA = saturate((_DissolveAmount * 0.01) + (alD * (_DissolveAL * 0.01)));
+                    float edgeWA = (_DissolveWidth * 0.01) * (1.0 + alD * 2.0);
+                    clip(dNoise - (dLevelA * (1.0 + edgeWA * 2.0) - edgeWA)); 
                 }
                 if (i.fx.x < -0.5 || (facing < 0 && i.fx.x > 0.001)) return float4(0,0,0,1);
                 float bFade = _BreakFade; if (_BreakManual < 0.5) { float _bg = _BreakCoreGlow; ApplyBreakStyle(_BreakStyle, _bg, bFade); }
@@ -3918,13 +4343,16 @@ Shader "Zetph/ZetsFancyShader"
             }
             float4 fragShadow(v2f_shadow i) : SV_Target {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                ZetViewVisClip();
+                if (_RetroEnable > 0.5 && _RetroPixelate > 0.5) i.uv = (floor(i.uv * _RetroPixelRes) + 0.5) / _RetroPixelRes;
                 bool alAvail = AudioLinkIsAvailable();
                 
                 if (_DissolveEnable > 0.5) {
                     float dNoise = _DissolveTex.Sample(sampler_LinearRepeat, i.uv).r;
                     float alD = 0; if (alAvail) alD = ALEnv((uint)_DissolveBand);
                     float dLevel = saturate((_DissolveAmount * 0.01) + (alD * (_DissolveAL * 0.01)));
-                    clip(dNoise - dLevel); 
+                    float edgeWS = (_DissolveWidth * 0.01) * (1.0 + alD * 2.0);
+                    clip(dNoise - (dLevel * (1.0 + edgeWS * 2.0) - edgeWS));
                 }
                 if (_BreakEnable > 0.5) {
                     float bMask = _MaskTex.Sample(sampler_LinearClamp, i.uv).r;
