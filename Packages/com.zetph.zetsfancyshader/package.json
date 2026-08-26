@@ -1,7 +1,7 @@
 {
   "name": "com.zetph.zetsfancyshader",
   "displayName": "ZetsFancyShader",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "unity": "2022.3",
   "description": "PC-only toon + PBR shader for VRChat avatars, with AudioLink-reactive emission and FX, geometry break, glitch, interior mapping, subsurface scattering, debug views, and a companion eye shader. Reads AudioLink and VRSL GI straight from the globals worlds publish - nothing to install. Optional LTCGI and VRC Light Volumes support activates automatically when those packages are present. Ships its own material inspector, locking and map packer - no ThryEditor required.",
   "author": {

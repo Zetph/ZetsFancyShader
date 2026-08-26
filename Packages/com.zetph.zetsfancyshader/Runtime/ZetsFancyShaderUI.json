@@ -1,6 +1,6 @@
 {
  "title": "ZetsFancyShader",
- "version": "v0.5.0",
+ "version": "v0.6.1",
  "groups": [
   {
    "path": "engine",
@@ -324,13 +324,6 @@
    "showIf": []
   },
   {
-   "path": "emission_em0_em0mir",
-   "label": "Infinity Mirror",
-   "info": "Creates a recursive tunnel of repeating layers behind the surface, like an infinity mirror, using a background texture and parallax depth.",
-   "toggle": "_Em0Mirror",
-   "showIf": []
-  },
-  {
    "path": "emission_em1",
    "label": "Emission 1",
    "info": "Another independent emission layer with the same controls as Emission 0. Stacks with the others.",
@@ -372,13 +365,6 @@
    "label": "Scan / Sweep",
    "info": "",
    "toggle": "_Em1Scan",
-   "showIf": []
-  },
-  {
-   "path": "emission_em1_em1mir",
-   "label": "Infinity Mirror",
-   "info": "",
-   "toggle": "_Em1Mirror",
    "showIf": []
   },
   {
@@ -426,13 +412,6 @@
    "showIf": []
   },
   {
-   "path": "emission_em2_em2mir",
-   "label": "Infinity Mirror",
-   "info": "",
-   "toggle": "_Em2Mirror",
-   "showIf": []
-  },
-  {
    "path": "emission_em3",
    "label": "Emission 3",
    "info": "Another independent emission layer with the same controls as Emission 0. Stacks with the others.",
@@ -474,13 +453,6 @@
    "label": "Scan / Sweep",
    "info": "",
    "toggle": "_Em3Scan",
-   "showIf": []
-  },
-  {
-   "path": "emission_em3_em3mir",
-   "label": "Infinity Mirror",
-   "info": "",
-   "toggle": "_Em3Mirror",
    "showIf": []
   },
   {
@@ -528,7 +500,7 @@
   {
    "path": "specialfx_style_room_roomvary",
    "label": "Window Variety",
-   "info": "Makes each window show a different room. Without this every window shows an identical interior, which is the main giveaway that interior mapping is a trick.",
+   "info": "Gives each window its own room, so a wall of windows doesn't repeat.",
    "toggle": "",
    "showIf": [
     "_RoomEnable"
@@ -537,7 +509,7 @@
   {
    "path": "specialfx_style_room_roomfurn",
    "label": "Furniture Layer",
-   "info": "An optional cut-out layer suspended inside the room at its own distance. Because it sits between the window and the back wall, it shifts against the background as you move, which is what makes the interior feel like real space.",
+   "info": "A cut-out layer inside the room at its own distance, so it shifts against the back wall as you move.",
    "toggle": "",
    "showIf": [
     "_RoomEnable"
@@ -546,7 +518,7 @@
   {
    "path": "specialfx_style_room_roomlight",
    "label": "Room Lights",
-   "info": "Lights the windows independently, switching over time and flickering, so a facade reads as occupied rather than uniformly lit.",
+   "info": "Lights windows independently, switching and flickering.",
    "toggle": "_RoomLightEnable",
    "showIf": [
     "_RoomEnable"
@@ -598,7 +570,7 @@
   {
    "path": "specialfx_style_refract_refractphys",
    "label": "Physical Glass",
-   "info": "Refraction derived from Snell's law rather than a screen offset. The view ray genuinely bends by the index of refraction, each colour bends by a slightly different amount so edges split into a prism fringe, and rough glass scatters what shows through.",
+   "info": "Refraction from Snell's law: the ray bends by a real index of refraction, each colour bends differently for a prism fringe, and rough glass scatters.",
    "toggle": "",
    "showIf": [
     "_RefractEnable"
@@ -705,6 +677,13 @@
    "showIf": []
   },
   {
+   "path": "specialfx_style_diffract",
+   "label": "Diffraction",
+   "info": "A microscopic grating splits reflected light into spectral orders, throwing rainbow streaks that fan out from highlights. This is how holographic wraps and CD surfaces get their colour, and it behaves differently from thin film.",
+   "toggle": "_DiffEnable",
+   "showIf": []
+  },
+  {
    "path": "specialfx_style_irid",
    "label": "Iridescence",
    "info": "A view dependent colour shift (oil slick / soap bubble) layered over the surface.",
@@ -714,7 +693,7 @@
   {
    "path": "specialfx_style_irid_iridfilm",
    "label": "Thin Film",
-   "info": "Physically based iridescence: the colours come from light interfering with itself inside a microscopically thin film, the same effect as a soap bubble or an oil slick. Hue shifts with viewing angle and film thickness rather than cycling through chosen colours.",
+   "info": "Physically based iridescence from thin-film interference, as in a soap bubble. Hue shifts with viewing angle and film thickness.",
    "toggle": "",
    "showIf": [
     "_IridEnable"
@@ -755,12 +734,39 @@
    "showIf": []
   },
   {
+   "path": "specialfx_geo_dissolve_dissdir",
+   "label": "Direction",
+   "info": "Sweeps the burn along an axis instead of following the pattern's brightness. The pattern still roughens the edge.",
+   "toggle": "",
+   "showIf": [
+    "_DissolveEnable"
+   ]
+  },
+  {
    "path": "specialfx_geo_dissolve_dissadv",
    "label": "Dissolve Settings",
    "info": "",
    "toggle": "",
    "showIf": [
     "_DissolveEnable"
+   ]
+  },
+  {
+   "path": "specialfx_geo_dissolve_dissal",
+   "label": "AudioLink Settings",
+   "info": "Makes the dissolve react to AudioLink. Off by default so the dissolve amount stays where you set it.",
+   "toggle": "_DissolveALEnable",
+   "showIf": [
+    "_DissolveEnable"
+   ]
+  },
+  {
+   "path": "specialfx_geo_dissolve_dissal_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_DissolveALEnable"
    ]
   },
   {
@@ -785,6 +791,49 @@
    "info": "The classic toon / anime outline: a back-facing shell extruded around the mesh in a flat colour. Pick a colour and width, mask where it shows, optionally tint it by the texture or let it react to light. World width is a fixed thickness in metres (thins with distance); Screen width stays a constant on-screen thickness at any distance.",
    "toggle": "_OutlineStdEnable",
    "showIf": []
+  },
+  {
+   "path": "specialfx_style_infinity",
+   "label": "Infinity Mirror",
+   "info": "Samples a pattern at increasing depth so the surface reads as a tunnel receding into the mesh.",
+   "toggle": "_InfEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_infinity_infdepth",
+   "label": "Depth",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_InfEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_infinity_infplace",
+   "label": "Placement",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_InfEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_infinity_infal",
+   "label": "AudioLink Settings",
+   "info": "Drives the mirror from AudioLink: brighter, and optionally deeper, on the beat.",
+   "toggle": "_InfALEnable",
+   "showIf": [
+    "_InfEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_infinity_infal_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_InfALEnable"
+   ]
   },
   {
    "path": "specialfx_style_stars",
@@ -889,7 +938,7 @@
   {
    "path": "specialfx_style_morph",
    "label": "UV Morph",
-   "info": "Warps the texture coordinates before anything samples them, so the whole surface swims, swirls, or glitches. Because it happens first, albedo, normals, emission and every other UV0 map distort together.",
+   "info": "Warps texture coordinates before anything samples them, so albedo, normals and emission distort together.",
    "toggle": "_MorphEnable",
    "showIf": []
   },
@@ -924,6 +973,13 @@
    "showIf": [
     "_StarEnable"
    ]
+  },
+  {
+   "path": "specialfx_geo_displace",
+   "label": "Displacement",
+   "info": "Subdivides the mesh and pushes vertices along their normals using the Height Map, so the silhouette changes for real. Subdivision falls off with distance.",
+   "toggle": "_DispEnable",
+   "showIf": []
   },
   {
    "path": "specialfx_geo_break",
@@ -1038,10 +1094,6 @@
   {
    "name": "_ZTest",
    "text": "How the material tests against the depth buffer. LessEqual is standard. Always draws through everything (see-through-wall look)."
-  },
-  {
-   "name": "_ZWriteOverride",
-   "text": "Whether opaque geometry writes depth. On is correct for opaque; transparency modes manage this automatically, so leave at On unless hand-tuning."
   },
   {
    "name": "_ColorMask",
@@ -1868,10 +1920,6 @@
    "text": "Limits this matcap to white areas."
   },
   {
-   "name": "_Em0BgTex",
-   "text": "Pattern drawn inside every slot's infinity mirror. Each slot still tints, scales, and pans it independently."
-  },
-  {
    "name": "_Em0Mask",
    "text": "Where this layer glows. White glows, black does not."
   },
@@ -2002,58 +2050,6 @@
   {
    "name": "_Em0ScanGlitch",
    "text": "Randomly flickers pixels in the band on and off for a glitchy look. 0 is steady. Needs a pixel grid, so it falls back to 64 blocks if Pixelation is 0."
-  },
-  {
-   "name": "_Em0Triplanar",
-   "text": "Project the mirror pattern in 3D instead of by UV."
-  },
-  {
-   "name": "_Em0Rotation",
-   "text": "Rotates the mirror pattern."
-  },
-  {
-   "name": "_Em0BgColor",
-   "text": "Tint of the infinity mirror background."
-  },
-  {
-   "name": "_Em0ScaleLock",
-   "text": "Lock the background to a uniform scale using the X value."
-  },
-  {
-   "name": "_Em0BgScale",
-   "text": "Scale of the background pattern."
-  },
-  {
-   "name": "_Em0TileX",
-   "text": "Repeat the background horizontally."
-  },
-  {
-   "name": "_Em0TileY",
-   "text": "Repeat the background vertically."
-  },
-  {
-   "name": "_Em0Pan",
-   "text": "Scrolls the background over time."
-  },
-  {
-   "name": "_Em0Layers",
-   "text": "How many repeating depth layers the mirror draws."
-  },
-  {
-   "name": "_Em0Parallax",
-   "text": "Starting depth of the first mirror layer."
-  },
-  {
-   "name": "_Em0LayerDist",
-   "text": "Gap between each mirror layer."
-  },
-  {
-   "name": "_Em0NearBright",
-   "text": "Brightness of the closest mirror layer."
-  },
-  {
-   "name": "_Em0FarBright",
-   "text": "Brightness of the deepest mirror layer."
   },
   {
    "name": "_Em1Enable",
@@ -2192,58 +2188,6 @@
    "text": "Randomly flickers pixels in the band on and off for a glitchy look. 0 is steady. Needs a pixel grid, so it falls back to 64 blocks if Pixelation is 0."
   },
   {
-   "name": "_Em1Triplanar",
-   "text": "Project the mirror pattern in 3D instead of by UV."
-  },
-  {
-   "name": "_Em1Rotation",
-   "text": "Rotates the mirror pattern."
-  },
-  {
-   "name": "_Em1BgColor",
-   "text": "Tint of the infinity mirror background."
-  },
-  {
-   "name": "_Em1ScaleLock",
-   "text": "Lock the background to a uniform scale using the X value."
-  },
-  {
-   "name": "_Em1BgScale",
-   "text": "Scale of the background pattern."
-  },
-  {
-   "name": "_Em1TileX",
-   "text": "Repeat the background horizontally."
-  },
-  {
-   "name": "_Em1TileY",
-   "text": "Repeat the background vertically."
-  },
-  {
-   "name": "_Em1Pan",
-   "text": "Scrolls the background over time."
-  },
-  {
-   "name": "_Em1Layers",
-   "text": "How many repeating depth layers the mirror draws."
-  },
-  {
-   "name": "_Em1Parallax",
-   "text": "Starting depth of the first mirror layer."
-  },
-  {
-   "name": "_Em1LayerDist",
-   "text": "Gap between each mirror layer."
-  },
-  {
-   "name": "_Em1NearBright",
-   "text": "Brightness of the closest mirror layer."
-  },
-  {
-   "name": "_Em1FarBright",
-   "text": "Brightness of the deepest mirror layer."
-  },
-  {
    "name": "_Em2Enable",
    "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Emission Intensity for menu toggles rather than this checkbox."
   },
@@ -2380,58 +2324,6 @@
    "text": "Randomly flickers pixels in the band on and off for a glitchy look. 0 is steady. Needs a pixel grid, so it falls back to 64 blocks if Pixelation is 0."
   },
   {
-   "name": "_Em2Triplanar",
-   "text": "Project the mirror pattern in 3D instead of by UV."
-  },
-  {
-   "name": "_Em2Rotation",
-   "text": "Rotates the mirror pattern."
-  },
-  {
-   "name": "_Em2BgColor",
-   "text": "Tint of the infinity mirror background."
-  },
-  {
-   "name": "_Em2ScaleLock",
-   "text": "Lock the background to a uniform scale using the X value."
-  },
-  {
-   "name": "_Em2BgScale",
-   "text": "Scale of the background pattern."
-  },
-  {
-   "name": "_Em2TileX",
-   "text": "Repeat the background horizontally."
-  },
-  {
-   "name": "_Em2TileY",
-   "text": "Repeat the background vertically."
-  },
-  {
-   "name": "_Em2Pan",
-   "text": "Scrolls the background over time."
-  },
-  {
-   "name": "_Em2Layers",
-   "text": "How many repeating depth layers the mirror draws."
-  },
-  {
-   "name": "_Em2Parallax",
-   "text": "Starting depth of the first mirror layer."
-  },
-  {
-   "name": "_Em2LayerDist",
-   "text": "Gap between each mirror layer."
-  },
-  {
-   "name": "_Em2NearBright",
-   "text": "Brightness of the closest mirror layer."
-  },
-  {
-   "name": "_Em2FarBright",
-   "text": "Brightness of the deepest mirror layer."
-  },
-  {
    "name": "_Em3Enable",
    "text": "Enabling this compiles this slot's textures into the shader, so it recompiles once. Sliders and colours inside stay instant. Note: because this sets a shader keyword, animate Emission Intensity for menu toggles rather than this checkbox."
   },
@@ -2566,58 +2458,6 @@
   {
    "name": "_Em3ScanGlitch",
    "text": "Randomly flickers pixels in the band on and off for a glitchy look. 0 is steady. Needs a pixel grid, so it falls back to 64 blocks if Pixelation is 0."
-  },
-  {
-   "name": "_Em3Triplanar",
-   "text": "Project the mirror pattern in 3D instead of by UV."
-  },
-  {
-   "name": "_Em3Rotation",
-   "text": "Rotates the mirror pattern."
-  },
-  {
-   "name": "_Em3BgColor",
-   "text": "Tint of the infinity mirror background."
-  },
-  {
-   "name": "_Em3ScaleLock",
-   "text": "Lock the background to a uniform scale using the X value."
-  },
-  {
-   "name": "_Em3BgScale",
-   "text": "Scale of the background pattern."
-  },
-  {
-   "name": "_Em3TileX",
-   "text": "Repeat the background horizontally."
-  },
-  {
-   "name": "_Em3TileY",
-   "text": "Repeat the background vertically."
-  },
-  {
-   "name": "_Em3Pan",
-   "text": "Scrolls the background over time."
-  },
-  {
-   "name": "_Em3Layers",
-   "text": "How many repeating depth layers the mirror draws."
-  },
-  {
-   "name": "_Em3Parallax",
-   "text": "Starting depth of the first mirror layer."
-  },
-  {
-   "name": "_Em3LayerDist",
-   "text": "Gap between each mirror layer."
-  },
-  {
-   "name": "_Em3NearBright",
-   "text": "Brightness of the closest mirror layer."
-  },
-  {
-   "name": "_Em3FarBright",
-   "text": "Brightness of the deepest mirror layer."
   },
   {
    "name": "_RoomCube",
@@ -2993,7 +2833,7 @@
   },
   {
    "name": "_DissolveAL",
-   "text": "How much audio drives the dissolve amount."
+   "text": "How much the audio adds to the dissolve amount on top of the base level."
   },
   {
    "name": "_DissolveWidth",
@@ -3001,7 +2841,7 @@
   },
   {
    "name": "_DissolveBand",
-   "text": "AudioLink band that drives the burn."
+   "text": "Which frequency band drives the dissolve."
   },
   {
    "name": "_OutlineMask",
@@ -3101,7 +2941,7 @@
   },
   {
    "name": "_StarUVSource",
-   "text": "Which coordinate space the stars and nebula live in. UV0 maps to the mesh UVs and stretches with them. Panosphere projects onto a sphere around the view, so the field reads like real sky seen through the surface. Polar wraps it into rings. The mask still uses UV0 either way."
+   "text": "Which space the starfield lives in. Volumetric places stars as points in space around the avatar, so spacing stays even across curved surfaces and there is no projection to stretch or seam; this is the best choice on a body. UV0 follows the mesh unwrap and stretches where it does. Triplanar projects from position but switches plane by facing, which can seam. Panosphere reads like real sky, and Polar wraps into rings."
   },
   {
    "name": "_ConstellationEmission",
@@ -4092,20 +3932,508 @@
    "text": "Colour the glass absorbs as light passes through it, applied more strongly the thicker the glass. This is how coloured glass gets deeper in tone at its thickest points."
   },
   {
+   "name": "_DissolveGlow",
+   "text": "How brightly the burn edge glows as the surface dissolves. 0 removes the glow and leaves a plain clean edge."
+  },
+  {
+   "name": "_DissolveALEnable",
+   "text": "Turns AudioLink reactivity on for the dissolve. Off keeps the dissolve exactly where the slider or your animation puts it, which is what you want when driving it from a menu."
+  },
+  {
+   "name": "_DissolveVolBoost",
+   "text": "Scales the reaction by overall volume across all bands, so quiet passages react less."
+  },
+  {
+   "name": "_DissolveVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_DissolveMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_DissolveMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_DissolveAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_DissolveAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_DissolveMode",
+   "text": "Pattern burns wherever the noise texture is darkest, so the surface dissolves in random patches. Directional sweeps the burn along an axis instead, for a materialise-from-the-feet-up look, with the pattern still roughening the edge."
+  },
+  {
+   "name": "_DissolveDir",
+   "text": "Which way the burn travels, in the avatar's own space. 0,1,0 sweeps upward from the feet; 0,-1,0 downward from the head; 1,0,0 across from one side. Values in between give diagonals."
+  },
+  {
+   "name": "_DissolveDirNoise",
+   "text": "How much the pattern disturbs the sweeping front. 0 gives a clean straight edge, higher values make it ragged and organic. Around a third usually looks best."
+  },
+  {
+   "name": "_DissolveDirSpread",
+   "text": "How far the sweep travels to cover the mesh. Lower values make the front cross the body faster and reach the ends of the slider sooner; raise it if the dissolve finishes before the slider does."
+  },
+  {
+   "name": "_DispEnable",
+   "text": "Subdivides the mesh and displaces it using the Height Map, producing real sculpted geometry with correct silhouettes."
+  },
+  {
+   "name": "_DispStrength",
+   "text": "How far the surface is pushed along its normals. Negative values carve inward instead of bulging outward."
+  },
+  {
+   "name": "_DispCenter",
+   "text": "Which grey level in the height map counts as the original surface. At 0.5 the map lifts brighter areas and sinks darker ones; at 0 everything only pushes outward."
+  },
+  {
+   "name": "_DispTess",
+   "text": "How finely triangles are subdivided. Displacement can only move vertices that exist, so detail in the height map needs subdivision to show. This is the main cost control."
+  },
+  {
+   "name": "_DispTessNear",
+   "text": "Within this distance the mesh is subdivided at full detail."
+  },
+  {
+   "name": "_DispTessFar",
+   "text": "Beyond this distance subdivision drops to nothing, so distant copies of the avatar cost almost nothing."
+  },
+  {
+   "name": "_Em0Harmony",
+   "text": "Tints this layer's glow with the colour of the light in the room."
+  },
+  {
+   "name": "_Em0HarmonyAmt",
+   "text": "How strongly the room's colour is applied."
+  },
+  {
+   "name": "_Em0HarmonyComp",
+   "text": "Uses the opposite colour to the room, so the glow stands out instead of blending in."
+  },
+  {
+   "name": "_Em0HarmonyPurity",
+   "text": "How pure the picked-up colour is. 0 ignores the room's hue."
+  },
+  {
+   "name": "_Em1Harmony",
+   "text": "Tints this layer's glow with the colour of the light in the room."
+  },
+  {
+   "name": "_Em1HarmonyAmt",
+   "text": "How strongly the room's colour is applied."
+  },
+  {
+   "name": "_Em1HarmonyComp",
+   "text": "Uses the opposite colour to the room, so the glow stands out instead of blending in."
+  },
+  {
+   "name": "_Em1HarmonyPurity",
+   "text": "How pure the picked-up colour is. 0 ignores the room's hue."
+  },
+  {
+   "name": "_Em2Harmony",
+   "text": "Tints this layer's glow with the colour of the light in the room."
+  },
+  {
+   "name": "_Em2HarmonyAmt",
+   "text": "How strongly the room's colour is applied."
+  },
+  {
+   "name": "_Em2HarmonyComp",
+   "text": "Uses the opposite colour to the room, so the glow stands out instead of blending in."
+  },
+  {
+   "name": "_Em2HarmonyPurity",
+   "text": "How pure the picked-up colour is. 0 ignores the room's hue."
+  },
+  {
+   "name": "_Em3Harmony",
+   "text": "Tints this layer's glow with the colour of the light in the room."
+  },
+  {
+   "name": "_Em3HarmonyAmt",
+   "text": "How strongly the room's colour is applied."
+  },
+  {
+   "name": "_Em3HarmonyComp",
+   "text": "Uses the opposite colour to the room, so the glow stands out instead of blending in."
+  },
+  {
+   "name": "_Em3HarmonyPurity",
+   "text": "How pure the picked-up colour is. 0 ignores the room's hue."
+  },
+  {
+   "name": "_DiffEnable",
+   "text": "Splits reflected light into rainbow streaks, as a holographic wrap or CD surface does."
+  },
+  {
+   "name": "_DiffStrength",
+   "text": "Overall brightness of the spectral streaks."
+  },
+  {
+   "name": "_DiffPitch",
+   "text": "Spacing of the grating lines in nanometres. This sets how far apart the colours fan out: tighter pitch spreads them wider."
+  },
+  {
+   "name": "_DiffOrders",
+   "text": "How many spectral repeats are drawn. More gives extra rainbow bands further from the highlight, at a little more cost."
+  },
+  {
+   "name": "_DiffSharp",
+   "text": "How tightly each order is focused. High is crisp separate streaks, low smears them into a wash."
+  },
+  {
+   "name": "_DiffAxis",
+   "text": "Which way the grating lines run, in tangent space so they follow the mesh's UV flow. Radial fans them out from the highlight instead."
+  },
+  {
+   "name": "_DiffTwist",
+   "text": "Rotates the grating direction."
+  },
+  {
+   "name": "_DiffSpecOnly",
+   "text": "How tightly the streaks stay tied to where light actually reflects. 0 spreads them across the whole surface."
+  },
+  {
+   "name": "_DiffTintAmt",
+   "text": "How much the streaks colour the base surface as well as its highlights."
+  },
+  {
+   "name": "_StencilCalcUI",
+   "text": "Simulates the stencil test in the inspector: shows the buffer as bits, which bits the masks let through, and which operation the GPU would take."
+  },
+  {
    "name": "_Em0Map",
-   "text": "Optional colour texture for this emission layer. Its RGB is multiplied by the emission colour, so it can carry a pattern, gradient or artwork that glows. The mask still decides where the layer emits; leave this empty for a flat colour."
+   "text": "Optional colour texture for this layer's glow. Its RGB multiplies the emission colour, so it can carry a pattern or artwork. The mask still decides where the layer emits."
   },
   {
    "name": "_Em1Map",
-   "text": "Optional colour texture for this emission layer. Its RGB is multiplied by the emission colour, so it can carry a pattern, gradient or artwork that glows. The mask still decides where the layer emits; leave this empty for a flat colour."
+   "text": "Optional colour texture for this layer's glow. Its RGB multiplies the emission colour, so it can carry a pattern or artwork. The mask still decides where the layer emits."
   },
   {
    "name": "_Em2Map",
-   "text": "Optional colour texture for this emission layer. Its RGB is multiplied by the emission colour, so it can carry a pattern, gradient or artwork that glows. The mask still decides where the layer emits; leave this empty for a flat colour."
+   "text": "Optional colour texture for this layer's glow. Its RGB multiplies the emission colour, so it can carry a pattern or artwork. The mask still decides where the layer emits."
   },
   {
    "name": "_Em3Map",
-   "text": "Optional colour texture for this emission layer. Its RGB is multiplied by the emission colour, so it can carry a pattern, gradient or artwork that glows. The mask still decides where the layer emits; leave this empty for a flat colour."
+   "text": "Optional colour texture for this layer's glow. Its RGB multiplies the emission colour, so it can carry a pattern or artwork. The mask still decides where the layer emits."
+  },
+  {
+   "name": "_InfEnable",
+   "text": "Repeats a pattern at increasing depth so the surface looks like a tunnel into the mesh."
+  },
+  {
+   "name": "_InfIntensity",
+   "text": "Master fade for the effect. 0 is off."
+  },
+  {
+   "name": "_InfTex",
+   "text": "The pattern repeated at each depth layer."
+  },
+  {
+   "name": "_InfMask",
+   "text": "Where the mirror shows. White reveals it, black hides it."
+  },
+  {
+   "name": "_InfColor",
+   "text": "Tint applied to every layer."
+  },
+  {
+   "name": "_InfEmission",
+   "text": "Overall brightness of the mirror."
+  },
+  {
+   "name": "_InfLayers",
+   "text": "How many copies are drawn. More gives a deeper tunnel at more cost."
+  },
+  {
+   "name": "_InfParallax",
+   "text": "How far the first layer sits behind the surface."
+  },
+  {
+   "name": "_InfLayerDist",
+   "text": "Spacing between layers. Larger values make the tunnel feel longer."
+  },
+  {
+   "name": "_InfNearBright",
+   "text": "Brightness of the nearest layer."
+  },
+  {
+   "name": "_InfFarBright",
+   "text": "Brightness of the deepest layer. Lower than the near value gives the tunnel falloff."
+  },
+  {
+   "name": "_InfTriplanar",
+   "text": "Projects from world space on three axes instead of using the mesh UVs, which avoids seams on awkward unwraps."
+  },
+  {
+   "name": "_InfCenter",
+   "text": "Where the tunnel's vanishing point sits in UV space."
+  },
+  {
+   "name": "_InfRotation",
+   "text": "Rotates the pattern."
+  },
+  {
+   "name": "_InfScaleLock",
+   "text": "Uses the X scale for both axes."
+  },
+  {
+   "name": "_InfScale",
+   "text": "Pattern scale."
+  },
+  {
+   "name": "_InfTileX",
+   "text": "Repeats the pattern horizontally instead of clipping at its edge."
+  },
+  {
+   "name": "_InfTileY",
+   "text": "Repeats the pattern vertically instead of clipping at its edge."
+  },
+  {
+   "name": "_InfPan",
+   "text": "Scrolls the pattern over time."
+  },
+  {
+   "name": "_InfViewMode",
+   "text": "Where this effect appears: everywhere, only in mirrors and cameras, or only in normal view."
+  },
+  {
+   "name": "_InfALEnable",
+   "text": "Turns AudioLink reactivity on for the mirror."
+  },
+  {
+   "name": "_InfBand",
+   "text": "Which frequency band drives it."
+  },
+  {
+   "name": "_InfALBoost",
+   "text": "How much the beat brightens the mirror."
+  },
+  {
+   "name": "_InfALDepth",
+   "text": "How much the beat pushes the layers apart, so the tunnel lengthens rather than only brightening."
+  },
+  {
+   "name": "_InfVolBoost",
+   "text": "Scales the reaction by overall volume."
+  },
+  {
+   "name": "_InfVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_InfMultBand",
+   "text": "A second band that scales the primary signal."
+  },
+  {
+   "name": "_InfMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_InfAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_InfAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_DiffMask",
+   "text": "Where the diffraction shows. White reveals the spectral streaks, black hides them."
+  },
+  {
+   "name": "_StarTriScale",
+   "text": "How large the starfield is in the triplanar modes. Measured in metres against the avatar rather than in UV space, so values near 1 suit a humanoid and lower values spread the stars further apart."
+  },
+  {
+   "name": "_StarVolDepth",
+   "text": "How far the star volume extends around the surface in the volumetric mode. Larger values let stars sit further off the body before they fade."
+  },
+  {
+   "name": "_Decal0ScaleY",
+   "text": "Vertical size, used when Uniform Size is off."
+  },
+  {
+   "name": "_Decal0ScaleLock",
+   "text": "Uses Size X for both axes. Turn off to stretch the decal."
+  },
+  {
+   "name": "_Decal0RotSpeed",
+   "text": "Spins the decal continuously. 0 keeps it still at its set rotation."
+  },
+  {
+   "name": "_Decal0Symmetry",
+   "text": "Mirrors the decal's placement across the UV midline, so one slot can mark both sides of a body."
+  },
+  {
+   "name": "_Decal0FlipUV",
+   "text": "Flips the artwork itself rather than its placement."
+  },
+  {
+   "name": "_Decal0Tiled",
+   "text": "Repeats the decal across the surface instead of drawing it once."
+  },
+  {
+   "name": "_Decal0AlphaBlend",
+   "text": "How the decal's coverage is treated. Normal uses its alpha as-is, Multiply weights it by the decal's brightness, and Additive lets bright areas push through regardless of alpha."
+  },
+  {
+   "name": "_Decal0AlphaInt",
+   "text": "Scales the decal's coverage. Above 1 hardens soft edges."
+  },
+  {
+   "name": "_Decal0Hue",
+   "text": "Shifts the decal's colours around the hue wheel."
+  },
+  {
+   "name": "_Decal0Chroma",
+   "text": "Splits the decal's colour channels outward from its centre, as a lens disperses light toward its edges."
+  },
+  {
+   "name": "_Decal0MaskCh",
+   "text": "Which channel of the shared Decal RGBA Mask limits this decal. Off ignores the mask."
+  },
+  {
+   "name": "_Decal1ScaleY",
+   "text": "Vertical size, used when Uniform Size is off."
+  },
+  {
+   "name": "_Decal1ScaleLock",
+   "text": "Uses Size X for both axes. Turn off to stretch the decal."
+  },
+  {
+   "name": "_Decal1RotSpeed",
+   "text": "Spins the decal continuously. 0 keeps it still at its set rotation."
+  },
+  {
+   "name": "_Decal1Symmetry",
+   "text": "Mirrors the decal's placement across the UV midline, so one slot can mark both sides of a body."
+  },
+  {
+   "name": "_Decal1FlipUV",
+   "text": "Flips the artwork itself rather than its placement."
+  },
+  {
+   "name": "_Decal1Tiled",
+   "text": "Repeats the decal across the surface instead of drawing it once."
+  },
+  {
+   "name": "_Decal1AlphaBlend",
+   "text": "How the decal's coverage is treated. Normal uses its alpha as-is, Multiply weights it by the decal's brightness, and Additive lets bright areas push through regardless of alpha."
+  },
+  {
+   "name": "_Decal1AlphaInt",
+   "text": "Scales the decal's coverage. Above 1 hardens soft edges."
+  },
+  {
+   "name": "_Decal1Hue",
+   "text": "Shifts the decal's colours around the hue wheel."
+  },
+  {
+   "name": "_Decal1Chroma",
+   "text": "Splits the decal's colour channels outward from its centre, as a lens disperses light toward its edges."
+  },
+  {
+   "name": "_Decal1MaskCh",
+   "text": "Which channel of the shared Decal RGBA Mask limits this decal. Off ignores the mask."
+  },
+  {
+   "name": "_Decal2ScaleY",
+   "text": "Vertical size, used when Uniform Size is off."
+  },
+  {
+   "name": "_Decal2ScaleLock",
+   "text": "Uses Size X for both axes. Turn off to stretch the decal."
+  },
+  {
+   "name": "_Decal2RotSpeed",
+   "text": "Spins the decal continuously. 0 keeps it still at its set rotation."
+  },
+  {
+   "name": "_Decal2Symmetry",
+   "text": "Mirrors the decal's placement across the UV midline, so one slot can mark both sides of a body."
+  },
+  {
+   "name": "_Decal2FlipUV",
+   "text": "Flips the artwork itself rather than its placement."
+  },
+  {
+   "name": "_Decal2Tiled",
+   "text": "Repeats the decal across the surface instead of drawing it once."
+  },
+  {
+   "name": "_Decal2AlphaBlend",
+   "text": "How the decal's coverage is treated. Normal uses its alpha as-is, Multiply weights it by the decal's brightness, and Additive lets bright areas push through regardless of alpha."
+  },
+  {
+   "name": "_Decal2AlphaInt",
+   "text": "Scales the decal's coverage. Above 1 hardens soft edges."
+  },
+  {
+   "name": "_Decal2Hue",
+   "text": "Shifts the decal's colours around the hue wheel."
+  },
+  {
+   "name": "_Decal2Chroma",
+   "text": "Splits the decal's colour channels outward from its centre, as a lens disperses light toward its edges."
+  },
+  {
+   "name": "_Decal2MaskCh",
+   "text": "Which channel of the shared Decal RGBA Mask limits this decal. Off ignores the mask."
+  },
+  {
+   "name": "_Decal3ScaleY",
+   "text": "Vertical size, used when Uniform Size is off."
+  },
+  {
+   "name": "_Decal3ScaleLock",
+   "text": "Uses Size X for both axes. Turn off to stretch the decal."
+  },
+  {
+   "name": "_Decal3RotSpeed",
+   "text": "Spins the decal continuously. 0 keeps it still at its set rotation."
+  },
+  {
+   "name": "_Decal3Symmetry",
+   "text": "Mirrors the decal's placement across the UV midline, so one slot can mark both sides of a body."
+  },
+  {
+   "name": "_Decal3FlipUV",
+   "text": "Flips the artwork itself rather than its placement."
+  },
+  {
+   "name": "_Decal3Tiled",
+   "text": "Repeats the decal across the surface instead of drawing it once."
+  },
+  {
+   "name": "_Decal3AlphaBlend",
+   "text": "How the decal's coverage is treated. Normal uses its alpha as-is, Multiply weights it by the decal's brightness, and Additive lets bright areas push through regardless of alpha."
+  },
+  {
+   "name": "_Decal3AlphaInt",
+   "text": "Scales the decal's coverage. Above 1 hardens soft edges."
+  },
+  {
+   "name": "_Decal3Hue",
+   "text": "Shifts the decal's colours around the hue wheel."
+  },
+  {
+   "name": "_Decal3Chroma",
+   "text": "Splits the decal's colour channels outward from its centre, as a lens disperses light toward its edges."
+  },
+  {
+   "name": "_Decal3MaskCh",
+   "text": "Which channel of the shared Decal RGBA Mask limits this decal. Off ignores the mask."
+  },
+  {
+   "name": "_DecalRGBAMask",
+   "text": "One texture holding a mask for each decal, one per channel: red for Decal 0, green for 1, blue for 2, alpha for 3. Four masks in a single texture slot."
   }
  ],
  "lockCritical": [
@@ -4117,6 +4445,29 @@
   "_VRSLGI"
  ],
  "enums": [
+  {
+   "name": "_InfViewMode",
+   "options": [
+    "Everywhere",
+    "Mirrors & Cameras Only",
+    "Normal View Only"
+   ]
+  },
+  {
+   "name": "_DiffAxis",
+   "options": [
+    "Along Tangent",
+    "Across Tangent",
+    "Radial"
+   ]
+  },
+  {
+   "name": "_DissolveMode",
+   "options": [
+    "Pattern",
+    "Directional"
+   ]
+  },
   {
    "name": "_RefractMode",
    "options": [
@@ -4200,7 +4551,10 @@
    "options": [
     "UV0",
     "Panosphere",
-    "Polar"
+    "Polar",
+    "Triplanar (Object)",
+    "Triplanar (World)",
+    "Volumetric (3D)"
    ]
   },
   {
@@ -4243,6 +4597,150 @@
     "UV0",
     "VRSL GI",
     "VRSL Light Count"
+   ]
+  },
+  {
+   "name": "_Decal0Symmetry",
+   "options": [
+    "Off",
+    "Mirror X",
+    "Mirror Y",
+    "Both"
+   ]
+  },
+  {
+   "name": "_Decal0FlipUV",
+   "options": [
+    "Off",
+    "Flip X",
+    "Flip Y",
+    "Both"
+   ]
+  },
+  {
+   "name": "_Decal0AlphaBlend",
+   "options": [
+    "Normal",
+    "Multiply",
+    "Additive"
+   ]
+  },
+  {
+   "name": "_Decal0MaskCh",
+   "options": [
+    "Off",
+    "Red",
+    "Green",
+    "Blue",
+    "Alpha"
+   ]
+  },
+  {
+   "name": "_Decal1Symmetry",
+   "options": [
+    "Off",
+    "Mirror X",
+    "Mirror Y",
+    "Both"
+   ]
+  },
+  {
+   "name": "_Decal1FlipUV",
+   "options": [
+    "Off",
+    "Flip X",
+    "Flip Y",
+    "Both"
+   ]
+  },
+  {
+   "name": "_Decal1AlphaBlend",
+   "options": [
+    "Normal",
+    "Multiply",
+    "Additive"
+   ]
+  },
+  {
+   "name": "_Decal1MaskCh",
+   "options": [
+    "Off",
+    "Red",
+    "Green",
+    "Blue",
+    "Alpha"
+   ]
+  },
+  {
+   "name": "_Decal2Symmetry",
+   "options": [
+    "Off",
+    "Mirror X",
+    "Mirror Y",
+    "Both"
+   ]
+  },
+  {
+   "name": "_Decal2FlipUV",
+   "options": [
+    "Off",
+    "Flip X",
+    "Flip Y",
+    "Both"
+   ]
+  },
+  {
+   "name": "_Decal2AlphaBlend",
+   "options": [
+    "Normal",
+    "Multiply",
+    "Additive"
+   ]
+  },
+  {
+   "name": "_Decal2MaskCh",
+   "options": [
+    "Off",
+    "Red",
+    "Green",
+    "Blue",
+    "Alpha"
+   ]
+  },
+  {
+   "name": "_Decal3Symmetry",
+   "options": [
+    "Off",
+    "Mirror X",
+    "Mirror Y",
+    "Both"
+   ]
+  },
+  {
+   "name": "_Decal3FlipUV",
+   "options": [
+    "Off",
+    "Flip X",
+    "Flip Y",
+    "Both"
+   ]
+  },
+  {
+   "name": "_Decal3AlphaBlend",
+   "options": [
+    "Normal",
+    "Multiply",
+    "Additive"
+   ]
+  },
+  {
+   "name": "_Decal3MaskCh",
+   "options": [
+    "Off",
+    "Red",
+    "Green",
+    "Blue",
+    "Alpha"
    ]
   }
  ]
