@@ -20,7 +20,7 @@ using UnityEngine.Rendering;
 //  - GrabPass ordering fix: when _RefractEnable is on, the render queue is
 //    forced above 2500 so the named GrabPass captures the skybox and other
 //    geometry; at Geometry queue it grabs an incomplete frame (black skybox).
-//    NOTE: Thry's section toggle flips _RefractEnable, not this drawer, so the
+//    NOTE: the section toggle flips _RefractEnable, not this drawer, so the
 //    queue only re-asserts when the user touches Transparency Mode. The
 //    Refraction info box in the shader should tell users to re-pick the mode
 //    once after enabling refraction on an Opaque/Cutout material.

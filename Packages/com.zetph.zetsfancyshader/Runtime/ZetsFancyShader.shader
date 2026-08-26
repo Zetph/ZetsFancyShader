@@ -1,6 +1,6 @@
 // ==============================================================================
 // ZetsFancyShader
-// Version: v0.5.0
+// Version: v0.6.0
 // Author: Zetph
 //
 // Welcome to the source code!
@@ -36,8 +36,8 @@ Shader "Zetph/ZetsFancyShader"
         [Enum(UnityEngine.Rendering.StencilOp)] [Group(engine_stencil)] _StencilZFail ("On Depth Fail", Float) = 0
         [IntRange] [Group(engine_stencil)] _StencilReadMask ("Read Mask", Range(0, 255)) = 255
         [IntRange] [Group(engine_stencil)] _StencilWriteMask ("Write Mask", Range(0, 255)) = 255
+        [ZetStencilCalculator] [Group(engine_stencil)] _StencilCalcUI ("Stencil Calculator", Float) = 0
         [Enum(UnityEngine.Rendering.CompareFunction)] [Group(engine_renderstate)] _ZTest ("Depth Test", Float) = 4
-        [Enum(Off, 0, On, 1)] [Group(engine_renderstate)] _ZWriteOverride ("Depth Write Override", Float) = 1
         [Enum(None, 0, Red, 8, Green, 4, Blue, 2, Alpha, 1, RGB, 14, RGBA, 15)] [Group(engine_renderstate)] _ColorMask ("Color Mask", Float) = 15
         [Group(engine_renderstate)] _OffsetFactor ("Depth Offset Factor", Range(-5, 5)) = 0
         [Group(engine_renderstate)] _OffsetUnits ("Depth Offset Units", Range(-100, 100)) = 0
@@ -110,13 +110,25 @@ Shader "Zetph/ZetsFancyShader"
         [ToggleUI] [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueShiftAL ("AudioLink Hue Shift", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueBand ("AL Hue Band", Float) = 0
         [ToggleUI] [GroupToggle(base_decals)] _DecalsEnable ("Enable Decals", Float) = 0
+        [Group(base_decals)] _DecalRGBAMask ("Decal RGBA Mask (shared)", 2D) = "white" {}
         [ToggleUI] [GroupToggle(base_decals_decal0)] _Decal0Enable ("Enable Decal 0", Float) = 0
         [NoScaleOffset] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Tex ("Decal Image", 2D) = "white" {}
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Color ("Tint", Color) = (1, 1, 1, 1)
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Opacity ("Opacity", Range(0, 1)) = 1
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0PosX ("Position X", Range(0, 1)) = 0.5
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0PosY ("Position Y", Range(0, 1)) = 0.5
-        [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Scale ("Size", Range(0.01, 2)) = 0.3
+        [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Scale ("Size X", Range(0.01, 4)) = 0.25
+        [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0ScaleY ("Size Y", Range(0.01, 4)) = 0.25
+        [ToggleUI] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0ScaleLock ("Uniform Size", Float) = 1
+        [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0RotSpeed ("Rotation Speed", Range(-10, 10)) = 0
+        [Enum(Off, 0, Mirror X, 1, Mirror Y, 2, Both, 3)] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Symmetry ("Symmetry", Float) = 0
+        [Enum(Off, 0, Flip X, 1, Flip Y, 2, Both, 3)] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0FlipUV ("Mirrored UV", Float) = 0
+        [ToggleUI] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Tiled ("Tiled", Float) = 0
+        [Enum(Normal, 0, Multiply, 1, Additive, 2)] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0AlphaBlend ("Alpha Blend Mode", Float) = 0
+        [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0AlphaInt ("Alpha Intensity", Range(0, 4)) = 1
+        [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Hue ("Hue Shift", Range(0, 1)) = 0
+        [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Chroma ("Chromatic Aberration", Range(0, 1)) = 0
+        [Enum(Off, 0, Red, 1, Green, 2, Blue, 3, Alpha, 4)] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0MaskCh ("RGBA Mask Channel", Float) = 0
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Rotation ("Rotation", Range(0, 360)) = 0
         [Enum(Normal, 0, Add, 1, Multiply, 2, Screen, 3)] [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Blend ("Blend Mode", Float) = 0
         [Group(base_decals_decal0)] [ShowIf(_Decal0Enable)] _Decal0Emit ("Emission Glow", Range(0, 4)) = 0
@@ -131,7 +143,18 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Opacity ("Opacity", Range(0, 1)) = 1
         [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1PosX ("Position X", Range(0, 1)) = 0.5
         [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1PosY ("Position Y", Range(0, 1)) = 0.5
-        [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Scale ("Size", Range(0.01, 2)) = 0.3
+        [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Scale ("Size X", Range(0.01, 4)) = 0.25
+        [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1ScaleY ("Size Y", Range(0.01, 4)) = 0.25
+        [ToggleUI] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1ScaleLock ("Uniform Size", Float) = 1
+        [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1RotSpeed ("Rotation Speed", Range(-10, 10)) = 0
+        [Enum(Off, 0, Mirror X, 1, Mirror Y, 2, Both, 3)] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Symmetry ("Symmetry", Float) = 0
+        [Enum(Off, 0, Flip X, 1, Flip Y, 2, Both, 3)] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1FlipUV ("Mirrored UV", Float) = 0
+        [ToggleUI] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Tiled ("Tiled", Float) = 0
+        [Enum(Normal, 0, Multiply, 1, Additive, 2)] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1AlphaBlend ("Alpha Blend Mode", Float) = 0
+        [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1AlphaInt ("Alpha Intensity", Range(0, 4)) = 1
+        [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Hue ("Hue Shift", Range(0, 1)) = 0
+        [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Chroma ("Chromatic Aberration", Range(0, 1)) = 0
+        [Enum(Off, 0, Red, 1, Green, 2, Blue, 3, Alpha, 4)] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1MaskCh ("RGBA Mask Channel", Float) = 0
         [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Rotation ("Rotation", Range(0, 360)) = 0
         [Enum(Normal, 0, Add, 1, Multiply, 2, Screen, 3)] [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Blend ("Blend Mode", Float) = 0
         [Group(base_decals_decal1)] [ShowIf(_Decal1Enable)] _Decal1Emit ("Emission Glow", Range(0, 4)) = 0
@@ -146,7 +169,18 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Opacity ("Opacity", Range(0, 1)) = 1
         [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2PosX ("Position X", Range(0, 1)) = 0.5
         [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2PosY ("Position Y", Range(0, 1)) = 0.5
-        [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Scale ("Size", Range(0.01, 2)) = 0.3
+        [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Scale ("Size X", Range(0.01, 4)) = 0.25
+        [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2ScaleY ("Size Y", Range(0.01, 4)) = 0.25
+        [ToggleUI] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2ScaleLock ("Uniform Size", Float) = 1
+        [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2RotSpeed ("Rotation Speed", Range(-10, 10)) = 0
+        [Enum(Off, 0, Mirror X, 1, Mirror Y, 2, Both, 3)] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Symmetry ("Symmetry", Float) = 0
+        [Enum(Off, 0, Flip X, 1, Flip Y, 2, Both, 3)] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2FlipUV ("Mirrored UV", Float) = 0
+        [ToggleUI] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Tiled ("Tiled", Float) = 0
+        [Enum(Normal, 0, Multiply, 1, Additive, 2)] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2AlphaBlend ("Alpha Blend Mode", Float) = 0
+        [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2AlphaInt ("Alpha Intensity", Range(0, 4)) = 1
+        [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Hue ("Hue Shift", Range(0, 1)) = 0
+        [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Chroma ("Chromatic Aberration", Range(0, 1)) = 0
+        [Enum(Off, 0, Red, 1, Green, 2, Blue, 3, Alpha, 4)] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2MaskCh ("RGBA Mask Channel", Float) = 0
         [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Rotation ("Rotation", Range(0, 360)) = 0
         [Enum(Normal, 0, Add, 1, Multiply, 2, Screen, 3)] [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Blend ("Blend Mode", Float) = 0
         [Group(base_decals_decal2)] [ShowIf(_Decal2Enable)] _Decal2Emit ("Emission Glow", Range(0, 4)) = 0
@@ -161,7 +195,18 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Opacity ("Opacity", Range(0, 1)) = 1
         [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3PosX ("Position X", Range(0, 1)) = 0.5
         [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3PosY ("Position Y", Range(0, 1)) = 0.5
-        [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Scale ("Size", Range(0.01, 2)) = 0.3
+        [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Scale ("Size X", Range(0.01, 4)) = 0.25
+        [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3ScaleY ("Size Y", Range(0.01, 4)) = 0.25
+        [ToggleUI] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3ScaleLock ("Uniform Size", Float) = 1
+        [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3RotSpeed ("Rotation Speed", Range(-10, 10)) = 0
+        [Enum(Off, 0, Mirror X, 1, Mirror Y, 2, Both, 3)] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Symmetry ("Symmetry", Float) = 0
+        [Enum(Off, 0, Flip X, 1, Flip Y, 2, Both, 3)] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3FlipUV ("Mirrored UV", Float) = 0
+        [ToggleUI] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Tiled ("Tiled", Float) = 0
+        [Enum(Normal, 0, Multiply, 1, Additive, 2)] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3AlphaBlend ("Alpha Blend Mode", Float) = 0
+        [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3AlphaInt ("Alpha Intensity", Range(0, 4)) = 1
+        [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Hue ("Hue Shift", Range(0, 1)) = 0
+        [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Chroma ("Chromatic Aberration", Range(0, 1)) = 0
+        [Enum(Off, 0, Red, 1, Green, 2, Blue, 3, Alpha, 4)] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3MaskCh ("RGBA Mask Channel", Float) = 0
         [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Rotation ("Rotation", Range(0, 360)) = 0
         [Enum(Normal, 0, Add, 1, Multiply, 2, Screen, 3)] [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Blend ("Blend Mode", Float) = 0
         [Group(base_decals_decal3)] [ShowIf(_Decal3Enable)] _Decal3Emit ("Emission Glow", Range(0, 4)) = 0
@@ -188,7 +233,7 @@ Shader "Zetph/ZetsFancyShader"
         [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_1 ("Discard Tile (1,3)", Float) = 0
         [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_2 ("Discard Tile (2,3)", Float) = 0
         [ToggleUI] [Group(base_uvtd)] [ShowIf(_UVTileDiscardEnable)] _UVTileRow3_3 ("Discard Tile (3,3)", Float) = 0
-        [ToggleUI] [GroupToggle(base_detail)] _DetailEnable ("Enable Detail Maps", Float) = 0
+        [Toggle(ZET_DETAIL)] [GroupToggle(base_detail)] _DetailEnable ("Enable Detail Maps", Float) = 0
         [Group(base_detail)] [ShowIf(_DetailEnable)] _DetailMask ("Detail Mask", 2D) = "white" {}
         [Group(base_detail)] [ShowIf(_DetailEnable)] _DetailTiling ("Detail Tiling (X,Y) + Offset (Z,W)", Vector) = (8, 8, 0, 0)
         [Group(base_detail)] [ShowIf(_DetailEnable)] _DetailAlbedo ("Detail Albedo (grey = neutral)", 2D) = "grey" {}
@@ -207,7 +252,7 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lighting)] _MinBrightness ("Min Light Brightness", Range(0, 1)) = 0.0
         [Group(lighting)] _GrayscaleLighting ("Grayscale Lighting", Range(0, 1)) = 0.0
         [Group(lighting)] _ReceiveShadows ("Receive Casted Shadows", Range(0, 1)) = 1.0
-        [ToggleUI] [GroupToggle(lighting_sss)] _SSSEnable ("Enable Subsurface Scattering", Float) = 0
+        [Toggle(ZET_SSS)] [GroupToggle(lighting_sss)] _SSSEnable ("Enable Subsurface Scattering", Float) = 0
         [Group(lighting_sss)] [ShowIf(_SSSEnable)] _SSSMask ("SSS Mask", 2D) = "white" {}
         [Enum(Custom Color, 0, From Base Color, 1, Skin, 2, Foliage, 3, Marble, 4)] [Group(lighting_sss)] [ShowIf(_SSSEnable)] _SSSTintMode ("Tint Source", Float) = 0
         [HDR] [Group(lighting_sss)] [ShowIf(_SSSEnable)] [ShowIf(_SSSTintMode, 0)] _SSSColor ("Scatter Color", Color) = (1.0, 0.25, 0.1, 1)
@@ -245,7 +290,7 @@ Shader "Zetph/ZetsFancyShader"
         [ToggleUI] [Group(lighting_reflspec)] _SpecTintOn ("Tint Specular", Float) = 0
         [Group(lighting_reflspec)] [ShowIf(_SpecTintOn)] _SpecTint ("Specular Tint", Color) = (1, 1, 1, 1)
         [ZetMapPacker] [Group(lighting_reflspec)] _MapPackerUI ("Map Packer", Float) = 0
-        [ToggleUI] [GroupToggle(lighting_reflspec_aniso)] _AnisoEnable ("Enable Anisotropic Highlights", Float) = 0
+        [Toggle(ZET_ANISO)] [GroupToggle(lighting_reflspec_aniso)] _AnisoEnable ("Enable Anisotropic Highlights", Float) = 0
         [HDR] [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoColor ("Anisotropic Color", Color) = (1, 1, 1, 1)
         [Enum(Tangent, 0, Bitangent, 1)] [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoDir ("Highlight Direction", Float) = 0
         [Enum(Mesh Tangent, 0, Tangent Flow Map, 1, Object Space Map, 2)] [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoDirMode ("Direction Source", Float) = 0
@@ -297,9 +342,10 @@ Shader "Zetph/ZetsFancyShader"
         [Enum(Additive, 0, Multiply, 1, Screen, 2)] [Group(lighting_matcaps_mc4)] [ShowIf(_Matcap4Enable)] _Matcap4Mode ("Blend Mode", Float) = 0
         [Group(lighting_matcaps_mc4)] [ShowIf(_Matcap4Enable)] _Matcap4Strength ("Strength (0-100)", Range(0, 100)) = 50
         [Group(lighting_matcaps_mc4)] [ShowIf(_Matcap4Enable)] _Matcap4Mask ("MatCap 4 Mask", 2D) = "white" {}
-        [NoScaleOffset] [Group(emission)] _Em0BgTex ("Infinity Mirror Pattern (shared)", 2D) = "white" {}
-        [ToggleUI] [GroupToggle(emission_em0)] _Em0Enable ("Enable Emission 0", Float) = 0
+        [Toggle(ZET_EM0)] [GroupToggle(emission_em0)] _Em0Enable ("Enable Emission 0", Float) = 0
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Mask ("Emission 0 Mask", 2D) = "white" {}
+        [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Map ("Emission 0 Map", 2D) = "white" {}
+        [HideInInspector] _HasEm0Map ("", Float) = 0
         [HDR] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Color ("Emission 0 Color", Color) = (0, 1, 1, 1)
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Intensity ("Emission Intensity", Range(0, 10)) = 1
         [ToggleUI] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Hue ("AL Hue Shift", Float) = 0
@@ -324,6 +370,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em0_em0lb)] [ShowIf(_Em0LightBased)] _Em0MaxEmiss ("Max Emission Multiplier (lit)", Range(0, 4)) = 0
         [Group(emission_em0_em0lb)] [ShowIf(_Em0LightBased)] _Em0MinLight ("Min Lighting", Range(0, 1)) = 0
         [Group(emission_em0_em0lb)] [ShowIf(_Em0LightBased)] _Em0MaxLight ("Max Lighting", Range(0, 1)) = 1
+        [ToggleUI] [Group(emission_em0_em0lb)] [ShowIf(_Em0LightBased)] _Em0Harmony ("Match Light Colour", Float) = 0
+        [Group(emission_em0_em0lb)] [ShowIf(_Em0Harmony)] _Em0HarmonyAmt ("Match Amount", Range(0, 1)) = 0.5
+        [ToggleUI] [Group(emission_em0_em0lb)] [ShowIf(_Em0Harmony)] _Em0HarmonyComp ("Use Complementary", Float) = 0
+        [Group(emission_em0_em0lb)] [ShowIf(_Em0Harmony)] _Em0HarmonyPurity ("Colour Purity", Range(0, 2)) = 1
         [ToggleUI] [GroupToggle(emission_em0_em0blink)] _Em0Blink ("Enable Blinking", Float) = 0
         [Group(emission_em0_em0blink)] [ShowIf(_Em0Blink)] _Em0BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em0_em0blink)] [ShowIf(_Em0Blink)] _Em0BlinkMin ("Blink Minimum", Range(0, 1)) = 0
@@ -336,22 +386,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
-        [ToggleUI] [GroupToggle(emission_em0_em0mir)] _Em0Mirror ("Enable Infinity Mirror", Float) = 0
-        [ToggleUI] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Triplanar ("Use 3D Triplanar Mapping", Float) = 0
-        [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Rotation ("Pattern Rotation", Range(0, 360)) = 0
-        [HDR] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0BgColor ("Background Tint", Color) = (0.2, 0.2, 0.2, 1)
-        [ToggleUI] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0ScaleLock ("Uniform Scale (Use X)", Float) = 1
-        [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0BgScale ("Background Scale (X,Y)", Vector) = (1.0, 1.0, 0, 0)
-        [ToggleUI] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0TileX ("Tile Horizontally (X)", Float) = 1
-        [ToggleUI] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0TileY ("Tile Vertically (Y)", Float) = 1
-        [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Pan ("Background Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
-        [IntRange] [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Layers ("Infinity Mirror Layers", Range(1, 10)) = 3
-        [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0Parallax ("Initial Depth (0-100)", Range(0, 100)) = 25
-        [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0LayerDist ("Distance Between Layers (0-100)", Range(0, 100)) = 25
-        [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0NearBright ("Min-Depth Brightness", Range(0, 2)) = 1.0
-        [Group(emission_em0_em0mir)] [ShowIf(_Em0Mirror)] _Em0FarBright ("Max-Depth Brightness", Range(0, 2)) = 0.3
         [Toggle(ZET_EM1)] [GroupToggle(emission_em1)] _Em1Enable ("Enable Emission 1", Float) = 0
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Mask ("Emission 1 Mask", 2D) = "white" {}
+        [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Map ("Emission 1 Map", 2D) = "white" {}
+        [HideInInspector] _HasEm1Map ("", Float) = 0
         [HDR] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Color ("Emission 1 Color", Color) = (0, 1, 1, 1)
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Intensity ("Emission Intensity", Range(0, 10)) = 1
         [ToggleUI] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Hue ("AL Hue Shift", Float) = 0
@@ -376,6 +414,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em1_em1lb)] [ShowIf(_Em1LightBased)] _Em1MaxEmiss ("Max Emission Multiplier (lit)", Range(0, 4)) = 0
         [Group(emission_em1_em1lb)] [ShowIf(_Em1LightBased)] _Em1MinLight ("Min Lighting", Range(0, 1)) = 0
         [Group(emission_em1_em1lb)] [ShowIf(_Em1LightBased)] _Em1MaxLight ("Max Lighting", Range(0, 1)) = 1
+        [ToggleUI] [Group(emission_em1_em1lb)] [ShowIf(_Em1LightBased)] _Em1Harmony ("Match Light Colour", Float) = 0
+        [Group(emission_em1_em1lb)] [ShowIf(_Em1Harmony)] _Em1HarmonyAmt ("Match Amount", Range(0, 1)) = 0.5
+        [ToggleUI] [Group(emission_em1_em1lb)] [ShowIf(_Em1Harmony)] _Em1HarmonyComp ("Use Complementary", Float) = 0
+        [Group(emission_em1_em1lb)] [ShowIf(_Em1Harmony)] _Em1HarmonyPurity ("Colour Purity", Range(0, 2)) = 1
         [ToggleUI] [GroupToggle(emission_em1_em1blink)] _Em1Blink ("Enable Blinking", Float) = 0
         [Group(emission_em1_em1blink)] [ShowIf(_Em1Blink)] _Em1BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em1_em1blink)] [ShowIf(_Em1Blink)] _Em1BlinkMin ("Blink Minimum", Range(0, 1)) = 0
@@ -388,22 +430,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
-        [ToggleUI] [GroupToggle(emission_em1_em1mir)] _Em1Mirror ("Enable Infinity Mirror", Float) = 0
-        [ToggleUI] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Triplanar ("Use 3D Triplanar Mapping", Float) = 0
-        [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Rotation ("Pattern Rotation", Range(0, 360)) = 0
-        [HDR] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1BgColor ("Background Tint", Color) = (0.2, 0.2, 0.2, 1)
-        [ToggleUI] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1ScaleLock ("Uniform Scale (Use X)", Float) = 1
-        [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1BgScale ("Background Scale (X,Y)", Vector) = (1.0, 1.0, 0, 0)
-        [ToggleUI] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1TileX ("Tile Horizontally (X)", Float) = 1
-        [ToggleUI] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1TileY ("Tile Vertically (Y)", Float) = 1
-        [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Pan ("Background Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
-        [IntRange] [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Layers ("Infinity Mirror Layers", Range(1, 10)) = 3
-        [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1Parallax ("Initial Depth (0-100)", Range(0, 100)) = 25
-        [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1LayerDist ("Distance Between Layers (0-100)", Range(0, 100)) = 25
-        [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1NearBright ("Min-Depth Brightness", Range(0, 2)) = 1.0
-        [Group(emission_em1_em1mir)] [ShowIf(_Em1Mirror)] _Em1FarBright ("Max-Depth Brightness", Range(0, 2)) = 0.3
         [Toggle(ZET_EM2)] [GroupToggle(emission_em2)] _Em2Enable ("Enable Emission 2", Float) = 0
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Mask ("Emission 2 Mask", 2D) = "white" {}
+        [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Map ("Emission 2 Map", 2D) = "white" {}
+        [HideInInspector] _HasEm2Map ("", Float) = 0
         [HDR] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Color ("Emission 2 Color", Color) = (1, 0, 1, 1)
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Intensity ("Emission Intensity", Range(0, 10)) = 1
         [ToggleUI] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Hue ("AL Hue Shift", Float) = 0
@@ -428,6 +458,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em2_em2lb)] [ShowIf(_Em2LightBased)] _Em2MaxEmiss ("Max Emission Multiplier (lit)", Range(0, 4)) = 0
         [Group(emission_em2_em2lb)] [ShowIf(_Em2LightBased)] _Em2MinLight ("Min Lighting", Range(0, 1)) = 0
         [Group(emission_em2_em2lb)] [ShowIf(_Em2LightBased)] _Em2MaxLight ("Max Lighting", Range(0, 1)) = 1
+        [ToggleUI] [Group(emission_em2_em2lb)] [ShowIf(_Em2LightBased)] _Em2Harmony ("Match Light Colour", Float) = 0
+        [Group(emission_em2_em2lb)] [ShowIf(_Em2Harmony)] _Em2HarmonyAmt ("Match Amount", Range(0, 1)) = 0.5
+        [ToggleUI] [Group(emission_em2_em2lb)] [ShowIf(_Em2Harmony)] _Em2HarmonyComp ("Use Complementary", Float) = 0
+        [Group(emission_em2_em2lb)] [ShowIf(_Em2Harmony)] _Em2HarmonyPurity ("Colour Purity", Range(0, 2)) = 1
         [ToggleUI] [GroupToggle(emission_em2_em2blink)] _Em2Blink ("Enable Blinking", Float) = 0
         [Group(emission_em2_em2blink)] [ShowIf(_Em2Blink)] _Em2BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em2_em2blink)] [ShowIf(_Em2Blink)] _Em2BlinkMin ("Blink Minimum", Range(0, 1)) = 0
@@ -440,22 +474,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
-        [ToggleUI] [GroupToggle(emission_em2_em2mir)] _Em2Mirror ("Enable Infinity Mirror", Float) = 0
-        [ToggleUI] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Triplanar ("Use 3D Triplanar Mapping", Float) = 0
-        [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Rotation ("Pattern Rotation", Range(0, 360)) = 0
-        [HDR] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2BgColor ("Background Tint", Color) = (0.2, 0.2, 0.2, 1)
-        [ToggleUI] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2ScaleLock ("Uniform Scale (Use X)", Float) = 1
-        [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2BgScale ("Background Scale (X,Y)", Vector) = (1.0, 1.0, 0, 0)
-        [ToggleUI] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2TileX ("Tile Horizontally (X)", Float) = 1
-        [ToggleUI] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2TileY ("Tile Vertically (Y)", Float) = 1
-        [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Pan ("Background Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
-        [IntRange] [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Layers ("Infinity Mirror Layers", Range(1, 10)) = 3
-        [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2Parallax ("Initial Depth (0-100)", Range(0, 100)) = 25
-        [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2LayerDist ("Distance Between Layers (0-100)", Range(0, 100)) = 25
-        [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2NearBright ("Min-Depth Brightness", Range(0, 2)) = 1.0
-        [Group(emission_em2_em2mir)] [ShowIf(_Em2Mirror)] _Em2FarBright ("Max-Depth Brightness", Range(0, 2)) = 0.3
         [Toggle(ZET_EM3)] [GroupToggle(emission_em3)] _Em3Enable ("Enable Emission 3", Float) = 0
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Mask ("Emission 3 Mask", 2D) = "white" {}
+        [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Map ("Emission 3 Map", 2D) = "white" {}
+        [HideInInspector] _HasEm3Map ("", Float) = 0
         [HDR] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Color ("Emission 3 Color", Color) = (1, 1, 0, 1)
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Intensity ("Emission Intensity", Range(0, 10)) = 1
         [ToggleUI] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Hue ("AL Hue Shift", Float) = 0
@@ -480,6 +502,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em3_em3lb)] [ShowIf(_Em3LightBased)] _Em3MaxEmiss ("Max Emission Multiplier (lit)", Range(0, 4)) = 0
         [Group(emission_em3_em3lb)] [ShowIf(_Em3LightBased)] _Em3MinLight ("Min Lighting", Range(0, 1)) = 0
         [Group(emission_em3_em3lb)] [ShowIf(_Em3LightBased)] _Em3MaxLight ("Max Lighting", Range(0, 1)) = 1
+        [ToggleUI] [Group(emission_em3_em3lb)] [ShowIf(_Em3LightBased)] _Em3Harmony ("Match Light Colour", Float) = 0
+        [Group(emission_em3_em3lb)] [ShowIf(_Em3Harmony)] _Em3HarmonyAmt ("Match Amount", Range(0, 1)) = 0.5
+        [ToggleUI] [Group(emission_em3_em3lb)] [ShowIf(_Em3Harmony)] _Em3HarmonyComp ("Use Complementary", Float) = 0
+        [Group(emission_em3_em3lb)] [ShowIf(_Em3Harmony)] _Em3HarmonyPurity ("Colour Purity", Range(0, 2)) = 1
         [ToggleUI] [GroupToggle(emission_em3_em3blink)] _Em3Blink ("Enable Blinking", Float) = 0
         [Group(emission_em3_em3blink)] [ShowIf(_Em3Blink)] _Em3BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em3_em3blink)] [ShowIf(_Em3Blink)] _Em3BlinkMin ("Blink Minimum", Range(0, 1)) = 0
@@ -492,21 +518,7 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
-        [ToggleUI] [GroupToggle(emission_em3_em3mir)] _Em3Mirror ("Enable Infinity Mirror", Float) = 0
-        [ToggleUI] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Triplanar ("Use 3D Triplanar Mapping", Float) = 0
-        [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Rotation ("Pattern Rotation", Range(0, 360)) = 0
-        [HDR] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3BgColor ("Background Tint", Color) = (0.2, 0.2, 0.2, 1)
-        [ToggleUI] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3ScaleLock ("Uniform Scale (Use X)", Float) = 1
-        [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3BgScale ("Background Scale (X,Y)", Vector) = (1.0, 1.0, 0, 0)
-        [ToggleUI] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3TileX ("Tile Horizontally (X)", Float) = 1
-        [ToggleUI] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3TileY ("Tile Vertically (Y)", Float) = 1
-        [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Pan ("Background Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
-        [IntRange] [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Layers ("Infinity Mirror Layers", Range(1, 10)) = 3
-        [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3Parallax ("Initial Depth (0-100)", Range(0, 100)) = 25
-        [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3LayerDist ("Distance Between Layers (0-100)", Range(0, 100)) = 25
-        [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3NearBright ("Min-Depth Brightness", Range(0, 2)) = 1.0
-        [Group(emission_em3_em3mir)] [ShowIf(_Em3Mirror)] _Em3FarBright ("Max-Depth Brightness", Range(0, 2)) = 0.3
-        [ToggleUI] [GroupToggle(specialfx_style_room)] _RoomEnable ("Enable Interior Mapping", Float) = 0
+        [Toggle(ZET_ROOM)] [GroupToggle(specialfx_style_room)] _RoomEnable ("Enable Interior Mapping", Float) = 0
         [NoScaleOffset] [Group(specialfx_style_room)] [ShowIf(_RoomEnable)] _RoomCube ("Room Cubemap", Cube) = "black" {}
         [NoScaleOffset] [Group(specialfx_style_room)] [ShowIf(_RoomEnable)] _RoomMask ("Window Mask", 2D) = "white" {}
         [HDR] [Group(specialfx_style_room)] [ShowIf(_RoomEnable)] _RoomColor ("Room Tint", Color) = (1, 1, 1, 1)
@@ -563,7 +575,7 @@ Shader "Zetph/ZetsFancyShader"
         [ToggleUI] [Group(specialfx_style_refract_refractal)] [ShowIf(_RefractEnable)] _RefractALEnable ("AudioLink Reactive", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_refract_refractal)] [ShowIf(_RefractEnable)] [ShowIf(_RefractALEnable)] _RefractBand ("AL Band", Float) = 0
         [Group(specialfx_style_refract_refractal)] [ShowIf(_RefractEnable)] [ShowIf(_RefractALEnable)] _RefractAL ("AL Boost", Range(0, 8)) = 3
-        [ToggleUI] [GroupToggle(specialfx_audio_screen)] _ScreenEnable ("Enable Screen Display", Float) = 0
+        [Toggle(ZET_SCREEN)] [GroupToggle(specialfx_audio_screen)] _ScreenEnable ("Enable Screen Display", Float) = 0
         [NoScaleOffset] [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenMask ("Screen Mask", 2D) = "white" {}
         [Enum(Oscilloscope, 0, EQ Bars, 1)] [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenMode ("Screen Mode", Float) = 0
         [HDR] [Group(specialfx_audio_screen)] [ShowIf(_ScreenEnable)] _ScreenLineColor ("Wave Color", Color) = (0, 1, 1, 1)
@@ -619,7 +631,17 @@ Shader "Zetph/ZetsFancyShader"
         [IntRange] [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQColumns ("Number of EQ Bars", Range(2, 32)) = 8
         [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQGain ("Bar Gain", Range(0.5, 16)) = 4
         [Group(specialfx_audio_eq)] [ShowIf(_EQEnable)] _EQCurve ("Bar Curve", Range(0.25, 2)) = 0.7
-        [ToggleUI] [GroupToggle(specialfx_style_irid)] _IridEnable ("Enable Iridescence", Float) = 0
+        [Toggle(ZET_IRID)] [GroupToggle(specialfx_style_irid)] _IridEnable ("Enable Iridescence", Float) = 0
+        [Toggle(ZET_DIFFRACT)] [GroupToggle(specialfx_style_diffract)] _DiffEnable ("Enable Diffraction", Float) = 0
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffMask ("Diffraction Mask", 2D) = "white" {}
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffStrength ("Strength", Range(0, 8)) = 2
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffPitch ("Grating Pitch (nm)", Range(200, 3000)) = 900
+        [IntRange] [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffOrders ("Spectral Orders", Range(1, 5)) = 3
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffSharp ("Streak Sharpness", Range(1, 200)) = 40
+        [Enum(Along Tangent, 0, Across Tangent, 1, Radial, 2)] [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffAxis ("Grating Direction", Float) = 0
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffTwist ("Direction Twist", Range(-180, 180)) = 0
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffSpecOnly ("Follow Highlights", Range(0, 1)) = 0.7
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffTintAmt ("Apply to Base Color", Range(0, 1)) = 0.3
         [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] _IridMask ("Iridescence Mask", 2D) = "white" {}
         [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] _IridMode ("Iridescence Model", Float) = 0
         [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmNm ("Film Thickness (nm)", Range(80, 1200)) = 380
@@ -646,14 +668,27 @@ Shader "Zetph/ZetsFancyShader"
         [Group(specialfx_style_irid_iridal_adj)] [ShowIf(_IridALEnable)] _IridMultAmt ("Multiplier Amount", Range(0, 4)) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_irid_iridal_adj)] [ShowIf(_IridALEnable)] _IridAddBand ("Additive Band", Float) = 3
         [Group(specialfx_style_irid_iridal_adj)] [ShowIf(_IridALEnable)] _IridAddAmt ("Additive Amount", Range(0, 4)) = 0
-        [ToggleUI] [GroupToggle(specialfx_geo_dissolve)] _DissolveEnable ("Enable Data-Burn Dissolve", Float) = 0
+        [Toggle(ZET_DISSOLVE)] [GroupToggle(specialfx_geo_dissolve)] _DissolveEnable ("Enable Data-Burn Dissolve", Float) = 0
         [HDR] [Group(specialfx_geo_dissolve)] [ShowIf(_DissolveEnable)] _DissolveColor ("Burn Edge Color", Color) = (1, 0.2, 0, 1)
         [ToggleUI] [Group(specialfx_geo_dissolve)] [ShowIf(_DissolveEnable)] _DissolveHueShift ("AL Hue Shift", Float) = 0
         [Group(specialfx_geo_dissolve)] [ShowIf(_DissolveEnable)] _DissolveTex ("Dissolve Noise Pattern", 2D) = "white" {}
         [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveAmount ("Base Dissolve Amount (0-100)", Range(0, 100)) = 0
-        [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveAL ("Audio Reactivity (0-100)", Range(0, 100)) = 30
+
+        [Enum(Pattern, 0, Directional, 1)] [Group(specialfx_geo_dissolve)] [ShowIf(_DissolveEnable)] _DissolveMode ("Dissolve Style", Float) = 0
+        [Group(specialfx_geo_dissolve_dissdir)] [ShowIf(_DissolveMode, 1)] _DissolveDir ("Direction", Vector) = (0, 1, 0, 0)
+        [Group(specialfx_geo_dissolve_dissdir)] [ShowIf(_DissolveMode, 1)] _DissolveDirNoise ("Pattern Influence", Range(0, 1)) = 0.35
+        [Group(specialfx_geo_dissolve_dissdir)] [ShowIf(_DissolveMode, 1)] _DissolveDirSpread ("Sweep Length", Range(0.1, 4)) = 1.2
         [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveWidth ("Edge Glow Width (0-100)", Range(0, 100)) = 15
-        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveBand ("Burn AL Band", Float) = 0
+        [Group(specialfx_geo_dissolve_dissadv)] [ShowIf(_DissolveEnable)] _DissolveGlow ("Edge Glow Strength", Range(0, 10)) = 3
+        [ToggleUI] [GroupToggle(specialfx_geo_dissolve_dissal)] [ShowIf(_DissolveEnable)] _DissolveALEnable ("Enable AudioLink Reactivity", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_geo_dissolve_dissal)] [ShowIf(_DissolveALEnable)] _DissolveBand ("Primary AL Band", Float) = 0
+        [Group(specialfx_geo_dissolve_dissal)] [ShowIf(_DissolveALEnable)] _DissolveAL ("Audio Reactivity (0-100)", Range(0, 100)) = 30
+        [ToggleUI] [Group(specialfx_geo_dissolve_dissal)] [ShowIf(_DissolveALEnable)] _DissolveVolBoost ("Boost by Overall Volume", Float) = 0
+        [Group(specialfx_geo_dissolve_dissal)] [ShowIf(_DissolveVolBoost)] _DissolveVolAmt ("Volume Boost Amount", Range(0, 4)) = 1.0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_geo_dissolve_dissal_adj)] [ShowIf(_DissolveALEnable)] _DissolveMultBand ("Multiplier Band", Float) = 0
+        [Group(specialfx_geo_dissolve_dissal_adj)] [ShowIf(_DissolveALEnable)] _DissolveMultAmt ("Multiplier Amount", Range(0, 4)) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_geo_dissolve_dissal_adj)] [ShowIf(_DissolveALEnable)] _DissolveAddBand ("Additive Band", Float) = 3
+        [Group(specialfx_geo_dissolve_dissal_adj)] [ShowIf(_DissolveALEnable)] _DissolveAddAmt ("Additive Amount", Range(0, 4)) = 0
         [ToggleUI] [GroupToggle(specialfx_style_outline)] _OutlineEnable ("Enable Glitch Outline", Float) = 0
         [Group(specialfx_style_outline)] [ShowIf(_OutlineEnable)] _OutlineMask ("Outline Target Mask", 2D) = "black" {}
         [Enum(Off, 0, Always On, 1, Audio Reactive, 2)] [Group(specialfx_style_outline)] [ShowIf(_OutlineEnable)] _OutlineState ("Outline Mode", Float) = 1
@@ -678,10 +713,42 @@ Shader "Zetph/ZetsFancyShader"
         [ToggleUI] [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] _OutlineStdDistFade ("Distance Falloff [EXPERIMENTAL]", Float) = 0
         [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdDistFade)] _OutlineStdFadeNear ("Full Width Within (m)", Range(0, 10)) = 1
         [Group(specialfx_style_outlinestd)] [ShowIf(_OutlineStdEnable)] [ShowIf(_OutlineStdDistFade)] _OutlineStdFadeFar ("Gone Beyond (m)", Range(0, 20)) = 5
-        [ToggleUI] [GroupToggle(specialfx_style_stars)] _StarEnable ("Enable Constellation FX", Float) = 0
+        [Toggle(ZET_INFINITY)] [GroupToggle(specialfx_style_infinity)] _InfEnable ("Enable Infinity Mirror", Float) = 0
+        [Group(specialfx_style_infinity)] [ShowIf(_InfEnable)] _InfIntensity ("Intensity", Range(0, 1)) = 1
+        [NoScaleOffset] [Group(specialfx_style_infinity)] [ShowIf(_InfEnable)] _InfTex ("Mirror Pattern", 2D) = "white" {}
+        [Group(specialfx_style_infinity)] [ShowIf(_InfEnable)] _InfMask ("Mirror Mask", 2D) = "white" {}
+        [HDR] [Group(specialfx_style_infinity)] [ShowIf(_InfEnable)] _InfColor ("Pattern Tint", Color) = (1, 1, 1, 1)
+        [Group(specialfx_style_infinity)] [ShowIf(_InfEnable)] _InfEmission ("Emission Strength", Range(0, 8)) = 1
+        [IntRange] [Group(specialfx_style_infinity_infdepth)] [ShowIf(_InfEnable)] _InfLayers ("Layers", Range(1, 10)) = 6
+        [Group(specialfx_style_infinity_infdepth)] [ShowIf(_InfEnable)] _InfParallax ("Initial Depth (0-100)", Range(0, 100)) = 10
+        [Group(specialfx_style_infinity_infdepth)] [ShowIf(_InfEnable)] _InfLayerDist ("Distance Between Layers (0-100)", Range(0, 100)) = 10
+        [Group(specialfx_style_infinity_infdepth)] [ShowIf(_InfEnable)] _InfNearBright ("Min-Depth Brightness", Range(0, 4)) = 1
+        [Group(specialfx_style_infinity_infdepth)] [ShowIf(_InfEnable)] _InfFarBright ("Max-Depth Brightness", Range(0, 4)) = 0.2
+        [ToggleUI] [Group(specialfx_style_infinity_infplace)] [ShowIf(_InfEnable)] _InfTriplanar ("World Triplanar Projection", Float) = 0
+        [Group(specialfx_style_infinity_infplace)] [ShowIf(_InfEnable)] _InfCenter ("Projection Center (UV)", Vector) = (0.5, 0.5, 0, 0)
+        [Group(specialfx_style_infinity_infplace)] [ShowIf(_InfEnable)] _InfRotation ("Pattern Rotation", Range(0, 360)) = 0
+        [ToggleUI] [Group(specialfx_style_infinity_infplace)] [ShowIf(_InfEnable)] _InfScaleLock ("Uniform Scale (Use X)", Float) = 1
+        [Group(specialfx_style_infinity_infplace)] [ShowIf(_InfEnable)] _InfScale ("Pattern Scale (X,Y)", Vector) = (1, 1, 0, 0)
+        [ToggleUI] [Group(specialfx_style_infinity_infplace)] [ShowIf(_InfEnable)] _InfTileX ("Tile Horizontally", Float) = 1
+        [ToggleUI] [Group(specialfx_style_infinity_infplace)] [ShowIf(_InfEnable)] _InfTileY ("Tile Vertically", Float) = 1
+        [Group(specialfx_style_infinity_infplace)] [ShowIf(_InfEnable)] _InfPan ("Pan Speed (X,Y)", Vector) = (0, 0, 0, 0)
+        [Group(specialfx_style_infinity)] [ShowIf(_InfEnable)] _InfViewMode ("Show In", Float) = 0
+        [ToggleUI] [GroupToggle(specialfx_style_infinity_infal)] [ShowIf(_InfEnable)] _InfALEnable ("Enable AudioLink Reactivity", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_infinity_infal)] [ShowIf(_InfALEnable)] _InfBand ("Primary AL Band", Float) = 0
+        [Group(specialfx_style_infinity_infal)] [ShowIf(_InfALEnable)] _InfALBoost ("AL Emission Boost", Range(0, 8)) = 2
+        [Group(specialfx_style_infinity_infal)] [ShowIf(_InfALEnable)] _InfALDepth ("AL Depth Boost", Range(0, 4)) = 0
+        [ToggleUI] [Group(specialfx_style_infinity_infal)] [ShowIf(_InfALEnable)] _InfVolBoost ("Boost by Overall Volume", Float) = 0
+        [Group(specialfx_style_infinity_infal)] [ShowIf(_InfVolBoost)] _InfVolAmt ("Volume Boost Amount", Range(0, 4)) = 1
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_infinity_infal_adj)] [ShowIf(_InfALEnable)] _InfMultBand ("Multiplier Band", Float) = 0
+        [Group(specialfx_style_infinity_infal_adj)] [ShowIf(_InfALEnable)] _InfMultAmt ("Multiplier Amount", Range(0, 4)) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_infinity_infal_adj)] [ShowIf(_InfALEnable)] _InfAddBand ("Additive Band", Float) = 3
+        [Group(specialfx_style_infinity_infal_adj)] [ShowIf(_InfALEnable)] _InfAddAmt ("Additive Amount", Range(0, 4)) = 0
+        [Toggle(ZET_STARS)] [GroupToggle(specialfx_style_stars)] _StarEnable ("Enable Constellation FX", Float) = 0
         [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarMask ("Constellation Mask (optional)", 2D) = "white" {}
         [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _ConstellationBlend ("Blend Mode", Float) = 0
         [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarUVSource ("UV Source", Float) = 0
+        [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] [ShowIf(_StarUVSource, 3, ge)] _StarTriScale ("Triplanar Scale", Range(0.05, 5)) = 1
+        [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] [ShowIf(_StarUVSource, 5)] _StarVolDepth ("Volume Depth", Range(0.05, 3)) = 0.6
         [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _ConstellationEmission ("Emission Strength", Range(0, 8)) = 1
 
         [Enum(Base Color, 0, ColorChord, 1, Random Per Star, 2)] [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarColorMode ("Star Color Mode", Float) = 0
@@ -842,7 +909,7 @@ Shader "Zetph/ZetsFancyShader"
         [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _CoreTiling ("Core Pattern Tiling", Range(0.1, 8)) = 1
         [Group(specialfx_geo_break_breakadv)] [ShowIf(_BreakEnable)] _CoreDepth ("Core Parallax Depth", Range(0, 100)) = 25
         [Group(specialfx_geo_break)] [ShowIf(_BreakEnable)] _CoreTex ("Inner Core Pattern", 2D) = "white" {}
-        [ToggleUI] [GroupToggle(specialfx_style_glitter)] _GlitterEnable ("Enable Glitter", Float) = 0
+        [Toggle(ZET_GLITTER)] [GroupToggle(specialfx_style_glitter)] _GlitterEnable ("Enable Glitter", Float) = 0
         [HDR] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterColor ("Sparkle Color", Color) = (1, 1, 1, 1)
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterMask ("Glitter Mask", 2D) = "white" {}
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterDensity ("Density", Range(0, 1)) = 0.5
@@ -857,7 +924,7 @@ Shader "Zetph/ZetsFancyShader"
         [ToggleUI] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterALEnable ("AudioLink Reactive", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] [ShowIf(_GlitterALEnable)] _GlitterBand ("AL Band", Float) = 3
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] [ShowIf(_GlitterALEnable)] _GlitterAL ("AL Sparkle Boost", Range(0, 10)) = 3
-        [ToggleUI] [GroupToggle(specialfx_geo_glitch)] _GlitchEnable ("Enable Mesh Glitch", Float) = 0
+        [Toggle(ZET_GLITCH)] [GroupToggle(specialfx_geo_glitch)] _GlitchEnable ("Enable Mesh Glitch", Float) = 0
         [Group(specialfx_geo_glitch)] [ShowIf(_GlitchEnable)] _GlitchMask ("Glitch Area Mask", 2D) = "white" {}
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchBand ("Glitch AL Band", Float) = 0
         [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchThreshold ("Glitch Threshold", Range(0, 1)) = 0.35
@@ -866,6 +933,12 @@ Shader "Zetph/ZetsFancyShader"
         [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchRGBSplit ("RGB Split (UV)", Range(0, 0.05)) = 0.008
         [Group(specialfx_geo_glitch_glitchadv)] [ShowIf(_GlitchEnable)] _GlitchHue ("Neon Intensity", Range(0, 3.2)) = 0
         [Group(specialfx_style_height)] _HeightMap ("Height Map (B&W)", 2D) = "black" {}
+        [ToggleUI] [GroupToggle(specialfx_geo_displace)] _DispEnable ("Enable Displacement", Float) = 0
+        [Group(specialfx_geo_displace)] [ShowIf(_DispEnable)] _DispStrength ("Displacement Height", Range(-0.5, 0.5)) = 0.05
+        [Group(specialfx_geo_displace)] [ShowIf(_DispEnable)] _DispCenter ("Surface Level", Range(0, 1)) = 0.5
+        [IntRange] [Group(specialfx_geo_displace)] [ShowIf(_DispEnable)] _DispTess ("Subdivision", Range(1, 16)) = 6
+        [Group(specialfx_geo_displace)] [ShowIf(_DispEnable)] _DispTessNear ("Full Detail Within (m)", Range(0, 20)) = 2
+        [Group(specialfx_geo_displace)] [ShowIf(_DispEnable)] _DispTessFar ("Subdivision Off Beyond (m)", Range(0, 30)) = 6
         [ToggleUI] [Group(specialfx_style_height)] _HeightToNormalEnable ("Convert Height to Bump Normals", Float) = 0
         [Group(specialfx_style_height)] [ShowIf(_HeightToNormalEnable)] _HeightStrength ("Recess / Bump Depth", Range(0, 5)) = 1.0
         [ToggleUI] [Group(specialfx_style_height)] _ParallaxEnable ("Enable Parallax Heightmapping", Float) = 0
@@ -1052,35 +1125,79 @@ Shader "Zetph/ZetsFancyShader"
             Texture2D _AlphaTex;
             Texture2D _PackedMap;
             Texture2D _CoreTex;
-            Texture2D _DissolveTex;
+            #if defined(ZET_DISSOLVE)
+                Texture2D _DissolveTex;
+            #endif
             Texture2D _MatcapTex; Texture2D _MatcapMask;
             Texture2D _MaskTex;
-            Texture2D _NebGradTex;
+            #if defined(ZET_STARS)
+                Texture2D _NebGradTex;
+            #endif
+            #if defined(ZET_INFINITY)
+                Texture2D _InfTex;
+                Texture2D _InfMask;
+            #endif
             Texture2D _MorphMask;
             Texture2D _MorphFlowMap;
-            Texture2D _Em0Mask;
-            Texture2D _Em0BgTex;
+            #if defined(ZET_EM0)
+                Texture2D _Em0Mask;
+            #endif
+            #if defined(ZET_EM0)
+                Texture2D _Em0Map;
+            #endif
             Texture2D _OutlineMask;
             Texture2D _OutlineStdMask;
-            Texture2D _StarMask;
-            Texture2D _IridMask;
-            Texture2D _IridFilmRamp;
+            #if defined(ZET_STARS)
+                Texture2D _StarMask;
+            #endif
+            #if defined(ZET_DIFFRACT)
+                Texture2D _DiffMask;
+            #endif
+            #if defined(ZET_IRID)
+                Texture2D _IridMask;
+            #endif
+            #if defined(ZET_IRID)
+                Texture2D _IridFilmRamp;
+            #endif
             Texture2D _EQMask;
-            Texture2D _GlitchMask;
+            #if defined(ZET_GLITCH)
+                Texture2D _GlitchMask;
+            #endif
             Texture2D _SpeakerMask;
             Texture2D _Spec2Mask;
-            Texture2D _AnisoMask;
-            Texture2D _SSSMask;
-            Texture2D _SSSThicknessMap;
-            Texture2D _DetailMask;
-            Texture2D _DetailAlbedo;
-            Texture2D _DetailNormal;
-            Texture2D _Em0PathTex;
-            Texture2D _AnisoFlowMap;
-            Texture2D _AnisoObjectMap;
+            #if defined(ZET_ANISO)
+                Texture2D _AnisoMask;
+            #endif
+            #if defined(ZET_SSS)
+                Texture2D _SSSMask;
+            #endif
+            #if defined(ZET_SSS)
+                Texture2D _SSSThicknessMap;
+            #endif
+            #if defined(ZET_DETAIL)
+                Texture2D _DetailMask;
+            #endif
+            #if defined(ZET_DETAIL)
+                Texture2D _DetailAlbedo;
+            #endif
+            #if defined(ZET_DETAIL)
+                Texture2D _DetailNormal;
+            #endif
+            #if defined(ZET_EM0)
+                Texture2D _Em0PathTex;
+            #endif
+            #if defined(ZET_ANISO)
+                Texture2D _AnisoFlowMap;
+            #endif
+            #if defined(ZET_ANISO)
+                Texture2D _AnisoObjectMap;
+            #endif
             Texture2D _StyleSpecMask;
+            Texture2D _DecalRGBAMask;
             Texture2D _Decal0Tex;
-            Texture2D _GlitterMask;
+            #if defined(ZET_GLITTER)
+                Texture2D _GlitterMask;
+            #endif
             Texture2D _VertALMask;
             // ---- Secondary-slot textures: umbrella-keyword gated -------------
             // Unity caps a shader at 64 texture parameters, and ZFS's full set
@@ -1093,16 +1210,32 @@ Shader "Zetph/ZetsFancyShader"
             // All three umbrellas + LTCGI + LV on ONE unlocked material can
             // still exceed the cap - Unity will say so; turn something off.
             TextureCube _RoomCube;
-            Texture2D _RoomMask;
-            Texture2D _RoomFurnTex;
+            #if defined(ZET_ROOM)
+                Texture2D _RoomMask;
+            #endif
+            #if defined(ZET_ROOM)
+                Texture2D _RoomFurnTex;
+            #endif
             Texture2D _RefractMask;
             Texture2D _RefractMap;
-            Texture2D _ScreenMask;
-            Texture2D _ScreenArt;
-            Texture2D _ScreenBackdrop;
-            Texture2D _ScreenGridTex;
-            Texture2D _ScreenLCDTex;
-            Texture2D _ScreenBSODTex;
+            #if defined(ZET_SCREEN)
+                Texture2D _ScreenMask;
+            #endif
+            #if defined(ZET_SCREEN)
+                Texture2D _ScreenArt;
+            #endif
+            #if defined(ZET_SCREEN)
+                Texture2D _ScreenBackdrop;
+            #endif
+            #if defined(ZET_SCREEN)
+                Texture2D _ScreenGridTex;
+            #endif
+            #if defined(ZET_SCREEN)
+                Texture2D _ScreenLCDTex;
+            #endif
+            #if defined(ZET_SCREEN)
+                Texture2D _ScreenBSODTex;
+            #endif
 //ifex _RefractEnable==0
             // v64: screenspace-texture macros -> Texture2DArray under SPS-I so
             // refraction samples the correct eye slice in VR.
@@ -1195,6 +1328,10 @@ Shader "Zetph/ZetsFancyShader"
             float _ParallaxMipBias;
             float _HeightToNormalEnable;
             float _HeightStrength;
+            float _DispEnable; float _DispStrength; float _DispCenter;
+            float _DispTess; float _DispTessNear; float _DispTessFar;
+            float _DiffEnable; float _DiffStrength; float _DiffPitch; float _DiffOrders;
+            float _DiffSharp; float _DiffAxis; float _DiffTwist; float _DiffSpecOnly; float _DiffTintAmt;
             float _IridEnable;
             float _IridALEnable; float _IridVolBoost; float _IridVolAmt;
             float _IridMultBand; float _IridMultAmt; float _IridAddBand; float _IridAddAmt;
@@ -1226,7 +1363,10 @@ Shader "Zetph/ZetsFancyShader"
             float _DissolveEnable;
             float _DissolveAmount;
             float _DissolveAL;
-            float _DissolveWidth;
+            float _DissolveWidth; float _DissolveGlow;
+            float _DissolveMode; float4 _DissolveDir; float _DissolveDirNoise; float _DissolveDirSpread;
+            float _DissolveALEnable; float _DissolveVolBoost; float _DissolveVolAmt;
+            float _DissolveMultBand; float _DissolveMultAmt; float _DissolveAddBand; float _DissolveAddAmt;
             float _DissolveBand;
             float4 _DissolveColor;
             float _EQEnable;
@@ -1288,11 +1428,26 @@ Shader "Zetph/ZetsFancyShader"
             float _FallbackCubemapStrength;
             float _ForceFallback;
             float _HasBakedCubemap;
+            // Texture-presence companions must sit inside the cbuffer: the locker
+            // substitutes property names for literals everywhere except here.
+            float _HasEm0Map; float _HasEm1Map; float _HasEm2Map; float _HasEm3Map;
             float _ReflStrength;
             float _GlitterEnable; float4 _GlitterColor; float _GlitterDensity; float _GlitterSize; float _GlitterBrightness;
             float _GlitterAmount; float _GlitterViewRange; float _GlitterSpeed; float4 _GlitterFlow; float _GlitterProjection;
             float _GlitterLit; float _GlitterALEnable; float _GlitterBand; float _GlitterAL;
             float _DecalsEnable;
+            float _Decal0ScaleY; float _Decal0ScaleLock; float _Decal0RotSpeed; float _Decal0Symmetry;
+            float _Decal0FlipUV; float _Decal0Tiled; float _Decal0AlphaBlend; float _Decal0AlphaInt;
+            float _Decal0Hue; float _Decal0Chroma; float _Decal0MaskCh;
+            float _Decal1ScaleY; float _Decal1ScaleLock; float _Decal1RotSpeed; float _Decal1Symmetry;
+            float _Decal1FlipUV; float _Decal1Tiled; float _Decal1AlphaBlend; float _Decal1AlphaInt;
+            float _Decal1Hue; float _Decal1Chroma; float _Decal1MaskCh;
+            float _Decal2ScaleY; float _Decal2ScaleLock; float _Decal2RotSpeed; float _Decal2Symmetry;
+            float _Decal2FlipUV; float _Decal2Tiled; float _Decal2AlphaBlend; float _Decal2AlphaInt;
+            float _Decal2Hue; float _Decal2Chroma; float _Decal2MaskCh;
+            float _Decal3ScaleY; float _Decal3ScaleLock; float _Decal3RotSpeed; float _Decal3Symmetry;
+            float _Decal3FlipUV; float _Decal3Tiled; float _Decal3AlphaBlend; float _Decal3AlphaInt;
+            float _Decal3Hue; float _Decal3Chroma; float _Decal3MaskCh;
             float _Decal0Enable; float4 _Decal0Color; float _Decal0Opacity; float _Decal0Rotation; float _Decal0Blend; float _Decal0Emit; float _Decal0PosX; float _Decal0PosY; float _Decal0Scale; float _Decal0Overlay; float _Decal0Flipbook; float _Decal0FlipCols; float _Decal0FlipRows; float _Decal0FlipFPS;
             float _Decal1Enable; float4 _Decal1Color; float _Decal1Opacity; float _Decal1Rotation; float _Decal1Blend; float _Decal1Emit; float _Decal1PosX; float _Decal1PosY; float _Decal1Scale; float _Decal1Overlay; float _Decal1Flipbook; float _Decal1FlipCols; float _Decal1FlipRows; float _Decal1FlipFPS;
             float _Decal2Enable; float4 _Decal2Color; float _Decal2Opacity; float _Decal2Rotation; float _Decal2Blend; float _Decal2Emit; float _Decal2PosX; float _Decal2PosY; float _Decal2Scale; float _Decal2Overlay; float _Decal2Flipbook; float _Decal2FlipCols; float _Decal2FlipRows; float _Decal2FlipFPS;
@@ -1305,10 +1460,7 @@ Shader "Zetph/ZetsFancyShader"
             float _BreakManual;
             float _BreakCoreGlow;
             float4 _Em0Color;
-            float4 _Em0BgColor;
             float4 _Em0Center;
-            float4 _Em0BgScale;
-            float4 _Em0Pan;
             float _Em0Enable;
             float _Em0Hue;
             float _Em0Base;
@@ -1316,17 +1468,6 @@ Shader "Zetph/ZetsFancyShader"
             float _Em0AL;
             float _Em0Mode;
             float _Em0PulseScale;
-            float _Em0Rotation;
-            float _Em0Mirror;
-            float _Em0Triplanar;
-            float _Em0ScaleLock;
-            float _Em0TileX;
-            float _Em0TileY;
-            float _Em0Layers;
-            float _Em0Parallax;
-            float _Em0LayerDist;
-            float _Em0NearBright;
-            float _Em0FarBright;
             float _Em0ALEnable;
             float _Em0MultBand;
             float _Em0MultAmt;
@@ -1337,6 +1478,10 @@ Shader "Zetph/ZetsFancyShader"
             float _Em0Intensity;
             float _Em0EdgeGlow;
             float _Em0EdgePower;
+            float _Em0Harmony; float _Em0HarmonyAmt; float _Em0HarmonyComp; float _Em0HarmonyPurity;
+            float _Em1Harmony; float _Em1HarmonyAmt; float _Em1HarmonyComp; float _Em1HarmonyPurity;
+            float _Em2Harmony; float _Em2HarmonyAmt; float _Em2HarmonyComp; float _Em2HarmonyPurity;
+            float _Em3Harmony; float _Em3HarmonyAmt; float _Em3HarmonyComp; float _Em3HarmonyPurity;
             float _Em0LightBased;
             float _Em0MinEmiss;
             float _Em0MaxEmiss;
@@ -1347,10 +1492,7 @@ Shader "Zetph/ZetsFancyShader"
             float _Em0BlinkMin;
             float _Em0Scan; float _Em0ScanDir; float _Em0ScanMode; float _Em0ScanSpeed; float _Em0ScanWidth; float _Em0ScanSoft; float _Em0ScanFloor; float _Em0ScanPixels; float _Em0ScanGlitch;
             float4 _Em1Color;
-            float4 _Em1BgColor;
             float4 _Em1Center;
-            float4 _Em1BgScale;
-            float4 _Em1Pan;
             float _Em1Enable;
             float _Em1Hue;
             float _Em1Base;
@@ -1358,17 +1500,6 @@ Shader "Zetph/ZetsFancyShader"
             float _Em1AL;
             float _Em1Mode;
             float _Em1PulseScale;
-            float _Em1Rotation;
-            float _Em1Mirror;
-            float _Em1Triplanar;
-            float _Em1ScaleLock;
-            float _Em1TileX;
-            float _Em1TileY;
-            float _Em1Layers;
-            float _Em1Parallax;
-            float _Em1LayerDist;
-            float _Em1NearBright;
-            float _Em1FarBright;
             float _Em1ALEnable;
             float _Em1MultBand;
             float _Em1MultAmt;
@@ -1389,10 +1520,7 @@ Shader "Zetph/ZetsFancyShader"
             float _Em1BlinkMin;
             float _Em1Scan; float _Em1ScanDir; float _Em1ScanMode; float _Em1ScanSpeed; float _Em1ScanWidth; float _Em1ScanSoft; float _Em1ScanFloor; float _Em1ScanPixels; float _Em1ScanGlitch;
             float4 _Em2Color;
-            float4 _Em2BgColor;
             float4 _Em2Center;
-            float4 _Em2BgScale;
-            float4 _Em2Pan;
             float _Em2Enable;
             float _Em2Hue;
             float _Em2Base;
@@ -1400,17 +1528,6 @@ Shader "Zetph/ZetsFancyShader"
             float _Em2AL;
             float _Em2Mode;
             float _Em2PulseScale;
-            float _Em2Rotation;
-            float _Em2Mirror;
-            float _Em2Triplanar;
-            float _Em2ScaleLock;
-            float _Em2TileX;
-            float _Em2TileY;
-            float _Em2Layers;
-            float _Em2Parallax;
-            float _Em2LayerDist;
-            float _Em2NearBright;
-            float _Em2FarBright;
             float _Em2ALEnable;
             float _Em2MultBand;
             float _Em2MultAmt;
@@ -1431,10 +1548,7 @@ Shader "Zetph/ZetsFancyShader"
             float _Em2BlinkMin;
             float _Em2Scan; float _Em2ScanDir; float _Em2ScanMode; float _Em2ScanSpeed; float _Em2ScanWidth; float _Em2ScanSoft; float _Em2ScanFloor; float _Em2ScanPixels; float _Em2ScanGlitch;
             float4 _Em3Color;
-            float4 _Em3BgColor;
             float4 _Em3Center;
-            float4 _Em3BgScale;
-            float4 _Em3Pan;
             float _Em3Enable;
             float _Em3Hue;
             float _Em3Base;
@@ -1442,17 +1556,6 @@ Shader "Zetph/ZetsFancyShader"
             float _Em3AL;
             float _Em3Mode;
             float _Em3PulseScale;
-            float _Em3Rotation;
-            float _Em3Mirror;
-            float _Em3Triplanar;
-            float _Em3ScaleLock;
-            float _Em3TileX;
-            float _Em3TileY;
-            float _Em3Layers;
-            float _Em3Parallax;
-            float _Em3LayerDist;
-            float _Em3NearBright;
-            float _Em3FarBright;
             float _Em3ALEnable;
             float _Em3MultBand;
             float _Em3MultAmt;
@@ -1488,7 +1591,7 @@ Shader "Zetph/ZetsFancyShader"
             float _VRSLGISpecularMult; float _VRSLGISpecularClamp;
             float _VRSLGIToon; float _VRSLGIOcclusion;
             float _LTCGITintOn; float4 _LTCGIDiffuseTint; float4 _LTCGISpecularTint; float _LTCGIOcclusion;
-            float _ZTest; float _ZWriteOverride; float _ColorMask; float _OffsetFactor; float _OffsetUnits;
+            float _ZTest; float _ColorMask; float _OffsetFactor; float _OffsetUnits;
             float _LightVolumesStrength;
             float _LightVolumesSpec;
             float _LVPointShading;
@@ -1546,7 +1649,14 @@ Shader "Zetph/ZetsFancyShader"
             float _OutlineStdEnable; float4 _OutlineStdColor; float _OutlineStdWidth; float _OutlineStdWidthMode; float _OutlineStdTexTint; float _OutlineStdLit; float _OutlineStdDistFade; float _OutlineStdFadeNear; float _OutlineStdFadeFar; float _OutlineStdVColorMask; float _OutlineStdVColorChannel;
             float _OutlineRGBSplit;
             float4 _OutlineColor;
-            float _StarEnable; float _ConstellationBlend; float _ConstellationEmission; float _StarUVSource;
+            float _InfEnable; float _InfIntensity; float4 _InfColor; float _InfEmission;
+            float _InfLayers; float _InfParallax; float _InfLayerDist; float _InfNearBright; float _InfFarBright;
+            float _InfTriplanar; float4 _InfCenter; float _InfRotation; float _InfScaleLock; float4 _InfScale;
+            float _InfTileX; float _InfTileY; float4 _InfPan; float _InfViewMode;
+            float _InfALEnable; float _InfBand; float _InfALBoost; float _InfALDepth;
+            float _InfVolBoost; float _InfVolAmt; float _InfMultBand; float _InfMultAmt;
+            float _InfAddBand; float _InfAddAmt;
+            float _StarEnable; float _ConstellationBlend; float _ConstellationEmission; float _StarUVSource; float _StarTriScale; float _StarVolDepth;
             float _StarDensity;
             float _StarSize; float _StarScatter;
             float _StarSpeed;
@@ -1627,12 +1737,15 @@ Shader "Zetph/ZetsFancyShader"
                 return half3(0.95, 0.85, 0.7);                           // marble
             }
             struct DummyAppdata { float4 vertex; };
-            // Under SHADOWS_SHADOWMASK without screen shadows or a lightmap,
-            // AutoLight's SHADOW_COORDS expands to nothing while TRANSFER_SHADOW
-            // still writes _ShadowCoord (from lightmap UVs an avatar does not
-            // have) - invalid subscript. Guard the transfer with the exact same
-            // condition the attenuation reads use, so both ends stay consistent.
-            #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN) && !defined(LIGHTMAP_ON)
+            // Under SHADOWS_SHADOWMASK without screen shadows, AutoLight's
+            // SHADOW_COORDS expands to nothing while TRANSFER_SHADOW and the
+            // attenuation macros still reference _ShadowCoord (built from lightmap
+            // UVs an avatar does not carry) - invalid subscript. This holds whether
+            // or not LIGHTMAP_ON is set, so the guard covers both: an earlier version
+            // excluded the lightmapped case and broke in lightmapped scenes. Guard the
+            // transfer with the same condition the attenuation reads use, so both ends
+            // stay consistent.
+            #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN)
                 #define ZET_TRANSFER_SHADOW(o)
             #else
                 #define ZET_TRANSFER_SHADOW(o) TRANSFER_SHADOW(o)
@@ -1646,6 +1759,21 @@ Shader "Zetph/ZetsFancyShader"
             // The jitter and drift the star points use, for any cell in layer s. Each
             // star gets its own drift frequency and phase per axis, so the field wanders
             // as scattered points instead of oscillating on one shared clock (the "wave").
+            // 3D star placement. Projecting a 2D field onto a curved surface either
+            // stretches it (UV space) or breaks at the axis switch (dominant-axis
+            // triplanar). Placing stars in space instead avoids both: a star is a point
+            // the surface passes through, so spacing stays even across curvature and
+            // there is no projection to seam. Cells are visited as a 2x2x2 block around
+            // the sample, which keeps the count close to the 3x3 the flat path uses.
+            float3 ZetStarCell3D(float3 cell, float layer) {
+                float3 h = float3(hash2(cell.xy + cell.z * 37.1 + layer * 11.7),
+                                  hash2(cell.yz + cell.x * 17.3 + layer * 5.9),
+                                  hash2(cell.zx + cell.y * 29.7 + layer * 3.1));
+                float3 drift = float3(sin(_Time.y * (0.35 + h.x * 1.65) + h.y * 6.2832),
+                                      sin(_Time.y * (0.35 + h.y * 1.65) + h.z * 6.2832),
+                                      sin(_Time.y * (0.35 + h.z * 1.65) + h.x * 6.2832));
+                return cell + 0.5 + (h - 0.5) * _StarScatter + drift * (_StarDrift * 0.003);
+            }
             float2 ZetStarJitter(float2 cell, float s) {
                 float2 rr = (hash2D(cell + s * 11.23) - 0.5) * _StarScatter;
                 float2 freq  = 0.35 + hash2D(cell + s * 13.7) * 1.65;   // 0.35..2.0, per star and axis
@@ -1858,11 +1986,44 @@ Shader "Zetph/ZetsFancyShader"
                     uvOut += _VertALUVSpeed.xy * u;
                 }
             }
-            half3 ApplyDecal(Texture2D tex, SamplerState samp, float2 pos, float scale, float rot, half4 tint, float opacity, float blend, float emit, float4 fb, float2 uv, half3 base, inout half3 emiss) {
-                float2 d = (uv - pos) / max(scale, 1e-4);
-                float a = radians(rot); float sn = sin(a), cs = cos(a);
+            half3 hueShift(half3 c, float a) {
+                const half3 k = half3(0.57735, 0.57735, 0.57735);
+                half co = cos(a);
+                return c * co + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - co);
+            }
+            // One RGBA texture carries a mask for each decal, a channel apiece, so four
+            // masks cost a single texture slot rather than four.
+            float ZetDecalMask(float channel, float2 uv) {
+                if (channel < 0.5) return 1.0;
+                half4 m = _DecalRGBAMask.Sample(sampler_LinearClamp, uv);
+                return (channel < 1.5) ? m.r : (channel < 2.5) ? m.g : (channel < 3.5) ? m.b : m.a;
+            }
+            half3 ApplyDecal(Texture2D tex, SamplerState samp, float2 pos, float2 scale, float rot, half4 tint,
+                             float opacity, float blend, float emit, float4 fb, float2 uv, half3 base,
+                             float4 opts, float4 extra, float maskVal, inout half3 emiss) {
+                // opts:  x = rotation speed, y = symmetry mode, z = mirrored UV mode, w = tiled
+                // extra: x = hue shift, y = chromatic aberration, z = alpha blend mode, w = alpha intensity
+                // Symmetry mirrors the placement across the UV midline, so one slot can mark
+                // both arms; mirrored UV flips the artwork itself rather than its position.
+                float2 puv = uv;
+                if (opts.y > 0.5) {
+                    if (opts.y < 1.5)      puv.x = (puv.x > 0.5) ? 1.0 - puv.x : puv.x;   // X
+                    else if (opts.y < 2.5) puv.y = (puv.y > 0.5) ? 1.0 - puv.y : puv.y;   // Y
+                    else { puv.x = (puv.x > 0.5) ? 1.0 - puv.x : puv.x;
+                           puv.y = (puv.y > 0.5) ? 1.0 - puv.y : puv.y; }                 // Both
+                }
+                float2 d = (puv - pos) / max(scale, 1e-4);
+                float a = radians(rot + _Time.y * opts.x * 30.0); float sn = sin(a), cs = cos(a);
                 d = float2(d.x * cs - d.y * sn, d.x * sn + d.y * cs) + 0.5;
-                float box = step(0.0, d.x) * step(d.x, 1.0) * step(0.0, d.y) * step(d.y, 1.0);
+                // Tiled repeats the decal across the surface instead of clipping it to one box.
+                float box = (opts.w > 0.5) ? 1.0
+                          : step(0.0, d.x) * step(d.x, 1.0) * step(0.0, d.y) * step(d.y, 1.0);
+                if (opts.w > 0.5) d = frac(d);
+                if (opts.z > 0.5) {
+                    if (opts.z < 1.5)      d.x = 1.0 - d.x;
+                    else if (opts.z < 2.5) d.y = 1.0 - d.y;
+                    else { d.x = 1.0 - d.x; d.y = 1.0 - d.y; }
+                }
                 float2 sampUV = d;
                 if (fb.w > 0.5) {
                     float cols = max(fb.x, 1.0), rows = max(fb.y, 1.0);
@@ -1870,9 +2031,26 @@ Shader "Zetph/ZetsFancyShader"
                     float fx = fmod(fi, cols), fy = floor(fi / cols);
                     sampUV = float2((fx + saturate(d.x)) / cols, (rows - 1.0 - fy + saturate(d.y)) / rows);
                 }
-                half4 tx = tex.Sample(samp, sampUV);
-                half al = tx.a * tint.a * opacity * box;   // opacity is a plain uniform: animate 0..1 from a menu (e.g. blush)
+                half4 tx;
+                if (extra.y > 0.0001) {
+                    // Chromatic aberration offsets each channel outward from the decal's
+                    // centre, the same way a lens disperses colour toward its edges.
+                    float2 dir = (sampUV - 0.5) * extra.y * 0.06;
+                    tx.r = tex.Sample(samp, sampUV + dir).r;
+                    tx.g = tex.Sample(samp, sampUV).g;
+                    tx.b = tex.Sample(samp, sampUV - dir).b;
+                    tx.a = tex.Sample(samp, sampUV).a;
+                } else {
+                    tx = tex.Sample(samp, sampUV);
+                }
+                if (extra.x > 0.0001) tx.rgb = hueShift(tx.rgb, extra.x * 6.28318);
+                half al = tx.a * tint.a * opacity * box * maskVal * max(extra.w, 0.0);   // opacity is a plain uniform: animate 0..1 from a menu (e.g. blush)
                 half3 dc = tx.rgb * tint.rgb;
+                // Alpha blend mode decides how coverage is treated: Normal uses it as-is,
+                // Multiply weights it by the decal's own brightness, and Additive lets
+                // bright areas push through regardless of the texture's alpha.
+                if (extra.z > 1.5)      al = saturate(al + dot(dc, half3(0.333, 0.333, 0.333)));
+                else if (extra.z > 0.5) al *= dot(dc, half3(0.333, 0.333, 0.333));
                 half3 outc;
                 if (blend > 2.5)      outc = lerp(base, 1.0 - (1.0 - base) * (1.0 - dc), al); // Screen
                 else if (blend > 1.5) outc = lerp(base, base * dc, al);                       // Multiply
@@ -1883,11 +2061,157 @@ Shader "Zetph/ZetsFancyShader"
             }
             float3 rotAround(float3 p, float3 axis, float ang) { float s = sin(ang), c = cos(ang); return p * c + cross(axis, p) * s + axis * dot(axis, p) * (1.0 - c); }
             
-            half3 hueShift(half3 c, float a) {
-                const half3 k = half3(0.57735, 0.57735, 0.57735);
-                half co = cos(a);
-                return c * co + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - co);
+            // Directional dissolve. The burn front is a plane sweeping along a chosen axis
+            // rather than following the noise texture's own brightness. The noise is still
+            // mixed in so the front stays ragged: a pure gradient gives a clean straight
+            // line, which reads as mechanical, while a little pattern influence makes it
+            // look like the surface is genuinely burning away in that direction.
+            float ZetDissolveField(float noise, float3 objP)
+            {
+                if (_DissolveMode < 0.5) return noise;
+                float3 axis = _DissolveDir.xyz;
+                if (dot(axis, axis) < 1e-6) axis = float3(0, 1, 0);
+                axis = normalize(axis);
+                // Project onto the axis and normalise into 0..1 over the sweep length, so
+                // the whole mesh is covered regardless of how big it is.
+                float along = dot(objP, axis) / max(_DissolveDirSpread, 0.001);
+                float grad = saturate(along * 0.5 + 0.5);
+                return lerp(grad, noise, saturate(_DissolveDirNoise));
             }
+            // Approximate wavelength to RGB, over the visible 380-780nm range. Rough but
+            // smooth, which is what matters when it is summed across several orders.
+            half3 ZetWavelengthRGB(float nm)
+            {
+                half3 c = 0;
+                if (nm < 440.0)      c = half3((440.0 - nm) / 60.0, 0.0, 1.0);
+                else if (nm < 490.0) c = half3(0.0, (nm - 440.0) / 50.0, 1.0);
+                else if (nm < 510.0) c = half3(0.0, 1.0, (510.0 - nm) / 20.0);
+                else if (nm < 580.0) c = half3((nm - 510.0) / 70.0, 1.0, 0.0);
+                else if (nm < 645.0) c = half3(1.0, (645.0 - nm) / 65.0, 0.0);
+                else                 c = half3(1.0, 0.0, 0.0);
+                // Roll off at both ends of vision so the spectrum fades rather than clipping.
+                float fade = (nm < 420.0) ? (0.3 + 0.7 * (nm - 380.0) / 40.0)
+                           : (nm > 700.0) ? (0.3 + 0.7 * (780.0 - nm) / 80.0) : 1.0;
+                return c * saturate(fade);
+            }
+
+            // Diffraction grating. A regular microstructure splits reflected light into
+            // orders, and each order lands at the angle where the path difference is a
+            // whole number of wavelengths: pitch * sin(theta) = order * wavelength. Solving
+            // that for wavelength at the current angle gives the colour of each order, so
+            // the surface throws several rainbow streaks that fan out and sweep as it turns.
+            // This is a different mechanism from thin film, which is why a holographic wrap
+            // does not look like a soap bubble.
+            half3 ZetDiffraction(float3 N, float3 T, float3 B, float3 viewDir, float3 lightDir)
+            {
+                float3 H = normalize(viewDir + lightDir);
+                // The grating axis lives in tangent space, so it follows the mesh's UV flow
+                // and can be twisted or made radial from the surface centre.
+                float tw = radians(_DiffTwist);
+                float2 ax = float2(cos(tw), sin(tw));
+                float3 axis = (_DiffAxis < 0.5) ? (T * ax.x + B * ax.y)
+                            : (_DiffAxis < 1.5) ? (B * ax.x - T * ax.y)
+                                                : normalize(T * H.x + B * H.z + 1e-5);
+                // Component of the half-vector along the grating: this is sin(theta).
+                float sinT = dot(normalize(H), normalize(axis));
+                float nd = saturate(dot(N, H));
+
+                half3 acc = 0;
+                int orders = (int)_DiffOrders;
+                [unroll] for (int m = 1; m <= 5; m++) {
+                    if (m > orders) break;
+                    // Both signs: a grating throws symmetric orders either side.
+                    [unroll] for (int sgn = 0; sgn < 2; sgn++) {
+                        float ss = (sgn == 0) ? sinT : -sinT;
+                        float nm = _DiffPitch * ss / (float)m;
+                        if (nm < 380.0 || nm > 780.0) continue;
+                        // Narrow response so each order reads as a distinct streak rather
+                        // than smearing into a wash.
+                        float band = pow(saturate(1.0 - abs(ss) * 0.15), _DiffSharp * 0.05);
+                        acc += ZetWavelengthRGB(nm) * band / (float)m;
+                    }
+                }
+                // Tie it to where light actually reflects, so streaks radiate from highlights.
+                float spec = lerp(1.0, pow(nd, 8.0) * 4.0, _DiffSpecOnly);
+                return acc * spec * _DiffStrength;
+            }
+            // Infinity Mirror. Samples a pattern repeatedly at increasing parallax depth,
+            // each layer offset by the view direction, so the surface reads as a tunnel
+            // receding into the mesh. Extracted from the emission slots into its own
+            // effect, since it is a distinct look rather than a mode of a glow layer.
+
+            // Applies the colour of the world's light to an emissive colour. Only the hue
+            // carries over, not the brightness: brightness is Light-Based Emission's job
+            // and doubling up would fight it.
+            half3 ZetLightHarmony(half3 emissive, half3 ambient, half3 direct,
+                                  float on, float amt, float comp, float purity)
+            {
+                if (on < 0.5) return emissive;
+                half3 scene = ambient + direct;
+                float lum = dot(scene, half3(0.2126, 0.7152, 0.0722));
+                half3 hue = scene / max(lum, 1e-4);
+                half3 avg = dot(hue, half3(0.333, 0.333, 0.333)).xxx;
+                hue = lerp(avg, hue, purity);
+                if (comp > 0.5) hue = hueShift(hue, 3.14159);
+                return emissive * lerp(half3(1, 1, 1), hue, amt);
+            }
+
+            #if defined(ZET_INFINITY)
+            half3 ZetInfinityMirror(float2 uv, float3 wPos, float3 N, float3 viewDir, float2 vT, float al)
+            {
+                if (_InfEnable < 0.5 || ZetViewFactor(_InfViewMode) < 0.5) return 0;
+                float mask = _InfMask.Sample(sampler_LinearClamp, uv).r * _InfIntensity;
+                if (mask < 0.001) return 0;
+
+                half3 acc = 0;
+                int layers = (int)_InfLayers;
+                float denom = max(_InfLayers - 1.0, 1.0);
+                float rad = radians(_InfRotation);
+                float rotS = sin(rad), rotC = cos(rad);
+                float2 scale = _InfScaleLock > 0.5 ? _InfScale.xx : _InfScale.xy;
+                float2 safeScale = max(scale, 0.001);
+                // Audio can push the layers further apart, so the tunnel appears to
+                // lengthen on the beat rather than only brightening.
+                float depth0 = _InfParallax * 0.002;
+                float step0  = (_InfLayerDist * 0.002) * (1.0 + al * _InfALDepth);
+
+                if (_InfTriplanar > 0.5) {
+                    float3 blend = abs(N); blend /= dot(blend, 1.0);
+                    float3 safeView = sign(viewDir) * max(abs(viewDir), 0.001);
+                    float2 uvX = wPos.zy / safeScale, uvY = wPos.xz / safeScale, uvZ = wPos.xy / safeScale;
+                    [loop] for (int lx = 0; lx < 10; lx++) {
+                        if (lx >= layers) break;
+                        float cd = depth0 + lx * step0;
+                        float2 pX = uvX + (safeView.zy / safeView.x) * cd + _Time.y * _InfPan.xy;
+                        float2 pY = uvY + (safeView.xz / safeView.y) * cd + _Time.y * _InfPan.xy;
+                        float2 pZ = uvZ + (safeView.xy / safeView.z) * cd + _Time.y * _InfPan.xy;
+                        half3 cX = _InfTex.SampleLevel(sampler_MainTex, pX, 0).rgb;
+                        half3 cY = _InfTex.SampleLevel(sampler_MainTex, pY, 0).rgb;
+                        half3 cZ = _InfTex.SampleLevel(sampler_MainTex, pZ, 0).rgb;
+                        acc += (cX * blend.x + cY * blend.y + cZ * blend.z) * _InfColor.rgb
+                             * lerp(_InfNearBright, _InfFarBright, lx / denom);
+                    }
+                } else {
+                    float2 bgUV = uv - _InfCenter.xy;
+                    bgUV = float2(bgUV.x * rotC - bgUV.y * rotS, bgUV.x * rotS + bgUV.y * rotC);
+                    [loop] for (int ly = 0; ly < 10; ly++) {
+                        if (ly >= layers) break;
+                        float cd = depth0 + ly * step0;
+                        float2 rawUV = (bgUV / safeScale) + 0.5;
+                        rawUV -= (vT / (dot(viewDir, N) + 0.42)) * cd;
+                        rawUV += _Time.y * _InfPan.xy;
+                        float bounds = 1.0;
+                        if (_InfTileX < 0.5) bounds *= step(0.0, rawUV.x) * step(rawUV.x, 1.0);
+                        if (_InfTileY < 0.5) bounds *= step(0.0, rawUV.y) * step(rawUV.y, 1.0);
+                        float fX = _InfTileX > 0.5 ? frac(rawUV.x) : rawUV.x;
+                        float fY = _InfTileY > 0.5 ? frac(rawUV.y) : rawUV.y;
+                        acc += _InfTex.SampleLevel(sampler_MainTex, float2(fX, fY), 0).rgb * _InfColor.rgb
+                             * lerp(_InfNearBright, _InfFarBright, ly / denom) * bounds;
+                    }
+                }
+                return acc * mask * _InfEmission * (1.0 + al * _InfALBoost);
+            }
+            #endif
             // --- Plasma Hits: audio-gated hits that pop at random spots in the -------
             // avatar's own 3D space and ripple outward. Each of the up to 8 slots relocates
             // on its own clock; brightness is the band envelope past a threshold, so it's
@@ -2048,7 +2372,7 @@ Shader "Zetph/ZetsFancyShader"
                 if (amt < 0.00001) return uv;
                 float t = _Time.y * _MorphSpeed * (1.0 + mAL * _MorphALSpeed);
                 float2 p = uv * _MorphScale * _MorphTiling.xy + _MorphTiling.zw;
-                float2 off;
+                float2 off = 0;   // Swirl and Pinch return early, so this must start defined
                 if (_MorphMode < 0.5) {                       // Wave: smooth cross-ripple
                     off = float2(sin(p.y + t), cos(p.x + t * 1.3));
                 } else if (_MorphMode < 1.5) {                // Swirl: rotate around the centre
@@ -2129,14 +2453,13 @@ Shader "Zetph/ZetsFancyShader"
             // ---- Unified emission slot: multi-band AL blend (mult/add) + volume boost + infinity mirror ----
             struct EmSlot {
                 float enable; half3 baseColor; float hueOn; float baseAmt; float band; float alBoost; float mode; float pulseScale;
-                float2 projCenter; float rotationDeg; float mirrorOn; float triplanar; half3 bgColor; float scaleLock; float2 bgScale;
-                float tileX; float tileY; float2 pan; float layers; float parallax; float layerDist; float nearBright; float farBright;
+                float2 projCenter;
                 float alEnable; float multBand; float multAmt; float addBand; float addAmt; float volBoost; float volAmt;
                 float intensity; float edgeStrength; float edgePower; float lightBased; float minEmiss; float maxEmiss; float minLight; float maxLight;
                 float blinkOn; float blinkSpeed; float blinkMin;
                 float scanOn; float scanDir; float scanMode; float scanSpeed; float scanWidth; float scanSoft; float scanFloor; float scanPixels; float scanGlitch;
             };
-            half3 EvalEmissionSlot(EmSlot s, Texture2D maskTex, Texture2D bgTex, Texture2D pathTex,
+            half3 EvalEmissionSlot(EmSlot s, Texture2D maskTex, Texture2D mapTex, float hasMap, Texture2D pathTex,
                 float2 uv, float3 wPos, float3 N, float3 viewDir, float2 vT, float proxAlpha, bool alAvail, float litFactor)
             {
                 if (s.enable < 0.5) return half3(0, 0, 0);
@@ -2176,53 +2499,17 @@ Shader "Zetph/ZetsFancyShader"
                     // base + sig * boost, which is meant to push into HDR bloom.
                     sig = max(sig, 0.0);
                 }
+                // Emission map: an RGB texture that colours the glow per pixel, tinted by
+                // the slot colour. The mask still decides where the slot emits at all, so a
+                // map can carry the pattern while the mask carries the coverage.
+                // Emission map: RGB that colours the glow per pixel, tinted by the slot
+                // colour. The mask still decides where the slot emits, so a map can carry
+                // the pattern while the mask carries the coverage.
                 half3 finalCol = s.baseColor;
+                if (hasMap > 0.5) finalCol *= mapTex.Sample(sampler_LinearClamp, uv).rgb;
                 // hue phase uses the clamped signal so overdriven audio does not
                 // spin the hue wheel past a full rotation
                 if (s.hueOn > 0.5) finalCol = hueShift(finalCol, (alAvail ? saturate(sig) : _Time.y * 0.5) * 6.28318);
-                if (s.mirrorOn > 0.5) {
-                    half3 bgAccum = 0;
-                    float denom = max(s.layers - 1.0, 1.0);
-                    float rad = radians(s.rotationDeg);
-                    float rotS = sin(rad), rotC = cos(rad);
-                    float2 finalScale = s.scaleLock > 0.5 ? float2(s.bgScale.x, s.bgScale.x) : s.bgScale.xy;
-                    float2 safeScale = max(finalScale, 0.001);
-                    if (s.triplanar > 0.5) {
-                        float3 blend = abs(N); blend /= dot(blend, 1.0);
-                        float3 safeView = sign(viewDir) * max(abs(viewDir), 0.001);
-                        float2 uvX = wPos.zy / safeScale; float2 uvY = wPos.xz / safeScale; float2 uvZ = wPos.xy / safeScale;
-                        [loop]
-                        for (int lx = 0; lx < 10; lx++) {
-                            if (lx >= s.layers) break;
-                            float cd = (s.parallax * 0.002) + (lx * (s.layerDist * 0.002));
-                            float2 pX = uvX + (safeView.zy / safeView.x) * cd + _Time.y * s.pan;
-                            float2 pY = uvY + (safeView.xz / safeView.y) * cd + _Time.y * s.pan;
-                            float2 pZ = uvZ + (safeView.xy / safeView.z) * cd + _Time.y * s.pan;
-                            half3 cX = bgTex.SampleLevel(sampler_MainTex, pX, 0).rgb;
-                            half3 cY = bgTex.SampleLevel(sampler_MainTex, pY, 0).rgb;
-                            half3 cZ = bgTex.SampleLevel(sampler_MainTex, pZ, 0).rgb;
-                            bgAccum += (cX * blend.x + cY * blend.y + cZ * blend.z) * s.bgColor * lerp(s.nearBright, s.farBright, lx / denom);
-                        }
-                    } else {
-                        float2 bgUV = uv - s.projCenter;
-                        bgUV = float2(bgUV.x * rotC - bgUV.y * rotS, bgUV.x * rotS + bgUV.y * rotC);
-                        [loop]
-                        for (int ly = 0; ly < 10; ly++) {
-                            if (ly >= s.layers) break;
-                            float cd = (s.parallax * 0.002) + (ly * (s.layerDist * 0.002));
-                            float2 rawUV = (bgUV / safeScale) + float2(0.5, 0.5);
-                            rawUV -= (vT / (dot(viewDir, N) + 0.42)) * cd;
-                            rawUV += _Time.y * s.pan;
-                            float bounds = 1.0;
-                            if (s.tileX < 0.5) bounds *= step(0.0, rawUV.x) * step(rawUV.x, 1.0);
-                            if (s.tileY < 0.5) bounds *= step(0.0, rawUV.y) * step(rawUV.y, 1.0);
-                            float fX = s.tileX > 0.5 ? frac(rawUV.x) : rawUV.x;
-                            float fY = s.tileY > 0.5 ? frac(rawUV.y) : rawUV.y;
-                            bgAccum += bgTex.SampleLevel(sampler_MainTex, float2(fX, fY), 0).rgb * s.bgColor * lerp(s.nearBright, s.farBright, ly / denom) * bounds;
-                        }
-                    }
-                    finalCol = bgAccum;
-                }
                 float fres = pow(saturate(1.0 - saturate(dot(N, viewDir))), s.edgePower);
                 float bright = (s.baseAmt + sig * s.alBoost) + fres * s.edgeStrength;
                 if (s.lightBased > 0.5) {
@@ -2271,6 +2558,19 @@ Shader "Zetph/ZetsFancyShader"
             #pragma hull hull
             #pragma domain dom
             #pragma geometry geom
+            #pragma shader_feature_local _ ZET_SCREEN
+            #pragma shader_feature_local _ ZET_DETAIL
+            #pragma shader_feature_local _ ZET_ANISO
+            #pragma shader_feature_local _ ZET_ROOM
+            #pragma shader_feature_local _ ZET_SSS
+            #pragma shader_feature_local _ ZET_DISSOLVE
+            #pragma shader_feature_local _ ZET_GLITCH
+            #pragma shader_feature_local _ ZET_IRID
+            #pragma shader_feature_local _ ZET_STARS
+            #pragma shader_feature_local _ ZET_GLITTER
+            #pragma shader_feature_local _ ZET_DIFFRACT
+            #pragma shader_feature_local _ ZET_INFINITY
+            #pragma shader_feature_local _ ZET_EM0
             #pragma fragment fragBase
             #pragma target 5.0
             #pragma shader_feature_local _ ZET_VRSLGI
@@ -2306,13 +2606,19 @@ Shader "Zetph/ZetsFancyShader"
                     Texture2D _Matcap4Tex; Texture2D _Matcap4Mask;
                 #endif
                 #if defined(ZET_EM1)
-                    Texture2D _Em1Mask; Texture2D _Em1PathTex;
+                    Texture2D _Em1Mask;
+                    Texture2D _Em1Map;
+            Texture2D _Em1PathTex;
                 #endif
                 #if defined(ZET_EM2)
-                    Texture2D _Em2Mask; Texture2D _Em2PathTex;
+                    Texture2D _Em2Mask;
+                    Texture2D _Em2Map;
+            Texture2D _Em2PathTex;
                 #endif
                 #if defined(ZET_EM3)
-                    Texture2D _Em3Mask; Texture2D _Em3PathTex;
+                    Texture2D _Em3Mask;
+                    Texture2D _Em3Map;
+            Texture2D _Em3PathTex;
                 #endif
                 #if defined(ZET_DEC1)
                     Texture2D _Decal1Tex;
@@ -2365,6 +2671,17 @@ Shader "Zetph/ZetsFancyShader"
             }
             struct TessFactors { float edge[3] : SV_TessFactor; float inside : SV_InsideTessFactor; };
             TessFactors patchConstant(InputPatch<v2g, 3> patch) {
+                // Displacement needs subdivision of its own: a height map can only move
+                // vertices that exist, so a flat triangle stays flat however strong the map
+                // is. Its subdivision is independent of the break effect's.
+                if (_DispEnable > 0.5) {
+                    float3 dCenter = (patch[0].objPos.xyz + patch[1].objPos.xyz + patch[2].objPos.xyz) / 3.0;
+                    float3 dWorld  = mul(unity_ObjectToWorld, float4(dCenter, 1.0)).xyz;
+                    float dFall = saturate((_DispTessFar - distance(dWorld, _WorldSpaceCameraPos))
+                                           / max(_DispTessFar - _DispTessNear, 0.001));
+                    float df = max(lerp(1.0, _DispTess, dFall), 1.0);
+                    TessFactors od; od.edge[0] = df; od.edge[1] = df; od.edge[2] = df; od.inside = df; return od;
+                }
                 if (_BreakEnable < 0.5) {   // v64: skip the 3 mask samples when break is off
                     TessFactors o1; o1.edge[0] = 1.0; o1.edge[1] = 1.0; o1.edge[2] = 1.0; o1.inside = 1.0; return o1;
                 }
@@ -2385,7 +2702,17 @@ Shader "Zetph/ZetsFancyShader"
                 o.objPos  = patch[0].objPos * b.x + patch[1].objPos * b.y + patch[2].objPos * b.z;
                 o.normal  = normalize(patch[0].normal * b.x + patch[1].normal * b.y + patch[2].normal * b.z);
                 o.tangent = float4(normalize(patch[0].tangent.xyz * b.x + patch[1].tangent.xyz * b.y + patch[2].tangent.xyz * b.z), patch[0].tangent.w);
-                o.uv      = patch[0].uv * b.x + patch[1].uv * b.y + patch[2].uv * b.z; return o;
+                o.uv      = patch[0].uv * b.x + patch[1].uv * b.y + patch[2].uv * b.z;
+                // Push the new vertex along its normal by the height map. Sampled at LOD 0
+                // because the domain stage has no screen-space derivatives, and centred on
+                // Surface Level so mid-grey means no change and the map can carve inward
+                // as well as bulge outward.
+                if (_DispEnable > 0.5 && abs(_DispStrength) > 0.0001) {
+                    float h = _HeightMap.SampleLevel(sampler_LinearRepeat, o.uv, 0).r - _DispCenter;
+                    float m = _ParallaxMask.SampleLevel(sampler_LinearRepeat, o.uv, 0).r;
+                    o.objPos.xyz += o.normal * (h * m * _DispStrength);
+                }
+                return o;
             }
             [maxvertexcount(24)]
             void geom(triangle v2g i[3], inout TriangleStream<g2f> stream) {
@@ -2425,12 +2752,14 @@ Shader "Zetph/ZetsFancyShader"
                     }
                 }
                 float glitchAmt = 0, tick = 0;
+            #if defined(ZET_GLITCH)
                 if (_GlitchEnable > 0.5) {
                     float gMask = _GlitchMask.SampleLevel(sampler_LinearClamp, uvCenter, 0).r;
                     float ga = alAvail ? ALEnv((uint)_GlitchBand) : 0.0;
                     glitchAmt = ga * step(_GlitchThreshold, ga) * gMask;
                     tick = floor(_Time.y * 15.0);
                 }
+            #endif
                 // Core Backfaces
                 float bGap = _BreakCoreGlow; if (_BreakManual < 0.5) { float _bf = _BreakFade; ApplyBreakStyle(_BreakStyle, bGap, _bf); }
                 if (t > 0.001 && bGap > 0.001) {
@@ -2754,9 +3083,12 @@ Shader "Zetph/ZetsFancyShader"
                 half3 c_break = _UseColorChord > 0.5 ? (_CC_Break < 0.5 ? cc0 : _CC_Break < 1.5 ? cc1 : _CC_Break < 2.5 ? cc2 : cc3) : _EmissionColor.rgb;
                 half3 c_dissolve = _UseColorChord > 0.5 ? (_CC_Dissolve < 0.5 ? cc0 : _CC_Dissolve < 1.5 ? cc1 : _CC_Dissolve < 2.5 ? cc2 : cc3) : _DissolveColor.rgb;
                 half3 burnGlow = 0;
+            #if defined(ZET_DISSOLVE)
                 if (_DissolveEnable > 0.5) {
                     float dNoise = _DissolveTex.Sample(sampler_LinearRepeat, i.uv).r; 
-                    float alD = alAvail ? ALEnv((uint)_DissolveBand) : 0.0;
+                    dNoise = ZetDissolveField(dNoise, mul(unity_WorldToObject, float4(i.wPos, 1.0)).xyz);
+                    float alD = ZetALSignal(_DissolveALEnable, _DissolveBand, _DissolveMultBand, _DissolveMultAmt,
+                                            _DissolveAddBand, _DissolveAddAmt, _DissolveVolBoost, _DissolveVolAmt);
                     float dLevel = saturate((_DissolveAmount * 0.01) + (alD * (_DissolveAL * 0.01)));
                     // Widen the threshold past both ends of the noise range so 0 leaves the
                     // surface fully intact and 100 always clears it, whatever the texture's
@@ -2770,6 +3102,7 @@ Shader "Zetph/ZetsFancyShader"
                     if (_DissolveHueShift > 0.5) final_c_dissolve = hueShift(final_c_dissolve, (alAvail ? alD : _Time.y * 0.5) * 6.28318);
                     burnGlow = final_c_dissolve * isEdge; 
                 }
+            #endif
                 float bSurf = _BreakGlow, bGap = _BreakCoreGlow, bFade = _BreakFade;
                 if (_BreakManual < 0.5) ApplyBreakStyle(_BreakStyle, bGap, bFade);
                 if (bFade > 0.001 && i.fx.x > 0.001) {
@@ -2795,6 +3128,7 @@ Shader "Zetph/ZetsFancyShader"
                     N = -N; B = -B; vT.y = -vT.y;   // v64: flip the whole frame
                 }
                 fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uv);
+            #if defined(ZET_DETAIL)
                 if (_DetailEnable > 0.5) {
                     half dMask = _DetailMask.Sample(sampler_LinearRepeat, i.uv).r;
                     if (dMask > 0.001) {
@@ -2802,6 +3136,7 @@ Shader "Zetph/ZetsFancyShader"
                         albedo.rgb *= lerp(half3(1, 1, 1), dAlb * 2.0, _DetailAlbedoStrength * dMask);   // 2x: mid grey is neutral
                     }
                 }
+            #endif
                 half outAlpha = 1.0;
                 if (_AlphaMode > 0.5) {
                     half op = GetOpacity(albedo.a, i.uv);
@@ -2839,15 +3174,15 @@ Shader "Zetph/ZetsFancyShader"
                 }
                 half3 decalEmiss = 0;
                 if (_DecalsEnable > 0.5) {
-                    if (_Decal0Enable > 0.5 && _Decal0Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal0Tex, sampler_LinearClamp, float2(_Decal0PosX, _Decal0PosY), _Decal0Scale, _Decal0Rotation, _Decal0Color, _Decal0Opacity, _Decal0Blend, _Decal0Emit, float4(_Decal0FlipCols, _Decal0FlipRows, _Decal0FlipFPS, _Decal0Flipbook), i.uv, albedo.rgb, decalEmiss);
+                    if (_Decal0Enable > 0.5 && _Decal0Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal0Tex, sampler_LinearClamp, float2(_Decal0PosX, _Decal0PosY), (_Decal0ScaleLock > 0.5 ? _Decal0Scale.xx : float2(_Decal0Scale, _Decal0ScaleY)), _Decal0Rotation, _Decal0Color, _Decal0Opacity, _Decal0Blend, _Decal0Emit, float4(_Decal0FlipCols, _Decal0FlipRows, _Decal0FlipFPS, _Decal0Flipbook), i.uv, albedo.rgb, float4(_Decal0RotSpeed, _Decal0Symmetry, _Decal0FlipUV, _Decal0Tiled), float4(_Decal0Hue, _Decal0Chroma, _Decal0AlphaBlend, _Decal0AlphaInt), ZetDecalMask(_Decal0MaskCh, i.uv), decalEmiss);
                     #if defined(ZET_DEC1)
-                    if (_Decal1Enable > 0.5 && _Decal1Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal1Tex, sampler_LinearClamp, float2(_Decal1PosX, _Decal1PosY), _Decal1Scale, _Decal1Rotation, _Decal1Color, _Decal1Opacity, _Decal1Blend, _Decal1Emit, float4(_Decal1FlipCols, _Decal1FlipRows, _Decal1FlipFPS, _Decal1Flipbook), i.uv, albedo.rgb, decalEmiss);
+                    if (_Decal1Enable > 0.5 && _Decal1Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal1Tex, sampler_LinearClamp, float2(_Decal1PosX, _Decal1PosY), (_Decal1ScaleLock > 0.5 ? _Decal1Scale.xx : float2(_Decal1Scale, _Decal1ScaleY)), _Decal1Rotation, _Decal1Color, _Decal1Opacity, _Decal1Blend, _Decal1Emit, float4(_Decal1FlipCols, _Decal1FlipRows, _Decal1FlipFPS, _Decal1Flipbook), i.uv, albedo.rgb, float4(_Decal1RotSpeed, _Decal1Symmetry, _Decal1FlipUV, _Decal1Tiled), float4(_Decal1Hue, _Decal1Chroma, _Decal1AlphaBlend, _Decal1AlphaInt), ZetDecalMask(_Decal1MaskCh, i.uv), decalEmiss);
                     #endif
                     #if defined(ZET_DEC2)
-                    if (_Decal2Enable > 0.5 && _Decal2Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal2Tex, sampler_LinearClamp, float2(_Decal2PosX, _Decal2PosY), _Decal2Scale, _Decal2Rotation, _Decal2Color, _Decal2Opacity, _Decal2Blend, _Decal2Emit, float4(_Decal2FlipCols, _Decal2FlipRows, _Decal2FlipFPS, _Decal2Flipbook), i.uv, albedo.rgb, decalEmiss);
+                    if (_Decal2Enable > 0.5 && _Decal2Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal2Tex, sampler_LinearClamp, float2(_Decal2PosX, _Decal2PosY), (_Decal2ScaleLock > 0.5 ? _Decal2Scale.xx : float2(_Decal2Scale, _Decal2ScaleY)), _Decal2Rotation, _Decal2Color, _Decal2Opacity, _Decal2Blend, _Decal2Emit, float4(_Decal2FlipCols, _Decal2FlipRows, _Decal2FlipFPS, _Decal2Flipbook), i.uv, albedo.rgb, float4(_Decal2RotSpeed, _Decal2Symmetry, _Decal2FlipUV, _Decal2Tiled), float4(_Decal2Hue, _Decal2Chroma, _Decal2AlphaBlend, _Decal2AlphaInt), ZetDecalMask(_Decal2MaskCh, i.uv), decalEmiss);
                     #endif
                     #if defined(ZET_DEC3)
-                    if (_Decal3Enable > 0.5 && _Decal3Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal3Tex, sampler_LinearClamp, float2(_Decal3PosX, _Decal3PosY), _Decal3Scale, _Decal3Rotation, _Decal3Color, _Decal3Opacity, _Decal3Blend, _Decal3Emit, float4(_Decal3FlipCols, _Decal3FlipRows, _Decal3FlipFPS, _Decal3Flipbook), i.uv, albedo.rgb, decalEmiss);
+                    if (_Decal3Enable > 0.5 && _Decal3Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal3Tex, sampler_LinearClamp, float2(_Decal3PosX, _Decal3PosY), (_Decal3ScaleLock > 0.5 ? _Decal3Scale.xx : float2(_Decal3Scale, _Decal3ScaleY)), _Decal3Rotation, _Decal3Color, _Decal3Opacity, _Decal3Blend, _Decal3Emit, float4(_Decal3FlipCols, _Decal3FlipRows, _Decal3FlipFPS, _Decal3Flipbook), i.uv, albedo.rgb, float4(_Decal3RotSpeed, _Decal3Symmetry, _Decal3FlipUV, _Decal3Tiled), float4(_Decal3Hue, _Decal3Chroma, _Decal3AlphaBlend, _Decal3AlphaInt), ZetDecalMask(_Decal3MaskCh, i.uv), decalEmiss);
                     #endif
                 }
                 half4 packed = SamplePackedMap(i.uv);
@@ -2860,11 +3195,13 @@ Shader "Zetph/ZetsFancyShader"
                 half smoothness = lerp(_SmoothnessMin, _Smoothness, smoRaw);
                 
                 float3 nTS = UnpackScaleNormal(_BumpMap.Sample(sampler_MainTex, i.uv), _BumpScale);
+            #if defined(ZET_DETAIL)
                 if (_DetailEnable > 0.5) {
                     half dMaskN = _DetailMask.Sample(sampler_LinearRepeat, i.uv).r;
                     float3 dTS = UnpackScaleNormal(_DetailNormal.Sample(sampler_LinearRepeat, i.uv * _DetailTiling.xy + _DetailTiling.zw), _DetailNormalStrength * dMaskN);
                     nTS = normalize(float3(nTS.xy + dTS.xy, nTS.z * dTS.z));   // whiteout blend
                 }
+            #endif
                 if (_HeightToNormalEnable > 0.5) {
                     float2 ts = float2(0.002, 0.002);
                     float hC = _HeightMap.Sample(sampler_MainTex, i.uv).r;
@@ -2923,6 +3260,19 @@ Shader "Zetph/ZetsFancyShader"
                     #endif
                 }
                 half3 specCol = lerp(half3(0.04, 0.04, 0.04), albedo.rgb, metallic);
+                // Diffraction: applied before iridescence so the two can layer, since a
+                // real holographic film often has both a grating and a coating.
+            #if defined(ZET_DIFFRACT)
+                if (_DiffEnable > 0.5) {
+                    float dMask = _DiffMask.Sample(sampler_LinearClamp, i.uv).r;
+                    if (dMask > 0.001) {
+                        half3 diff = ZetDiffraction(N, T, B, viewDir, _WorldSpaceLightPos0.xyz) * dMask;
+                        albedo.rgb = lerp(albedo.rgb, albedo.rgb + diff, _DiffTintAmt);
+                        specCol = saturate(specCol + diff);
+                    }
+                }
+            #endif
+            #if defined(ZET_IRID)
                 if (_IridEnable > 0.5) {
                     float iridMask = _IridMask.Sample(sampler_LinearClamp, i.uv).r;
                     if (iridMask > 0.001) {
@@ -2975,13 +3325,14 @@ Shader "Zetph/ZetsFancyShader"
                         }
                     }
                 }
+            #endif
                 half aoRaw = (_PackMode > 0.5) ? 1.0 : packed.g;   // Unity MetallicSmoothness has no AO channel
                 half ao = lerp(1.0, aoRaw, _OcclusionStrength);
                 
                 float dither = (frac(52.9829189 * frac(dot(i.pos.xy, float2(0.06711056, 0.00583715)))) - 0.5) * _ShadowDither;
                 float3 H = normalize(_WorldSpaceLightPos0.xyz + viewDir);
                 float ndl = dot(n, _WorldSpaceLightPos0.xyz);
-                #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN) && !defined(LIGHTMAP_ON)
+                #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN)
                     float atten = 1.0;
                 #else
                     UNITY_LIGHT_ATTENUATION(atten, i, i.wPos);
@@ -3052,8 +3403,12 @@ Shader "Zetph/ZetsFancyShader"
                     ambient += i.vLights * ao;
                 #endif
                 if (_GrayscaleLighting > 0.0) { half ambLum = dot(ambient, half3(0.299, 0.587, 0.114)); ambient = lerp(ambient, ambLum.xxx, _GrayscaleLighting); }
+                // Sample what the world is actually lighting this surface with, once, so
+                // every emissive effect below can respond to the room consistently.
+                half3 zAmbient = ambient; half3 zDirect = direct;   // for Light Colour Harmony below
                 // Subsurface Scattering: warm terminator roll-off + backlight transmission
                 half3 sssAdd = 0;
+            #if defined(ZET_SSS)
                 if (_SSSEnable > 0.5) {
                     half sssMask = _SSSMask.Sample(sampler_LinearRepeat, i.uv).r;
                     if (sssMask > 0.001) {
@@ -3130,6 +3485,7 @@ Shader "Zetph/ZetsFancyShader"
                         }
                     }
                 }
+            #endif
                 // VRSL GI. Point and spot lights, so this belongs with direct
                 // light rather than ambient - it is a rig pointed at you, not
                 // indirect bounce. Runtime-gated for the same reason LV and LTCGI
@@ -3155,6 +3511,7 @@ Shader "Zetph/ZetsFancyShader"
                 col.rgb += vrslSpec * specCol;
                 half spec = pow(saturate(dot(n, H)), exp2(smoothness * 9.0 + 1.0));
                 half3 anisoAdd = 0;
+            #if defined(ZET_ANISO)
                 if (_AnisoEnable > 0.5) {
                     float3 anisoDir;
                     if (_AnisoDirMode > 1.5) {
@@ -3176,6 +3533,7 @@ Shader "Zetph/ZetsFancyShader"
                     // additive tinted anisotropic lobe, weighted toward reflective (smooth/metallic) areas
                     anisoAdd = _AnisoColor.rgb * anisoSpec * lerp(0.5, 1.0, saturate(smoothness + metallic));
                 }
+            #endif
                 
                 half3 specColT = (_SpecTintOn > 0.5) ? specCol * _SpecTint.rgb : specCol;
                 if (_LightingModel < 0.5) {
@@ -3260,6 +3618,7 @@ Shader "Zetph/ZetsFancyShader"
                     // parts. A second full LTCGI evaluation with the inverted
                     // normal - opt-in because of the cost. Diffuse only; no focus
                     // term needed since area lights are already spatially shaped.
+            #if defined(ZET_SSS)
                     if (_SSSEnable > 0.5 && _SSSLTCGI > 0.5) {
                         half sssMaskL = _SSSMask.Sample(sampler_LinearRepeat, i.uv).r;
                         half thinL = (1.0 - _SSSThicknessMap.Sample(sampler_LinearRepeat, i.uv).r) * sssMaskL;
@@ -3269,53 +3628,55 @@ Shader "Zetph/ZetsFancyShader"
                             col.rgb += diffuseCol * bDiff * (thinL * _SSSTransStrength) * sssTintL * _LTCGIStrength;
                         }
                     }
+            #endif
                 }
                 #endif
+            #if defined(ZET_EM0)
                 EmSlot s0;
                 s0.enable = _Em0Enable; s0.baseColor = c_em0; s0.hueOn = _Em0Hue; s0.baseAmt = _Em0Base; s0.band = _Em0Band; s0.alBoost = _Em0AL;
-                s0.mode = _Em0Mode; s0.pulseScale = _Em0PulseScale; s0.projCenter = _Em0Center.xy; s0.rotationDeg = _Em0Rotation; s0.mirrorOn = _Em0Mirror; s0.triplanar = _Em0Triplanar;
-                s0.bgColor = _Em0BgColor.rgb; s0.scaleLock = _Em0ScaleLock; s0.bgScale = _Em0BgScale.xy; s0.tileX = _Em0TileX; s0.tileY = _Em0TileY; s0.pan = _Em0Pan.xy;
-                s0.layers = _Em0Layers; s0.parallax = _Em0Parallax; s0.layerDist = _Em0LayerDist; s0.nearBright = _Em0NearBright; s0.farBright = _Em0FarBright; s0.alEnable = _Em0ALEnable;
-                s0.multBand = _Em0MultBand; s0.multAmt = _Em0MultAmt; s0.addBand = _Em0AddBand; s0.addAmt = _Em0AddAmt; s0.volBoost = _Em0VolBoost; s0.volAmt = _Em0VolAmt;
+                s0.mode = _Em0Mode; s0.pulseScale = _Em0PulseScale; s0.projCenter = _Em0Center.xy; s0.alEnable = _Em0ALEnable; s0.multBand = _Em0MultBand; s0.multAmt = _Em0MultAmt; s0.addBand = _Em0AddBand; s0.addAmt = _Em0AddAmt; s0.volBoost = _Em0VolBoost; s0.volAmt = _Em0VolAmt;
                 s0.intensity = _Em0Intensity; s0.edgeStrength = _Em0EdgeGlow; s0.edgePower = _Em0EdgePower; s0.lightBased = _Em0LightBased; s0.minEmiss = _Em0MinEmiss; s0.maxEmiss = _Em0MaxEmiss;
                 s0.minLight = _Em0MinLight; s0.maxLight = _Em0MaxLight; s0.blinkOn = _Em0Blink; s0.blinkSpeed = _Em0BlinkSpeed; s0.blinkMin = _Em0BlinkMin;
                 s0.scanOn = _Em0Scan; s0.scanDir = _Em0ScanDir; s0.scanMode = _Em0ScanMode; s0.scanSpeed = _Em0ScanSpeed; s0.scanWidth = _Em0ScanWidth; s0.scanSoft = _Em0ScanSoft; s0.scanFloor = _Em0ScanFloor; s0.scanPixels = _Em0ScanPixels; s0.scanGlitch = _Em0ScanGlitch;
-                col.rgb += EvalEmissionSlot(s0, _Em0Mask, _Em0BgTex, _Em0PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp);
+                // Dissolve burn edge. Computed further up alongside the clip, but never
+                // added to the output, so the glow could not appear however wide the
+                // edge was set. Added here with the other emissive contributions.
+                col.rgb += ZetLightHarmony(burnGlow * _DissolveGlow, zAmbient, zDirect, _Em0Harmony, _Em0HarmonyAmt, _Em0HarmonyComp, _Em0HarmonyPurity);
+                col.rgb += ZetLightHarmony(EvalEmissionSlot(s0, _Em0Mask, _Em0Map, _HasEm0Map, _Em0PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em0Harmony, _Em0HarmonyAmt, _Em0HarmonyComp, _Em0HarmonyPurity);
+            #endif
+            #if defined(ZET_INFINITY)
+                col.rgb += ZetLightHarmony(
+                    ZetInfinityMirror(i.uv, i.wPos, N, viewDir, vT,
+                        ZetALSignal(_InfALEnable, _InfBand, _InfMultBand, _InfMultAmt,
+                                    _InfAddBand, _InfAddAmt, _InfVolBoost, _InfVolAmt)),
+                    zAmbient, zDirect, _Em0Harmony, _Em0HarmonyAmt, _Em0HarmonyComp, _Em0HarmonyPurity);
+            #endif
                 #if defined(ZET_EM1)
                 EmSlot s1;
                 s1.enable = _Em1Enable; s1.baseColor = c_em1; s1.hueOn = _Em1Hue; s1.baseAmt = _Em1Base; s1.band = _Em1Band; s1.alBoost = _Em1AL;
-                s1.mode = _Em1Mode; s1.pulseScale = _Em1PulseScale; s1.projCenter = _Em1Center.xy; s1.rotationDeg = _Em1Rotation; s1.mirrorOn = _Em1Mirror; s1.triplanar = _Em1Triplanar;
-                s1.bgColor = _Em1BgColor.rgb; s1.scaleLock = _Em1ScaleLock; s1.bgScale = _Em1BgScale.xy; s1.tileX = _Em1TileX; s1.tileY = _Em1TileY; s1.pan = _Em1Pan.xy;
-                s1.layers = _Em1Layers; s1.parallax = _Em1Parallax; s1.layerDist = _Em1LayerDist; s1.nearBright = _Em1NearBright; s1.farBright = _Em1FarBright; s1.alEnable = _Em1ALEnable;
-                s1.multBand = _Em1MultBand; s1.multAmt = _Em1MultAmt; s1.addBand = _Em1AddBand; s1.addAmt = _Em1AddAmt; s1.volBoost = _Em1VolBoost; s1.volAmt = _Em1VolAmt;
+                s1.mode = _Em1Mode; s1.pulseScale = _Em1PulseScale; s1.projCenter = _Em1Center.xy; s1.alEnable = _Em1ALEnable; s1.multBand = _Em1MultBand; s1.multAmt = _Em1MultAmt; s1.addBand = _Em1AddBand; s1.addAmt = _Em1AddAmt; s1.volBoost = _Em1VolBoost; s1.volAmt = _Em1VolAmt;
                 s1.intensity = _Em1Intensity; s1.edgeStrength = _Em1EdgeGlow; s1.edgePower = _Em1EdgePower; s1.lightBased = _Em1LightBased; s1.minEmiss = _Em1MinEmiss; s1.maxEmiss = _Em1MaxEmiss;
                 s1.minLight = _Em1MinLight; s1.maxLight = _Em1MaxLight; s1.blinkOn = _Em1Blink; s1.blinkSpeed = _Em1BlinkSpeed; s1.blinkMin = _Em1BlinkMin;
                 s1.scanOn = _Em1Scan; s1.scanDir = _Em1ScanDir; s1.scanMode = _Em1ScanMode; s1.scanSpeed = _Em1ScanSpeed; s1.scanWidth = _Em1ScanWidth; s1.scanSoft = _Em1ScanSoft; s1.scanFloor = _Em1ScanFloor; s1.scanPixels = _Em1ScanPixels; s1.scanGlitch = _Em1ScanGlitch;
-                col.rgb += EvalEmissionSlot(s1, _Em1Mask, _Em0BgTex, _Em1PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp);
+                col.rgb += ZetLightHarmony(EvalEmissionSlot(s1, _Em1Mask, _Em1Map, _HasEm1Map, _Em1PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em1Harmony, _Em1HarmonyAmt, _Em1HarmonyComp, _Em1HarmonyPurity);
                 #endif
                 #if defined(ZET_EM2)
                 EmSlot s2;
                 s2.enable = _Em2Enable; s2.baseColor = c_em2; s2.hueOn = _Em2Hue; s2.baseAmt = _Em2Base; s2.band = _Em2Band; s2.alBoost = _Em2AL;
-                s2.mode = _Em2Mode; s2.pulseScale = _Em2PulseScale; s2.projCenter = _Em2Center.xy; s2.rotationDeg = _Em2Rotation; s2.mirrorOn = _Em2Mirror; s2.triplanar = _Em2Triplanar;
-                s2.bgColor = _Em2BgColor.rgb; s2.scaleLock = _Em2ScaleLock; s2.bgScale = _Em2BgScale.xy; s2.tileX = _Em2TileX; s2.tileY = _Em2TileY; s2.pan = _Em2Pan.xy;
-                s2.layers = _Em2Layers; s2.parallax = _Em2Parallax; s2.layerDist = _Em2LayerDist; s2.nearBright = _Em2NearBright; s2.farBright = _Em2FarBright; s2.alEnable = _Em2ALEnable;
-                s2.multBand = _Em2MultBand; s2.multAmt = _Em2MultAmt; s2.addBand = _Em2AddBand; s2.addAmt = _Em2AddAmt; s2.volBoost = _Em2VolBoost; s2.volAmt = _Em2VolAmt;
+                s2.mode = _Em2Mode; s2.pulseScale = _Em2PulseScale; s2.projCenter = _Em2Center.xy; s2.alEnable = _Em2ALEnable; s2.multBand = _Em2MultBand; s2.multAmt = _Em2MultAmt; s2.addBand = _Em2AddBand; s2.addAmt = _Em2AddAmt; s2.volBoost = _Em2VolBoost; s2.volAmt = _Em2VolAmt;
                 s2.intensity = _Em2Intensity; s2.edgeStrength = _Em2EdgeGlow; s2.edgePower = _Em2EdgePower; s2.lightBased = _Em2LightBased; s2.minEmiss = _Em2MinEmiss; s2.maxEmiss = _Em2MaxEmiss;
                 s2.minLight = _Em2MinLight; s2.maxLight = _Em2MaxLight; s2.blinkOn = _Em2Blink; s2.blinkSpeed = _Em2BlinkSpeed; s2.blinkMin = _Em2BlinkMin;
                 s2.scanOn = _Em2Scan; s2.scanDir = _Em2ScanDir; s2.scanMode = _Em2ScanMode; s2.scanSpeed = _Em2ScanSpeed; s2.scanWidth = _Em2ScanWidth; s2.scanSoft = _Em2ScanSoft; s2.scanFloor = _Em2ScanFloor; s2.scanPixels = _Em2ScanPixels; s2.scanGlitch = _Em2ScanGlitch;
-                col.rgb += EvalEmissionSlot(s2, _Em2Mask, _Em0BgTex, _Em2PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp);
+                col.rgb += ZetLightHarmony(EvalEmissionSlot(s2, _Em2Mask, _Em2Map, _HasEm2Map, _Em2PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em2Harmony, _Em2HarmonyAmt, _Em2HarmonyComp, _Em2HarmonyPurity);
                 #endif
                 #if defined(ZET_EM3)
                 EmSlot s3;
                 s3.enable = _Em3Enable; s3.baseColor = c_em3; s3.hueOn = _Em3Hue; s3.baseAmt = _Em3Base; s3.band = _Em3Band; s3.alBoost = _Em3AL;
-                s3.mode = _Em3Mode; s3.pulseScale = _Em3PulseScale; s3.projCenter = _Em3Center.xy; s3.rotationDeg = _Em3Rotation; s3.mirrorOn = _Em3Mirror; s3.triplanar = _Em3Triplanar;
-                s3.bgColor = _Em3BgColor.rgb; s3.scaleLock = _Em3ScaleLock; s3.bgScale = _Em3BgScale.xy; s3.tileX = _Em3TileX; s3.tileY = _Em3TileY; s3.pan = _Em3Pan.xy;
-                s3.layers = _Em3Layers; s3.parallax = _Em3Parallax; s3.layerDist = _Em3LayerDist; s3.nearBright = _Em3NearBright; s3.farBright = _Em3FarBright; s3.alEnable = _Em3ALEnable;
-                s3.multBand = _Em3MultBand; s3.multAmt = _Em3MultAmt; s3.addBand = _Em3AddBand; s3.addAmt = _Em3AddAmt; s3.volBoost = _Em3VolBoost; s3.volAmt = _Em3VolAmt;
+                s3.mode = _Em3Mode; s3.pulseScale = _Em3PulseScale; s3.projCenter = _Em3Center.xy; s3.alEnable = _Em3ALEnable; s3.multBand = _Em3MultBand; s3.multAmt = _Em3MultAmt; s3.addBand = _Em3AddBand; s3.addAmt = _Em3AddAmt; s3.volBoost = _Em3VolBoost; s3.volAmt = _Em3VolAmt;
                 s3.intensity = _Em3Intensity; s3.edgeStrength = _Em3EdgeGlow; s3.edgePower = _Em3EdgePower; s3.lightBased = _Em3LightBased; s3.minEmiss = _Em3MinEmiss; s3.maxEmiss = _Em3MaxEmiss;
                 s3.minLight = _Em3MinLight; s3.maxLight = _Em3MaxLight; s3.blinkOn = _Em3Blink; s3.blinkSpeed = _Em3BlinkSpeed; s3.blinkMin = _Em3BlinkMin;
                 s3.scanOn = _Em3Scan; s3.scanDir = _Em3ScanDir; s3.scanMode = _Em3ScanMode; s3.scanSpeed = _Em3ScanSpeed; s3.scanWidth = _Em3ScanWidth; s3.scanSoft = _Em3ScanSoft; s3.scanFloor = _Em3ScanFloor; s3.scanPixels = _Em3ScanPixels; s3.scanGlitch = _Em3ScanGlitch;
-                col.rgb += EvalEmissionSlot(s3, _Em3Mask, _Em0BgTex, _Em3PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp);
+                col.rgb += ZetLightHarmony(EvalEmissionSlot(s3, _Em3Mask, _Em3Map, _HasEm3Map, _Em3PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em3Harmony, _Em3HarmonyAmt, _Em3HarmonyComp, _Em3HarmonyPurity);
                 #endif
                 col.rgb += decalEmiss;
 //ifex _RefractEnable==0
@@ -3351,8 +3712,12 @@ Shader "Zetph/ZetsFancyShader"
                             int nS = max((int)_RefractSamples, 1);
                             float rad = _RefractRough * 0.03;
                             half3 acc = 0;
-                            [loop] for (int rs = 0; rs < 12; rs++) {
-                                if (rs >= nS) break;
+                            // Unrolled rather than a dynamic loop: sampling inside a loop
+                            // whose iteration count varies leaves the texture derivatives
+                            // undefined. Unrolling fixes the count at compile time, and the
+                            // per-iteration test simply contributes nothing past the count.
+                            [unroll] for (int rs = 0; rs < 12; rs++) {
+                                if (rs >= nS) continue;
                                 float fi = (float)rs;
                                 float ang = fi * 2.39996;                     // golden angle spiral
                                 float rr = rad * sqrt((fi + 0.5) / (float)nS);
@@ -3377,6 +3742,7 @@ Shader "Zetph/ZetsFancyShader"
                     }
                 }
 //endex
+            #if defined(ZET_ROOM)
                 if (_RoomEnable > 0.5) {
                     float rMask = smoothstep(0.5 - _RoomEdge, 0.5 + _RoomEdge, _RoomMask.Sample(sampler_MainTex, i.uv).r);
                     if (rMask > 0.001) {
@@ -3474,6 +3840,8 @@ Shader "Zetph/ZetsFancyShader"
                         col.rgb = lerp(col.rgb, room, rMask);
                     }
                 }
+            #endif
+            #if defined(ZET_SCREEN)
                 if (_ScreenEnable > 0.5) {
                     float scrMask = _ScreenMask.Sample(sampler_MainTex, i.uv).r;
                     if (scrMask > 0.001) {
@@ -3531,21 +3899,23 @@ Shader "Zetph/ZetsFancyShader"
                         col.rgb = lerp(col.rgb, scr, scrMask);
                     }
                 }
+            #endif
                 // Overlay decals: drawn on top of room/screen/lighting
                 if (_DecalsEnable > 0.5) {
                     half3 ovEmiss = 0;
-                    if (_Decal0Enable > 0.5 && _Decal0Overlay > 0.5) col.rgb = ApplyDecal(_Decal0Tex, sampler_LinearClamp, float2(_Decal0PosX, _Decal0PosY), _Decal0Scale, _Decal0Rotation, _Decal0Color, _Decal0Opacity, _Decal0Blend, _Decal0Emit, float4(_Decal0FlipCols, _Decal0FlipRows, _Decal0FlipFPS, _Decal0Flipbook), i.uv, col.rgb, ovEmiss);
+                    if (_Decal0Enable > 0.5 && _Decal0Overlay > 0.5) col.rgb = ApplyDecal(_Decal0Tex, sampler_LinearClamp, float2(_Decal0PosX, _Decal0PosY), (_Decal0ScaleLock > 0.5 ? _Decal0Scale.xx : float2(_Decal0Scale, _Decal0ScaleY)), _Decal0Rotation, _Decal0Color, _Decal0Opacity, _Decal0Blend, _Decal0Emit, float4(_Decal0FlipCols, _Decal0FlipRows, _Decal0FlipFPS, _Decal0Flipbook), i.uv, col.rgb, float4(_Decal0RotSpeed, _Decal0Symmetry, _Decal0FlipUV, _Decal0Tiled), float4(_Decal0Hue, _Decal0Chroma, _Decal0AlphaBlend, _Decal0AlphaInt), ZetDecalMask(_Decal0MaskCh, i.uv), ovEmiss);
                     #if defined(ZET_DEC1)
-                    if (_Decal1Enable > 0.5 && _Decal1Overlay > 0.5) col.rgb = ApplyDecal(_Decal1Tex, sampler_LinearClamp, float2(_Decal1PosX, _Decal1PosY), _Decal1Scale, _Decal1Rotation, _Decal1Color, _Decal1Opacity, _Decal1Blend, _Decal1Emit, float4(_Decal1FlipCols, _Decal1FlipRows, _Decal1FlipFPS, _Decal1Flipbook), i.uv, col.rgb, ovEmiss);
+                    if (_Decal1Enable > 0.5 && _Decal1Overlay > 0.5) col.rgb = ApplyDecal(_Decal1Tex, sampler_LinearClamp, float2(_Decal1PosX, _Decal1PosY), (_Decal1ScaleLock > 0.5 ? _Decal1Scale.xx : float2(_Decal1Scale, _Decal1ScaleY)), _Decal1Rotation, _Decal1Color, _Decal1Opacity, _Decal1Blend, _Decal1Emit, float4(_Decal1FlipCols, _Decal1FlipRows, _Decal1FlipFPS, _Decal1Flipbook), i.uv, col.rgb, float4(_Decal1RotSpeed, _Decal1Symmetry, _Decal1FlipUV, _Decal1Tiled), float4(_Decal1Hue, _Decal1Chroma, _Decal1AlphaBlend, _Decal1AlphaInt), ZetDecalMask(_Decal1MaskCh, i.uv), ovEmiss);
                     #endif
                     #if defined(ZET_DEC2)
-                    if (_Decal2Enable > 0.5 && _Decal2Overlay > 0.5) col.rgb = ApplyDecal(_Decal2Tex, sampler_LinearClamp, float2(_Decal2PosX, _Decal2PosY), _Decal2Scale, _Decal2Rotation, _Decal2Color, _Decal2Opacity, _Decal2Blend, _Decal2Emit, float4(_Decal2FlipCols, _Decal2FlipRows, _Decal2FlipFPS, _Decal2Flipbook), i.uv, col.rgb, ovEmiss);
+                    if (_Decal2Enable > 0.5 && _Decal2Overlay > 0.5) col.rgb = ApplyDecal(_Decal2Tex, sampler_LinearClamp, float2(_Decal2PosX, _Decal2PosY), (_Decal2ScaleLock > 0.5 ? _Decal2Scale.xx : float2(_Decal2Scale, _Decal2ScaleY)), _Decal2Rotation, _Decal2Color, _Decal2Opacity, _Decal2Blend, _Decal2Emit, float4(_Decal2FlipCols, _Decal2FlipRows, _Decal2FlipFPS, _Decal2Flipbook), i.uv, col.rgb, float4(_Decal2RotSpeed, _Decal2Symmetry, _Decal2FlipUV, _Decal2Tiled), float4(_Decal2Hue, _Decal2Chroma, _Decal2AlphaBlend, _Decal2AlphaInt), ZetDecalMask(_Decal2MaskCh, i.uv), ovEmiss);
                     #endif
                     #if defined(ZET_DEC3)
-                    if (_Decal3Enable > 0.5 && _Decal3Overlay > 0.5) col.rgb = ApplyDecal(_Decal3Tex, sampler_LinearClamp, float2(_Decal3PosX, _Decal3PosY), _Decal3Scale, _Decal3Rotation, _Decal3Color, _Decal3Opacity, _Decal3Blend, _Decal3Emit, float4(_Decal3FlipCols, _Decal3FlipRows, _Decal3FlipFPS, _Decal3Flipbook), i.uv, col.rgb, ovEmiss);
+                    if (_Decal3Enable > 0.5 && _Decal3Overlay > 0.5) col.rgb = ApplyDecal(_Decal3Tex, sampler_LinearClamp, float2(_Decal3PosX, _Decal3PosY), (_Decal3ScaleLock > 0.5 ? _Decal3Scale.xx : float2(_Decal3Scale, _Decal3ScaleY)), _Decal3Rotation, _Decal3Color, _Decal3Opacity, _Decal3Blend, _Decal3Emit, float4(_Decal3FlipCols, _Decal3FlipRows, _Decal3FlipFPS, _Decal3Flipbook), i.uv, col.rgb, float4(_Decal3RotSpeed, _Decal3Symmetry, _Decal3FlipUV, _Decal3Tiled), float4(_Decal3Hue, _Decal3Chroma, _Decal3AlphaBlend, _Decal3AlphaInt), ZetDecalMask(_Decal3MaskCh, i.uv), ovEmiss);
                     #endif
                     col.rgb += ovEmiss;
                 }
+            #if defined(ZET_GLITTER)
                 if (_GlitterEnable > 0.5) {
                     half gMask = _GlitterMask.Sample(sampler_MainTex, i.uv).r;
                     if (gMask > 0.001) {
@@ -3568,6 +3938,7 @@ Shader "Zetph/ZetsFancyShader"
                         col.rgb += g;
                     }
                 }
+            #endif
                 if (_OutlineEnable > 0.5 && _OutlineState > 0.5) 
                 {
                     float alO = alAvail ? ALEnv((uint)_OutlineBand) : 0.0;
@@ -3591,6 +3962,7 @@ Shader "Zetph/ZetsFancyShader"
                     if (_OutlineHueShift > 0.5) final_c_out = hueShift(final_c_out, (alAvail ? alO : _Time.y * 0.5) * 6.28318);
                     col.rgb += final_c_out * half3(outR, outG, outB) * visibility * proxAlpha;
                 }
+            #if defined(ZET_STARS)
                 if (_StarEnable > 0.5) 
                 {
                     float starMask = _StarMask.Sample(sampler_LinearClamp, i.uv).r;
@@ -3601,7 +3973,22 @@ Shader "Zetph/ZetsFancyShader"
                         // UV source: UV0 (mesh), Panosphere (view ray, reads as real sky), or
                         // Polar. The mask stays on UV0, so it still confines the effect to a region.
                         float2 uvSrc = i.uv;
-                        if (_StarUVSource == 1) {
+                        if (_StarUVSource == 3 || _StarUVSource == 4) {
+                            // Triplanar: derive the coordinate from position rather than UVs.
+                            // A UV unwrap stretches wherever the surface curves, and the
+                            // starfield stretches with it, which is what pulls the pattern
+                            // along arms and faces. Position does not stretch, so density and
+                            // shape stay even across curvature. The strongest normal axis
+                            // picks the projection plane.
+                            float3 tp = (_StarUVSource == 3)
+                                ? mul(unity_WorldToObject, float4(i.wPos, 1.0)).xyz
+                                : i.wPos;
+                            tp *= _StarTriScale;
+                            float3 an = abs(normalize(i.wNrm));
+                            if (an.x >= an.y && an.x >= an.z)      uvSrc = tp.zy;
+                            else if (an.y >= an.z)                 uvSrc = tp.xz;
+                            else                                   uvSrc = tp.xy;
+                        } else if (_StarUVSource == 1) {
                             float3 vd = normalize(i.wPos - _WorldSpaceCameraPos);
                             uvSrc = float2(atan2(vd.z, vd.x) * 0.15915 + 0.5, acos(clamp(vd.y, -1.0, 1.0)) * 0.31831);
                         } else if (_StarUVSource == 2) {
@@ -3662,10 +4049,41 @@ Shader "Zetph/ZetsFancyShader"
                             float2 starUV = baseUV * depth - viewOffset * depth;
                             starUV += timeOffset * (1.0 - s * 0.2); 
                             
-                            float2 gv = frac(starUV) - 0.5;
-                            float2 id = floor(starUV);
-                            float2 r = ZetStarJitter(id, s);
-                            float starHash = hash2(id + s * 7.31); 
+                            // Volumetric placement walks a 2x2x2 block of cells in space and
+                            // keeps the nearest star, so the field has no projection and
+                            // therefore no seam and no stretching. The flat path below is
+                            // untouched and still used by the UV and triplanar modes.
+                            float2 gv, r; float starHash; float2 id = 0;
+                            float vol3D = 0; float3 volStar = 0; float3 volP = 0;
+                            float3 volStar2 = 0; float vol3D2 = 1e9;
+                            if (_StarUVSource == 5) {
+                                volP = mul(unity_WorldToObject, float4(i.wPos, 1.0)).xyz
+                                     * (_StarDensity * 0.4) * depth;
+                                volP.z += timeOffset * (1.0 - s * 0.2);
+                                float3 base = floor(volP - 0.5);
+                                float best = 1e9; float bestHash = 0; float3 bestPos = 0;
+                                float second = 1e9; float3 secondPos = 0;
+                                [unroll] for (int cz = 0; cz <= 1; cz++)
+                                [unroll] for (int cy = 0; cy <= 1; cy++)
+                                [unroll] for (int cx = 0; cx <= 1; cx++) {
+                                    float3 cell = base + float3(cx, cy, cz);
+                                    float3 sp = ZetStarCell3D(cell, (float)s);
+                                    float d = length(volP - sp);
+                                    if (d < best) {
+                                        second = best; secondPos = bestPos;
+                                        best = d; bestPos = sp;
+                                        bestHash = hash2(cell.xy + cell.z * 7.31 + s * 7.31);
+                                    } else if (d < second) { second = d; secondPos = sp; }
+                                }
+                                vol3D = best; volStar = bestPos; starHash = bestHash;
+                                vol3D2 = second; volStar2 = secondPos;
+                                gv = 0; r = 0;
+                            } else {
+                                gv = frac(starUV) - 0.5;
+                                id = floor(starUV);
+                                r = ZetStarJitter(id, s);
+                                starHash = hash2(id + s * 7.31);
+                            }
                             
                             float twAmt = saturate(_StarTwinkle * 0.01);
                             float twPhase = _Time.y * (_StarTwinkleSpeed * 0.1) + starHash * 100.0 + s * 2.3;
@@ -3674,13 +4092,15 @@ Shader "Zetph/ZetsFancyShader"
                             float size = (_StarSize * 0.0015) * (1.0 - s * 0.2) * sizePulse; 
                             float soft = _StarSoftness * 0.0015;
                             float2 distVec = gv - r;
-                            float maxDist = max(abs(distVec.x), abs(distVec.y));
-                            half star = smoothstep(size + soft, size * 0.1, length(distVec)) * step(0.5, starHash);
-                            star *= smoothstep(0.5, 0.3, maxDist); 
+                            float maxDist = (_StarUVSource == 5) ? vol3D : max(abs(distVec.x), abs(distVec.y));
+                            float starDist = (_StarUVSource == 5) ? vol3D : length(distVec);
+                            half star = smoothstep(size + soft, size * 0.1, starDist) * step(0.5, starHash);
+                            if (_StarUVSource != 5) star *= smoothstep(0.5, 0.3, maxDist);
                             
                             // Full-range brightness twinkle: visible on bright/large stars, scales 0..1 with amount
                             half twinkle = 1.0 - twAmt * (1.0 - twWave);
-                            float3 starPos3D = float3(starUV * 2.0, depth * 2.0 - _Time.y * (_StarSpeed * 0.02));
+                            float3 starPos3D = (_StarUVSource == 5) ? volStar * 2.0
+                                             : float3(starUV * 2.0, depth * 2.0 - _Time.y * (_StarSpeed * 0.02));
                             half gasDensity = noise3D(starPos3D * 3.0) * 0.7 + noise3D(starPos3D * 8.0) * 0.3;
                             half occlusion = lerp(1.0, smoothstep(0.6, 0.3, gasDensity), _RaymarchEnable);
                             half3 finalStarColor = _StarColor.rgb;
@@ -3691,7 +4111,25 @@ Shader "Zetph/ZetsFancyShader"
                             // this layer's own 3x3, so both ends stay in the window and the
                             // link is never clipped. Depth comes from the layers themselves,
                             // which sit at different parallax depths and drift at their own speed.
-                            if (_StarLineEnable > 0.5 && starHash >= 0.5) {
+                            if (_StarLineEnable > 0.5 && starHash >= 0.5 && _StarUVSource == 5) {
+                                // In space a link is simply the segment between this cell's
+                                // star and its nearest neighbour, measured in 3D, so lines
+                                // curve over the surface without clipping at a cell edge.
+                                float3 ab3 = volStar2 - volStar;
+                                float llen3 = length(ab3);
+                                float lmax3 = _StarLineMaxLen * 0.02 + 0.2;
+                                if (llen3 > 1e-4 && llen3 < lmax3) {
+                                    float tt3 = saturate(dot(volP - volStar, ab3) / dot(ab3, ab3));
+                                    float dPerp3 = length(volP - (volStar + ab3 * tt3));
+                                    float taper3 = pow(abs(tt3 - 0.5) * 2.0, 1.6);
+                                    float w3 = lerp(_StarLineThickness * 0.0006, _StarLineThickness * 0.0014, taper3);
+                                    float core3 = 1.0 - smoothstep(w3 * 0.2, w3, dPerp3);
+                                    float fade3 = smoothstep(lmax3, lmax3 * 0.3, llen3);
+                                    half3 lc3 = (_StarLineColorMode > 0.5) ? finalStarColor : _StarLineColor.rgb;
+                                    starAccum += lc3 * core3 * fade3 * (1.0 + alS * _StarAL) * _StarLineStrength;
+                                }
+                            }
+                            else if (_StarLineEnable > 0.5 && starHash >= 0.5) {
                                 float lth    = _StarLineThickness * 0.0003 + 0.0004;
                                 float lmaxL  = _StarLineMaxLen * 0.02 + 0.2;
                                 float lfadeS = lerp(lmaxL, lmaxL * 0.3, saturate(_StarLineFade * 0.01));
@@ -3728,6 +4166,7 @@ Shader "Zetph/ZetsFancyShader"
                         col.rgb = lerp(col.rgb, ZetPhotoBlend(col.rgb, starAccum * _ConstellationEmission, _ConstellationBlend), starMask * proxAlpha * ZetViewFactor(_StarViewMode));
                     }
                 }
+            #endif
                 
                 if (_EQEnable > 0.5 && alAvail) {
                     float eqMask = _EQMask.Sample(sampler_LinearClamp, i.uv).r;
@@ -3797,9 +4236,13 @@ Shader "Zetph/ZetsFancyShader"
                 }
 //endex
                 half3 hcol = col.rgb;
+                half3 preFX = hcol;
                 ZetApplyPlasma(hcol, i.wPos);
                 ZetApplyHologram(hcol, outAlpha, i.wPos, i.wNrm, i.pos.xy);
                 ZetApplyRetro(hcol, i.pos.xy);
+                // Everything the special effects added is the emissive part, so the world
+                // response is applied to that difference rather than to the lit surface.
+                hcol = preFX + ZetLightHarmony(hcol - preFX, zAmbient, zDirect, _Em0Harmony, _Em0HarmonyAmt, _Em0HarmonyComp, _Em0HarmonyPurity);
                 col.rgb = hcol;
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return fixed4(col.rgb, outAlpha);
@@ -3891,6 +4334,13 @@ Shader "Zetph/ZetsFancyShader"
             CGPROGRAM
             #pragma vertex vert
             #pragma hull hull
+            #pragma shader_feature_local _ ZET_SCREEN
+            #pragma shader_feature_local _ ZET_DETAIL
+            #pragma shader_feature_local _ ZET_ANISO
+            #pragma shader_feature_local _ ZET_ROOM
+            #pragma shader_feature_local _ ZET_SSS
+            #pragma shader_feature_local _ ZET_DISSOLVE
+            #pragma shader_feature_local _ ZET_GLITCH
             #pragma domain dom
             #pragma geometry geom
             #pragma fragment fragAdd
@@ -3951,6 +4401,17 @@ Shader "Zetph/ZetsFancyShader"
             }
             struct TessFactors { float edge[3] : SV_TessFactor; float inside : SV_InsideTessFactor; };
             TessFactors patchConstant(InputPatch<v2g, 3> patch) {
+                // Displacement needs subdivision of its own: a height map can only move
+                // vertices that exist, so a flat triangle stays flat however strong the map
+                // is. Its subdivision is independent of the break effect's.
+                if (_DispEnable > 0.5) {
+                    float3 dCenter = (patch[0].objPos.xyz + patch[1].objPos.xyz + patch[2].objPos.xyz) / 3.0;
+                    float3 dWorld  = mul(unity_ObjectToWorld, float4(dCenter, 1.0)).xyz;
+                    float dFall = saturate((_DispTessFar - distance(dWorld, _WorldSpaceCameraPos))
+                                           / max(_DispTessFar - _DispTessNear, 0.001));
+                    float df = max(lerp(1.0, _DispTess, dFall), 1.0);
+                    TessFactors od; od.edge[0] = df; od.edge[1] = df; od.edge[2] = df; od.inside = df; return od;
+                }
                 if (_BreakEnable < 0.5) {   // v64: skip the 3 mask samples when break is off
                     TessFactors o1; o1.edge[0] = 1.0; o1.edge[1] = 1.0; o1.edge[2] = 1.0; o1.inside = 1.0; return o1;
                 }
@@ -3971,7 +4432,17 @@ Shader "Zetph/ZetsFancyShader"
                 o.objPos  = patch[0].objPos * b.x + patch[1].objPos * b.y + patch[2].objPos * b.z;
                 o.normal  = normalize(patch[0].normal * b.x + patch[1].normal * b.y + patch[2].normal * b.z);
                 o.tangent = float4(normalize(patch[0].tangent.xyz * b.x + patch[1].tangent.xyz * b.y + patch[2].tangent.xyz * b.z), patch[0].tangent.w);
-                o.uv      = patch[0].uv * b.x + patch[1].uv * b.y + patch[2].uv * b.z; return o;
+                o.uv      = patch[0].uv * b.x + patch[1].uv * b.y + patch[2].uv * b.z;
+                // Push the new vertex along its normal by the height map. Sampled at LOD 0
+                // because the domain stage has no screen-space derivatives, and centred on
+                // Surface Level so mid-grey means no change and the map can carve inward
+                // as well as bulge outward.
+                if (_DispEnable > 0.5 && abs(_DispStrength) > 0.0001) {
+                    float h = _HeightMap.SampleLevel(sampler_LinearRepeat, o.uv, 0).r - _DispCenter;
+                    float m = _ParallaxMask.SampleLevel(sampler_LinearRepeat, o.uv, 0).r;
+                    o.objPos.xyz += o.normal * (h * m * _DispStrength);
+                }
+                return o;
             }
             [maxvertexcount(3)]   // main triangle only: core backfaces and speaker rings are not emitted in ForwardAdd
             void geom(triangle v2g i[3], inout TriangleStream<g2f> stream) {
@@ -4011,12 +4482,14 @@ Shader "Zetph/ZetsFancyShader"
                     }
                 }
                 float glitchAmt = 0, tick = 0;
+            #if defined(ZET_GLITCH)
                 if (_GlitchEnable > 0.5) {
                     float gMask = _GlitchMask.SampleLevel(sampler_LinearClamp, uvCenter, 0).r;
                     float ga = alAvail ? ALEnv((uint)_GlitchBand) : 0.0;
                     glitchAmt = ga * step(_GlitchThreshold, ga) * gMask;
                     tick = floor(_Time.y * 15.0);
                 }
+            #endif
                 // Core Backfaces
                 // (Removed from ForwardAdd pass entirely to save geometry fill rate!
                 // fragAdd unconditionally returns black for core backfaces (i.fx.x < -0.5),
@@ -4085,17 +4558,22 @@ Shader "Zetph/ZetsFancyShader"
                 float3 viewDir = normalize(_WorldSpaceCameraPos - i.wPos);
                 bool alAvail = AudioLinkIsAvailable();
                 if (i.fx.w > 0.5) return float4(0,0,0,1); 
+            #if defined(ZET_DISSOLVE)
                 if (_DissolveEnable > 0.5) {
                     float dNoise = _DissolveTex.Sample(sampler_LinearRepeat, i.uv).r;
-                    float alD = alAvail ? ALEnv((uint)_DissolveBand) : 0.0;
+                    dNoise = ZetDissolveField(dNoise, mul(unity_WorldToObject, float4(i.wPos, 1.0)).xyz);
+                    float alD = ZetALSignal(_DissolveALEnable, _DissolveBand, _DissolveMultBand, _DissolveMultAmt,
+                                            _DissolveAddBand, _DissolveAddAmt, _DissolveVolBoost, _DissolveVolAmt);
                     float dLevelA = saturate((_DissolveAmount * 0.01) + (alD * (_DissolveAL * 0.01)));
                     float edgeWA = (_DissolveWidth * 0.01) * (1.0 + alD * 2.0);
                     clip(dNoise - (dLevelA * (1.0 + edgeWA * 2.0) - edgeWA)); 
                 }
+            #endif
                 if (i.fx.x < -0.5 || (facing < 0 && i.fx.x > 0.001)) return float4(0,0,0,1);
                 float bFade = _BreakFade; if (_BreakManual < 0.5) { float _bg = _BreakCoreGlow; ApplyBreakStyle(_BreakStyle, _bg, bFade); }
                 if (bFade > 0.001 && i.fx.x > 0.001) { float fadeN = hash2(i.uv * 97.0); clip(fadeN - saturate(i.fx.x) * bFade); }
                 fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uv);
+            #if defined(ZET_DETAIL)
                 if (_DetailEnable > 0.5) {
                     half dMask = _DetailMask.Sample(sampler_LinearRepeat, i.uv).r;
                     if (dMask > 0.001) {
@@ -4103,6 +4581,7 @@ Shader "Zetph/ZetsFancyShader"
                         albedo.rgb *= lerp(half3(1, 1, 1), dAlb * 2.0, _DetailAlbedoStrength * dMask);   // 2x: mid grey is neutral
                     }
                 }
+            #endif
                 if (_AlphaMode > 0.5) {
                     half op = GetOpacity(albedo.a, i.uv);
                     if (_AlphaMode > 1.5) albedo.rgb *= saturate(op);   // additive light respects coverage when transparent
@@ -4131,15 +4610,15 @@ Shader "Zetph/ZetsFancyShader"
                 }
                 half3 decalEmiss = 0;
                 if (_DecalsEnable > 0.5) {
-                    if (_Decal0Enable > 0.5 && _Decal0Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal0Tex, sampler_LinearClamp, float2(_Decal0PosX, _Decal0PosY), _Decal0Scale, _Decal0Rotation, _Decal0Color, _Decal0Opacity, _Decal0Blend, _Decal0Emit, float4(_Decal0FlipCols, _Decal0FlipRows, _Decal0FlipFPS, _Decal0Flipbook), i.uv, albedo.rgb, decalEmiss);
+                    if (_Decal0Enable > 0.5 && _Decal0Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal0Tex, sampler_LinearClamp, float2(_Decal0PosX, _Decal0PosY), (_Decal0ScaleLock > 0.5 ? _Decal0Scale.xx : float2(_Decal0Scale, _Decal0ScaleY)), _Decal0Rotation, _Decal0Color, _Decal0Opacity, _Decal0Blend, _Decal0Emit, float4(_Decal0FlipCols, _Decal0FlipRows, _Decal0FlipFPS, _Decal0Flipbook), i.uv, albedo.rgb, float4(_Decal0RotSpeed, _Decal0Symmetry, _Decal0FlipUV, _Decal0Tiled), float4(_Decal0Hue, _Decal0Chroma, _Decal0AlphaBlend, _Decal0AlphaInt), ZetDecalMask(_Decal0MaskCh, i.uv), decalEmiss);
                     #if defined(ZET_DEC1)
-                    if (_Decal1Enable > 0.5 && _Decal1Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal1Tex, sampler_LinearClamp, float2(_Decal1PosX, _Decal1PosY), _Decal1Scale, _Decal1Rotation, _Decal1Color, _Decal1Opacity, _Decal1Blend, _Decal1Emit, float4(_Decal1FlipCols, _Decal1FlipRows, _Decal1FlipFPS, _Decal1Flipbook), i.uv, albedo.rgb, decalEmiss);
+                    if (_Decal1Enable > 0.5 && _Decal1Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal1Tex, sampler_LinearClamp, float2(_Decal1PosX, _Decal1PosY), (_Decal1ScaleLock > 0.5 ? _Decal1Scale.xx : float2(_Decal1Scale, _Decal1ScaleY)), _Decal1Rotation, _Decal1Color, _Decal1Opacity, _Decal1Blend, _Decal1Emit, float4(_Decal1FlipCols, _Decal1FlipRows, _Decal1FlipFPS, _Decal1Flipbook), i.uv, albedo.rgb, float4(_Decal1RotSpeed, _Decal1Symmetry, _Decal1FlipUV, _Decal1Tiled), float4(_Decal1Hue, _Decal1Chroma, _Decal1AlphaBlend, _Decal1AlphaInt), ZetDecalMask(_Decal1MaskCh, i.uv), decalEmiss);
                     #endif
                     #if defined(ZET_DEC2)
-                    if (_Decal2Enable > 0.5 && _Decal2Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal2Tex, sampler_LinearClamp, float2(_Decal2PosX, _Decal2PosY), _Decal2Scale, _Decal2Rotation, _Decal2Color, _Decal2Opacity, _Decal2Blend, _Decal2Emit, float4(_Decal2FlipCols, _Decal2FlipRows, _Decal2FlipFPS, _Decal2Flipbook), i.uv, albedo.rgb, decalEmiss);
+                    if (_Decal2Enable > 0.5 && _Decal2Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal2Tex, sampler_LinearClamp, float2(_Decal2PosX, _Decal2PosY), (_Decal2ScaleLock > 0.5 ? _Decal2Scale.xx : float2(_Decal2Scale, _Decal2ScaleY)), _Decal2Rotation, _Decal2Color, _Decal2Opacity, _Decal2Blend, _Decal2Emit, float4(_Decal2FlipCols, _Decal2FlipRows, _Decal2FlipFPS, _Decal2Flipbook), i.uv, albedo.rgb, float4(_Decal2RotSpeed, _Decal2Symmetry, _Decal2FlipUV, _Decal2Tiled), float4(_Decal2Hue, _Decal2Chroma, _Decal2AlphaBlend, _Decal2AlphaInt), ZetDecalMask(_Decal2MaskCh, i.uv), decalEmiss);
                     #endif
                     #if defined(ZET_DEC3)
-                    if (_Decal3Enable > 0.5 && _Decal3Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal3Tex, sampler_LinearClamp, float2(_Decal3PosX, _Decal3PosY), _Decal3Scale, _Decal3Rotation, _Decal3Color, _Decal3Opacity, _Decal3Blend, _Decal3Emit, float4(_Decal3FlipCols, _Decal3FlipRows, _Decal3FlipFPS, _Decal3Flipbook), i.uv, albedo.rgb, decalEmiss);
+                    if (_Decal3Enable > 0.5 && _Decal3Overlay < 0.5) albedo.rgb = ApplyDecal(_Decal3Tex, sampler_LinearClamp, float2(_Decal3PosX, _Decal3PosY), (_Decal3ScaleLock > 0.5 ? _Decal3Scale.xx : float2(_Decal3Scale, _Decal3ScaleY)), _Decal3Rotation, _Decal3Color, _Decal3Opacity, _Decal3Blend, _Decal3Emit, float4(_Decal3FlipCols, _Decal3FlipRows, _Decal3FlipFPS, _Decal3Flipbook), i.uv, albedo.rgb, float4(_Decal3RotSpeed, _Decal3Symmetry, _Decal3FlipUV, _Decal3Tiled), float4(_Decal3Hue, _Decal3Chroma, _Decal3AlphaBlend, _Decal3AlphaInt), ZetDecalMask(_Decal3MaskCh, i.uv), decalEmiss);
                     #endif
                 }
                 half4 packed = SamplePackedMap(i.uv);
@@ -4149,11 +4628,13 @@ Shader "Zetph/ZetsFancyShader"
                 half metallic   = lerp(_MetallicMin, _Metallic, metRaw);   // floor 0 makes this metRaw * _Metallic
                 half smoothness = lerp(_SmoothnessMin, _Smoothness, smoRaw);
                 float3 nTS = UnpackScaleNormal(_BumpMap.Sample(sampler_MainTex, i.uv), _BumpScale);
+            #if defined(ZET_DETAIL)
                 if (_DetailEnable > 0.5) {
                     half dMaskN = _DetailMask.Sample(sampler_LinearRepeat, i.uv).r;
                     float3 dTS = UnpackScaleNormal(_DetailNormal.Sample(sampler_LinearRepeat, i.uv * _DetailTiling.xy + _DetailTiling.zw), _DetailNormalStrength * dMaskN);
                     nTS = normalize(float3(nTS.xy + dTS.xy, nTS.z * dTS.z));   // whiteout blend
                 }
+            #endif
                 if (_HeightToNormalEnable > 0.5) {
                     float2 ts = float2(0.002, 0.002);
                     float hC = _HeightMap.Sample(sampler_MainTex, i.uv).r;
@@ -4171,7 +4652,7 @@ Shader "Zetph/ZetsFancyShader"
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz - i.wPos * _WorldSpaceLightPos0.w);
                 float3 H = normalize(lightDir + viewDir);
                 float ndl = dot(n, lightDir);
-                #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN) && !defined(LIGHTMAP_ON)
+                #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN)
                     float atten = 1.0;
                 #else
                     UNITY_LIGHT_ATTENUATION(atten, i, i.wPos);
@@ -4195,6 +4676,7 @@ Shader "Zetph/ZetsFancyShader"
                 half3 direct  = lightCol * lerp(_ShadowTint.rgb, half3(1, 1, 1), ramp);
                 fixed4 col = fixed4(diffuseCol * direct, 1.0);
                 // Subsurface Scattering for this light (no ambient term in Add pass)
+            #if defined(ZET_SSS)
                 if (_SSSEnable > 0.5) {
                     half sssMask = _SSSMask.Sample(sampler_LinearRepeat, i.uv).r;
                     if (sssMask > 0.001) {
@@ -4214,10 +4696,12 @@ Shader "Zetph/ZetsFancyShader"
                         col.rgb += diffuseCol * sssAdd;
                     }
                 }
+            #endif
                 half spec = pow(saturate(dot(n, H)), exp2(smoothness * 9.0 + 1.0));
                 half3 specCol = lerp(half3(0.04, 0.04, 0.04), albedo.rgb, metallic);
                 
                 half3 anisoAdd = 0;
+            #if defined(ZET_ANISO)
                 if (_AnisoEnable > 0.5) {
                     float3 anisoDir;
                     if (_AnisoDirMode > 1.5) {
@@ -4239,6 +4723,7 @@ Shader "Zetph/ZetsFancyShader"
                     // additive tinted anisotropic lobe, weighted toward reflective (smooth/metallic) areas
                     anisoAdd = _AnisoColor.rgb * anisoSpec * lerp(0.5, 1.0, saturate(smoothness + metallic));
                 }
+            #endif
                 
                 if (_LightingModel < 0.5) {
                     col.rgb += specCol * lightCol * smoothstep(0.5 - _SpecEdge, 0.5 + _SpecEdge, spec) * ramp;
@@ -4278,14 +4763,18 @@ Shader "Zetph/ZetsFancyShader"
                         col.rgb += _Spec2Color.rgb * spec2 * spec2Mask * lightCol * ramp;
                     }
                 }
+            #if defined(ZET_ROOM)
                 if (_RoomEnable > 0.5) {
                     float rMaskA = smoothstep(0.5 - _RoomEdge, 0.5 + _RoomEdge, _RoomMask.Sample(sampler_MainTex, i.uv).r);
                     col.rgb *= (1.0 - rMaskA);
                 }
+            #endif
+            #if defined(ZET_SCREEN)
                 if (_ScreenEnable > 0.5) {
                     float scrMaskA = _ScreenMask.Sample(sampler_MainTex, i.uv).r;
                     col.rgb *= (1.0 - scrMaskA);
                 }
+            #endif
 //ifex _RefractEnable==0
                 if (_RefractEnable > 0.5) {
                     float rfMaskA = _RefractMask.Sample(sampler_MainTex, i.uv).r;
@@ -4307,6 +4796,7 @@ Shader "Zetph/ZetsFancyShader"
             CGPROGRAM
             #pragma target 5.0
             #pragma vertex vertShadow
+            #pragma shader_feature_local _ ZET_DISSOLVE
             #pragma fragment fragShadow
             #pragma multi_compile_shadowcaster
             struct appdata_shadow {
@@ -4320,6 +4810,7 @@ Shader "Zetph/ZetsFancyShader"
                 V2F_SHADOW_CASTER; 
                 float2 uv : TEXCOORD1; 
                 float heightW : TEXCOORD2; 
+                float3 objPos : TEXCOORD3;   // for the directional dissolve gradient
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             v2f_shadow vertShadow(appdata_shadow v) {
@@ -4339,6 +4830,7 @@ Shader "Zetph/ZetsFancyShader"
                 
                 o.uv = stUV;
                 o.heightW = mul(unity_ObjectToWorld, v.vertex).y - unity_ObjectToWorld._m13;
+                o.objPos  = v.vertex.xyz;
                 return o;
             }
             float4 fragShadow(v2f_shadow i) : SV_Target {
@@ -4347,13 +4839,17 @@ Shader "Zetph/ZetsFancyShader"
                 if (_RetroEnable > 0.5 && _RetroPixelate > 0.5) i.uv = (floor(i.uv * _RetroPixelRes) + 0.5) / _RetroPixelRes;
                 bool alAvail = AudioLinkIsAvailable();
                 
+            #if defined(ZET_DISSOLVE)
                 if (_DissolveEnable > 0.5) {
                     float dNoise = _DissolveTex.Sample(sampler_LinearRepeat, i.uv).r;
-                    float alD = 0; if (alAvail) alD = ALEnv((uint)_DissolveBand);
+                    dNoise = ZetDissolveField(dNoise, i.objPos.xyz);
+                    float alD = ZetALSignal(_DissolveALEnable, _DissolveBand, _DissolveMultBand, _DissolveMultAmt,
+                                            _DissolveAddBand, _DissolveAddAmt, _DissolveVolBoost, _DissolveVolAmt);
                     float dLevel = saturate((_DissolveAmount * 0.01) + (alD * (_DissolveAL * 0.01)));
                     float edgeWS = (_DissolveWidth * 0.01) * (1.0 + alD * 2.0);
                     clip(dNoise - (dLevel * (1.0 + edgeWS * 2.0) - edgeWS));
                 }
+            #endif
                 if (_BreakEnable > 0.5) {
                     float bMask = _MaskTex.Sample(sampler_LinearClamp, i.uv).r;
                     float drive;

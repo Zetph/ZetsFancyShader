@@ -139,6 +139,11 @@ namespace Zetph.FancyShader.EditorUI
                 _shader = ZetShaderLocker.ResolveSourceShader(material) ?? material.shader;
                 _data = ZetUIData.Load(_shader);
                 Rebuild();
+
+                // Materials saved before a feature was keyword-gated carry the enable
+                // value but not the keyword. Reconcile once on load so they light up
+                // without the user having to toggle each one off and on again.
+                SyncAllToggleKeywords(properties);
             }
 
             // Unity rebuilds this array every frame; the tree stores names only.
@@ -868,6 +873,7 @@ namespace Zetph.FancyShader.EditorUI
 
                     editor.RegisterPropertyChangeUndo(toggle.name);
                     toggle.floatValue = now ? 1f : 0f;
+                    SyncToggleKeyword(toggle);
 
                     // Enabling refraction changes the queue the GrabPass needs.
                     // Previously this only re-asserted when the user touched
@@ -918,6 +924,54 @@ namespace Zetph.FancyShader.EditorUI
             }
 
             return expanded;
+        }
+
+        /// <summary>
+        /// Keeps a [Toggle(KEYWORD)] property's shader keyword in step with its value.
+        /// The group header writes the float directly rather than going through
+        /// MaterialEditor.ShaderProperty, which is what would normally set the keyword,
+        /// so without this a gated feature reads as enabled while its code is compiled
+        /// out and the effect silently does nothing.
+        /// </summary>
+        /// <summary>Reconciles every [Toggle(KEYWORD)] property with its keyword.</summary>
+        private void SyncAllToggleKeywords(MaterialProperty[] properties)
+        {
+            if (properties == null) return;
+            foreach (MaterialProperty p in properties)
+            {
+                if (p.type != MaterialProperty.PropType.Float &&
+                    p.type != MaterialProperty.PropType.Range) continue;
+                SyncToggleKeyword(p);
+            }
+        }
+
+        private void SyncToggleKeyword(MaterialProperty toggle)
+        {
+            if (toggle == null || _shader == null) return;
+
+            int index = _shader.FindPropertyIndex(toggle.name);
+            if (index < 0) return;
+
+            string[] attributes = _shader.GetPropertyAttributes(index);
+            string keyword = null;
+            foreach (string a in attributes)
+            {
+                if (!a.StartsWith("Toggle(", StringComparison.Ordinal)) continue;
+                int close = a.IndexOf(')');
+                if (close <= 7) continue;
+                keyword = a.Substring(7, close - 7).Trim();
+                break;
+            }
+            if (string.IsNullOrEmpty(keyword)) return;
+
+            bool on = toggle.floatValue > 0.5f;
+            foreach (UnityEngine.Object t in toggle.targets)
+            {
+                Material m = t as Material;
+                if (m == null) continue;
+                if (on) m.EnableKeyword(keyword);
+                else    m.DisableKeyword(keyword);
+            }
         }
 
         private MaterialProperty FindToggle(Node group)

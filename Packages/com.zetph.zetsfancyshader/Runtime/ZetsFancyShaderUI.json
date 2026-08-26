@@ -4090,6 +4090,22 @@
   {
    "name": "_RefractAbsorb",
    "text": "Colour the glass absorbs as light passes through it, applied more strongly the thicker the glass. This is how coloured glass gets deeper in tone at its thickest points."
+  },
+  {
+   "name": "_Em0Map",
+   "text": "Optional colour texture for this emission layer. Its RGB is multiplied by the emission colour, so it can carry a pattern, gradient or artwork that glows. The mask still decides where the layer emits; leave this empty for a flat colour."
+  },
+  {
+   "name": "_Em1Map",
+   "text": "Optional colour texture for this emission layer. Its RGB is multiplied by the emission colour, so it can carry a pattern, gradient or artwork that glows. The mask still decides where the layer emits; leave this empty for a flat colour."
+  },
+  {
+   "name": "_Em2Map",
+   "text": "Optional colour texture for this emission layer. Its RGB is multiplied by the emission colour, so it can carry a pattern, gradient or artwork that glows. The mask still decides where the layer emits; leave this empty for a flat colour."
+  },
+  {
+   "name": "_Em3Map",
+   "text": "Optional colour texture for this emission layer. Its RGB is multiplied by the emission colour, so it can carry a pattern, gradient or artwork that glows. The mask still decides where the layer emits; leave this empty for a flat colour."
   }
  ],
  "lockCritical": [

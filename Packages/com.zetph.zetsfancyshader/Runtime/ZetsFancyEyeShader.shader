@@ -1,6 +1,6 @@
 // ==============================================================================
 // ZetsFancyEyeShader - Eye Variant
-// Version: v0.5.0
+// Version: v0.6.0
 // Features: Convex-correct Reflections, Wetness Mask, Parallax,
 // Anisotropic Highlights, Stylized Anime Specular, PBR specular lobe,
 // LTCGI, and VRC Light Volumes (ambient + speculars).
