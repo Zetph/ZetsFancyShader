@@ -1,6 +1,6 @@
 {
  "title": "ZetsFancyShader",
- "version": "v0.6.1",
+ "version": "v0.6.2",
  "groups": [
   {
    "path": "engine",
@@ -1929,7 +1929,7 @@
   },
   {
    "name": "_Em0Intensity",
-   "text": "Overall brightness multiplier for this layer."
+   "text": "Master brightness for the whole layer, multiplying everything including the audio-driven part. At 0 nothing can light it up, so use Base Brightness to control the resting level rather than this."
   },
   {
    "name": "_Em0Hue",
@@ -1937,7 +1937,7 @@
   },
   {
    "name": "_Em0Mode",
-   "text": "How the audio drives the glow pattern. Gradient Path makes the audio travel along this slot's Path Gradient map."
+   "text": "How the audio drives this layer's glow pattern. Only applies while this AudioLink section is on; with it off the layer ignores audio entirely and the sub-effects below drive it instead."
   },
   {
    "name": "_Em0PathTex",
@@ -1945,7 +1945,7 @@
   },
   {
    "name": "_Em0Base",
-   "text": "Baseline glow always on, before audio adds to it."
+   "text": "How brightly this layer glows when nothing is driving it - the always-on floor. Set it to 0 for a layer that stays dark until AudioLink lifts it, which is how you get glow that only appears on the beat."
   },
   {
    "name": "_Em0EdgeGlow",
@@ -1961,7 +1961,7 @@
   },
   {
    "name": "_Em0AL",
-   "text": "How much the chosen band boosts brightness."
+   "text": "How much the audio signal adds to brightness on top of Base Brightness. The multiplier and additive bands shape the signal, but this is what turns it into glow, so at 0 none of them do anything."
   },
   {
    "name": "_Em0PulseScale",
@@ -2021,7 +2021,7 @@
   },
   {
    "name": "_Em0ScanDir",
-   "text": "Vertical sweeps up and down. Horizontal sweeps side to side like a scanner."
+   "text": "Which way the band travels in UV space. Vertical sweeps up and down the texture, Horizontal side to side. Object Space uses the direction vector instead."
   },
   {
    "name": "_Em0ScanMode",
@@ -2065,7 +2065,7 @@
   },
   {
    "name": "_Em1Intensity",
-   "text": "Overall brightness multiplier for this layer."
+   "text": "Master brightness for the whole layer, multiplying everything including the audio-driven part. At 0 nothing can light it up, so use Base Brightness to control the resting level rather than this."
   },
   {
    "name": "_Em1Hue",
@@ -2073,7 +2073,7 @@
   },
   {
    "name": "_Em1Mode",
-   "text": "How the audio drives the glow pattern. Gradient Path makes the audio travel along this slot's Path Gradient map."
+   "text": "How the audio drives this layer's glow pattern. Only applies while this AudioLink section is on; with it off the layer ignores audio entirely and the sub-effects below drive it instead."
   },
   {
    "name": "_Em1PathTex",
@@ -2081,7 +2081,7 @@
   },
   {
    "name": "_Em1Base",
-   "text": "Baseline glow always on, before audio adds to it."
+   "text": "How brightly this layer glows when nothing is driving it - the always-on floor. Set it to 0 for a layer that stays dark until AudioLink lifts it, which is how you get glow that only appears on the beat."
   },
   {
    "name": "_Em1EdgeGlow",
@@ -2097,7 +2097,7 @@
   },
   {
    "name": "_Em1AL",
-   "text": "How much the chosen band boosts brightness."
+   "text": "How much the audio signal adds to brightness on top of Base Brightness. The multiplier and additive bands shape the signal, but this is what turns it into glow, so at 0 none of them do anything."
   },
   {
    "name": "_Em1PulseScale",
@@ -2157,7 +2157,7 @@
   },
   {
    "name": "_Em1ScanDir",
-   "text": "Vertical sweeps up and down. Horizontal sweeps side to side like a scanner."
+   "text": "Which way the band travels in UV space. Vertical sweeps up and down the texture, Horizontal side to side. Object Space uses the direction vector instead."
   },
   {
    "name": "_Em1ScanMode",
@@ -2201,7 +2201,7 @@
   },
   {
    "name": "_Em2Intensity",
-   "text": "Overall brightness multiplier for this layer."
+   "text": "Master brightness for the whole layer, multiplying everything including the audio-driven part. At 0 nothing can light it up, so use Base Brightness to control the resting level rather than this."
   },
   {
    "name": "_Em2Hue",
@@ -2209,7 +2209,7 @@
   },
   {
    "name": "_Em2Mode",
-   "text": "How the audio drives the glow pattern. Gradient Path makes the audio travel along this slot's Path Gradient map."
+   "text": "How the audio drives this layer's glow pattern. Only applies while this AudioLink section is on; with it off the layer ignores audio entirely and the sub-effects below drive it instead."
   },
   {
    "name": "_Em2PathTex",
@@ -2217,7 +2217,7 @@
   },
   {
    "name": "_Em2Base",
-   "text": "Baseline glow always on, before audio adds to it."
+   "text": "How brightly this layer glows when nothing is driving it - the always-on floor. Set it to 0 for a layer that stays dark until AudioLink lifts it, which is how you get glow that only appears on the beat."
   },
   {
    "name": "_Em2EdgeGlow",
@@ -2233,7 +2233,7 @@
   },
   {
    "name": "_Em2AL",
-   "text": "How much the chosen band boosts brightness."
+   "text": "How much the audio signal adds to brightness on top of Base Brightness. The multiplier and additive bands shape the signal, but this is what turns it into glow, so at 0 none of them do anything."
   },
   {
    "name": "_Em2PulseScale",
@@ -2293,7 +2293,7 @@
   },
   {
    "name": "_Em2ScanDir",
-   "text": "Vertical sweeps up and down. Horizontal sweeps side to side like a scanner."
+   "text": "Which way the band travels in UV space. Vertical sweeps up and down the texture, Horizontal side to side. Object Space uses the direction vector instead."
   },
   {
    "name": "_Em2ScanMode",
@@ -2337,7 +2337,7 @@
   },
   {
    "name": "_Em3Intensity",
-   "text": "Overall brightness multiplier for this layer."
+   "text": "Master brightness for the whole layer, multiplying everything including the audio-driven part. At 0 nothing can light it up, so use Base Brightness to control the resting level rather than this."
   },
   {
    "name": "_Em3Hue",
@@ -2345,7 +2345,7 @@
   },
   {
    "name": "_Em3Mode",
-   "text": "How the audio drives the glow pattern. Gradient Path makes the audio travel along this slot's Path Gradient map."
+   "text": "How the audio drives this layer's glow pattern. Only applies while this AudioLink section is on; with it off the layer ignores audio entirely and the sub-effects below drive it instead."
   },
   {
    "name": "_Em3PathTex",
@@ -2353,7 +2353,7 @@
   },
   {
    "name": "_Em3Base",
-   "text": "Baseline glow always on, before audio adds to it."
+   "text": "How brightly this layer glows when nothing is driving it - the always-on floor. Set it to 0 for a layer that stays dark until AudioLink lifts it, which is how you get glow that only appears on the beat."
   },
   {
    "name": "_Em3EdgeGlow",
@@ -2369,7 +2369,7 @@
   },
   {
    "name": "_Em3AL",
-   "text": "How much the chosen band boosts brightness."
+   "text": "How much the audio signal adds to brightness on top of Base Brightness. The multiplier and additive bands shape the signal, but this is what turns it into glow, so at 0 none of them do anything."
   },
   {
    "name": "_Em3PulseScale",
@@ -2429,7 +2429,7 @@
   },
   {
    "name": "_Em3ScanDir",
-   "text": "Vertical sweeps up and down. Horizontal sweeps side to side like a scanner."
+   "text": "Which way the band travels in UV space. Vertical sweeps up and down the texture, Horizontal side to side. Object Space uses the direction vector instead."
   },
   {
    "name": "_Em3ScanMode",
@@ -4109,19 +4109,19 @@
   },
   {
    "name": "_Em0Map",
-   "text": "Optional colour texture for this layer's glow. Its RGB multiplies the emission colour, so it can carry a pattern or artwork. The mask still decides where the layer emits."
+   "text": "Colours the glow per pixel, carrying its own shading and gradients, so the pattern reads as painted rather than as a flat stencil. It multiplies the emission colour, so a mostly-dark map dims the layer: raise Emission Intensity to compensate. The mask still decides where the layer emits at all."
   },
   {
    "name": "_Em1Map",
-   "text": "Optional colour texture for this layer's glow. Its RGB multiplies the emission colour, so it can carry a pattern or artwork. The mask still decides where the layer emits."
+   "text": "Colours the glow per pixel, carrying its own shading and gradients, so the pattern reads as painted rather than as a flat stencil. It multiplies the emission colour, so a mostly-dark map dims the layer: raise Emission Intensity to compensate. The mask still decides where the layer emits at all."
   },
   {
    "name": "_Em2Map",
-   "text": "Optional colour texture for this layer's glow. Its RGB multiplies the emission colour, so it can carry a pattern or artwork. The mask still decides where the layer emits."
+   "text": "Colours the glow per pixel, carrying its own shading and gradients, so the pattern reads as painted rather than as a flat stencil. It multiplies the emission colour, so a mostly-dark map dims the layer: raise Emission Intensity to compensate. The mask still decides where the layer emits at all."
   },
   {
    "name": "_Em3Map",
-   "text": "Optional colour texture for this layer's glow. Its RGB multiplies the emission colour, so it can carry a pattern or artwork. The mask still decides where the layer emits."
+   "text": "Colours the glow per pixel, carrying its own shading and gradients, so the pattern reads as painted rather than as a flat stencil. It multiplies the emission colour, so a mostly-dark map dims the layer: raise Emission Intensity to compensate. The mask still decides where the layer emits at all."
   },
   {
    "name": "_InfEnable",
@@ -4434,6 +4434,130 @@
   {
    "name": "_DecalRGBAMask",
    "text": "One texture holding a mask for each decal, one per channel: red for Decal 0, green for 1, blue for 2, alpha for 3. Four masks in a single texture slot."
+  },
+  {
+   "name": "_Em0ScanSpace",
+   "text": "Which space the band travels through. UV follows the texture unwrap, which does not line up with the body's own axes. Object Space sweeps across the avatar itself, so the band crosses left to right or up the body regardless of how the mesh is unwrapped."
+  },
+  {
+   "name": "_Em0ScanExtent",
+   "text": "How far the sweep travels in metres. Match this across every material that should share the same wave."
+  },
+  {
+   "name": "_Em1ScanSpace",
+   "text": "Which space the band travels through. UV follows the texture unwrap, which does not line up with the body's own axes. Object Space sweeps across the avatar itself, so the band crosses left to right or up the body regardless of how the mesh is unwrapped."
+  },
+  {
+   "name": "_Em1ScanExtent",
+   "text": "How far the sweep travels in metres. Match this across every material that should share the same wave."
+  },
+  {
+   "name": "_Em2ScanSpace",
+   "text": "Which space the band travels through. UV follows the texture unwrap, which does not line up with the body's own axes. Object Space sweeps across the avatar itself, so the band crosses left to right or up the body regardless of how the mesh is unwrapped."
+  },
+  {
+   "name": "_Em2ScanExtent",
+   "text": "How far the sweep travels in metres. Match this across every material that should share the same wave."
+  },
+  {
+   "name": "_Em3ScanSpace",
+   "text": "Which space the band travels through. UV follows the texture unwrap, which does not line up with the body's own axes. Object Space sweeps across the avatar itself, so the band crosses left to right or up the body regardless of how the mesh is unwrapped."
+  },
+  {
+   "name": "_Em3ScanExtent",
+   "text": "How far the sweep travels in metres. Match this across every material that should share the same wave."
+  },
+  {
+   "name": "_Em0ScanAxis",
+   "text": "Which way the band travels through the avatar's own space. 0,1,0 sweeps up the body, 1,0,0 across it from side to side, 0,0,1 from back to front. Values in between give diagonals."
+  },
+  {
+   "name": "_Em1ScanAxis",
+   "text": "Which way the band travels through the avatar's own space. 0,1,0 sweeps up the body, 1,0,0 across it from side to side, 0,0,1 from back to front. Values in between give diagonals."
+  },
+  {
+   "name": "_Em2ScanAxis",
+   "text": "Which way the band travels through the avatar's own space. 0,1,0 sweeps up the body, 1,0,0 across it from side to side, 0,0,1 from back to front. Values in between give diagonals."
+  },
+  {
+   "name": "_Em3ScanAxis",
+   "text": "Which way the band travels through the avatar's own space. 0,1,0 sweeps up the body, 1,0,0 across it from side to side, 0,0,1 from back to front. Values in between give diagonals."
+  },
+  {
+   "name": "_StarSatRange",
+   "text": "How much saturation varies between stars. A field where every star shares one saturation reads as a pattern; some variation makes it look like a sky."
+  },
+  {
+   "name": "_StarValRange",
+   "text": "How much brightness varies between stars, so the field has faint and bright ones rather than all being equal."
+  },
+  {
+   "name": "_StarLayerFade",
+   "text": "How much deeper parallax layers dim, so the field reads as having depth rather than sitting flat."
+  },
+  {
+   "name": "_StarLineThickVar",
+   "text": "How much line thickness varies between links, so the constellation web is not drawn with a single uniform pen."
+  },
+  {
+   "name": "_GlitterShape",
+   "text": "Shape of each speck. Dots are round points. Flakes are squares. Hexagons are what real cut craft glitter actually is, and read as the most convincing."
+  },
+  {
+   "name": "_GlitterFlakeRot",
+   "text": "How much each flake is randomly rotated. Without it a field of polygons lines up into an obvious grid. 1 gives fully random angles."
+  },
+  {
+   "name": "_GlitterAspect",
+   "text": "Stretches each flake along one axis, turning specks into elongated shards. 0 keeps them regular."
+  },
+  {
+   "name": "_ProbeDirLight",
+   "text": "Shades the surface using a light direction recovered from the world's light probes. Most VRChat worlds have no realtime directional light, and without one an avatar is lit only by flat ambient, which is what makes it look shapeless. Turn this off only if a world's probes give a direction you do not want."
+  },
+  {
+   "name": "_ProbeDirStrength",
+   "text": "How strongly the probe-derived light shapes the surface. It only applies where there is no strong realtime light, so raising it will not affect brightly lit worlds."
+  },
+  {
+   "name": "_Em0ScanOrigin",
+   "text": "Where the sweep begins, in metres along the chosen direction from the avatar's origin. Set every material on the avatar to the same start and length and a single band will cross all of them as one wave."
+  },
+  {
+   "name": "_Em0ScanPhase",
+   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+  },
+  {
+   "name": "_Em1ScanOrigin",
+   "text": "Where the sweep begins, in metres along the chosen direction from the avatar's origin. Set every material on the avatar to the same start and length and a single band will cross all of them as one wave."
+  },
+  {
+   "name": "_Em1ScanPhase",
+   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+  },
+  {
+   "name": "_Em2ScanOrigin",
+   "text": "Where the sweep begins, in metres along the chosen direction from the avatar's origin. Set every material on the avatar to the same start and length and a single band will cross all of them as one wave."
+  },
+  {
+   "name": "_Em2ScanPhase",
+   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+  },
+  {
+   "name": "_Em3ScanOrigin",
+   "text": "Where the sweep begins, in metres along the chosen direction from the avatar's origin. Set every material on the avatar to the same start and length and a single band will cross all of them as one wave."
+  },
+  {
+   "name": "_Em3ScanPhase",
+   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+  },
+  {
+   "name": "_ALMasterEnable",
+   "text": "Master switch for AudioLink on this material. Off silences every reactive effect at once, without touching each one's own toggle. It is a plain float, so it animates from a menu: use it to turn a whole avatar's reactivity on and off in one control."
+  },
+  {
+   "name": "_GlitterSpeedVar",
+   "text": "How much each flake's twinkle rate differs from the rest. At 0 every flake shares one rate and the field pulses together in a repeating wave; higher values scatter the timing so flakes glint independently."
   }
  ],
  "lockCritical": [
@@ -4741,6 +4865,42 @@
     "Green",
     "Blue",
     "Alpha"
+   ]
+  },
+  {
+   "name": "_Em0ScanSpace",
+   "options": [
+    "UV",
+    "Object Space"
+   ]
+  },
+  {
+   "name": "_Em1ScanSpace",
+   "options": [
+    "UV",
+    "Object Space"
+   ]
+  },
+  {
+   "name": "_Em2ScanSpace",
+   "options": [
+    "UV",
+    "Object Space"
+   ]
+  },
+  {
+   "name": "_Em3ScanSpace",
+   "options": [
+    "UV",
+    "Object Space"
+   ]
+  },
+  {
+   "name": "_GlitterShape",
+   "options": [
+    "Dots",
+    "Flakes",
+    "Hexagons"
    ]
   }
  ]

@@ -1,6 +1,6 @@
 // ==============================================================================
 // ZetsFancyEyeShader - Eye Variant
-// Version: v0.6.1
+// Version: v0.6.2
 // Features: Convex-correct Reflections, Wetness Mask, Parallax,
 // Anisotropic Highlights, Stylized Anime Specular, PBR specular lobe,
 // LTCGI, and VRC Light Volumes (ambient + speculars).
@@ -23,38 +23,40 @@ Shader "Zetph/ZetsFancyEyeShader"
         [Normal] [Group(base)] _BumpMap ("Normal Map", 2D) = "bump" {}
         [Group(base)] _BumpScale ("Normal Strength", Range(0, 2)) = 1
         [Enum(Toon Ramp, 0, Realistic PBR, 1)] [Group(lighting)] _LightingModel ("Lighting Model", Float) = 0
-        [Toggle] [Group(lighting)] _EyeWrapLight ("Wrapped Eye Lighting", Float) = 0
+        [ToggleUI] [Group(lighting)] _EyeWrapLight ("Wrapped Eye Lighting", Float) = 0
         [Group(lighting)] _MaxBrightness ("Max Light Brightness", Range(0, 5)) = 1.0
         [Group(lighting)] _MinBrightness ("Min Light Brightness", Range(0, 1)) = 0.0
         [Group(lighting)] _ReceiveShadows ("Receive Casted Shadows", Range(0, 1)) = 1.0
             [Group(lighting_toon)] _ShadowEdge ("Shadow Edge", Range(0, 1)) = 0.5
             [Group(lighting_toon)] _ShadowSoft ("Shadow Softness", Range(0.001, 0.5)) = 0.01
+        [ToggleUI] [Group(lighting_toon)] _ProbeDirLight ("Shade From Probes", Float) = 1
+        [Group(lighting_toon)] [ShowIf(_ProbeDirLight)] _ProbeDirStrength ("Probe Shading Strength", Range(0, 2)) = 1
             [Group(lighting_toon)] _ShadowDither ("Shadow Dithering", Range(0, 0.1)) = 0
             [Group(lighting_toon)] _ShadowTint ("Shadow Tint", Color) = (0.5, 0.5, 0.5, 1)
         [Enum(ZFS Packed, 0, Unity MetalSmooth, 1)] [Group(reflspec)] _PackMode ("Packed Map Format", Float) = 0
         [NoScaleOffset] [Group(reflspec)] _PackedMap ("Packed Map", 2D) = "white" {}
-        [Toggle] [Group(reflspec)] _InvSmooth ("Map uses Roughness", Float) = 0
+        [ToggleUI] [Group(reflspec)] _InvSmooth ("Map uses Roughness", Float) = 0
         [Group(reflspec)] _Metallic ("Metallic", Range(0, 1)) = 0
         [Group(reflspec)] _EyeSmoothness ("Smoothness", Range(0, 1)) = 0.5
         [Group(reflspec)] _OcclusionStrength ("AO Strength", Range(0, 1)) = 1
         [ZetMapPacker] [Group(reflspec)] _MapPackerUI ("Map Packer", Float) = 0
         [Group(reflspec)] [ShowIf(_LightingModel)] _SpecStrength ("PBR Specular Strength", Range(0, 4)) = 1
-            [Toggle] [GroupToggle(reflspec_refl)] _UseEnvReflections ("Enable Reflection Probes", Float) = 1
+            [ToggleUI] [GroupToggle(reflspec_refl)] _UseEnvReflections ("Enable Reflection Probes", Float) = 1
             [NoScaleOffset] [Group(reflspec_refl)] _BakedCubemap ("Reflection Fallback Cubemap", Cube) = "black" {}
             [Group(reflspec_refl)] _FallbackCubemapStrength ("Fallback Strength", Range(0, 2)) = 1
             [HideInInspector] [Group(reflspec_refl)] _HasBakedCubemap ("", Float) = 0
             [Group(reflspec_refl)] _ReflStrength ("Reflection Strength", Range(0, 2)) = 1
-            [Toggle] [Group(reflspec_refl)] _ReflFlipX ("Reflection Flip X (horizontal)", Float) = 0
-            [Toggle] [Group(reflspec_refl)] _ReflFlipY ("Reflection Flip Y (vertical)", Float) = 1
-            [Toggle] [GroupToggle(reflspec_aniso)] _AnisoEnable ("Enable Anisotropic Highlights", Float) = 0
+            [ToggleUI] [Group(reflspec_refl)] _ReflFlipX ("Reflection Flip X (horizontal)", Float) = 0
+            [ToggleUI] [Group(reflspec_refl)] _ReflFlipY ("Reflection Flip Y (vertical)", Float) = 1
+            [ToggleUI] [GroupToggle(reflspec_aniso)] _AnisoEnable ("Enable Anisotropic Highlights", Float) = 0
             [HDR] [Group(reflspec_aniso)] _AnisoColor ("Anisotropic Color", Color) = (1, 1, 1, 1)
             [Enum(Tangent, 0, Bitangent, 1)] [Group(reflspec_aniso)] _AnisoDir ("Highlight Direction", Float) = 1
             [Group(reflspec_aniso)] _AnisoShift ("Highlight Offset", Range(-1, 1)) = 0
             [Group(reflspec_aniso)] _AnisoPower ("Highlight Sharpness", Range(0, 10)) = 5.0
             [Group(reflspec_aniso)] _AnisoStrength ("Highlight Strength", Range(0, 5)) = 1.0
-            [Toggle] [GroupToggle(reflspec_stylespec)] _StyleSpecEnable ("Enable Stylized Specular", Float) = 0
+            [ToggleUI] [GroupToggle(reflspec_stylespec)] _StyleSpecEnable ("Enable Stylized Specular", Float) = 0
             [HDR] [Group(reflspec_stylespec)] _StyleSpecTint ("Highlight Tint", Color) = (1, 1, 1, 1)
-            [Toggle] [Group(reflspec_stylespec)] _StyleSpecUseLight ("Use Light Color", Float) = 1
+            [ToggleUI] [Group(reflspec_stylespec)] _StyleSpecUseLight ("Use Light Color", Float) = 1
             [Group(reflspec_stylespec)] _StyleSpecMask ("Highlight Mask", 2D) = "white" {}
             [Group(reflspec_stylespec)] _SS1Size ("Layer 1 Size", Range(0, 1)) = 0.3
             [Group(reflspec_stylespec)] _SS1Feather ("Layer 1 Feather", Range(0, 1)) = 0.1
@@ -66,31 +68,69 @@ Shader "Zetph/ZetsFancyEyeShader"
             [Group(reflspec_stylespec)] _SS3Feather ("Layer 3 Feather", Range(0, 1)) = 0.02
             [Group(reflspec_stylespec)] _SS3Strength ("Layer 3 Strength", Range(0, 4)) = 0
         [HideInInspector] [Group(reflspec)] m_eye_fx ("Eye FX", Float) = 0
-            [Toggle] [GroupToggle(reflspec_parallax)] _ParallaxEnable ("Enable Parallax Heightmapping", Float) = 0
+            [ToggleUI] [GroupToggle(reflspec_parallax)] _ParallaxEnable ("Enable Parallax Heightmapping", Float) = 0
             [Group(reflspec_parallax)] _HeightMap ("Height Map (B&W)", 2D) = "black" {}
             [Group(reflspec_parallax)] _ParallaxMask ("Parallax Mask", 2D) = "white" {}
             [Group(reflspec_parallax)] _ParallaxStrength ("Strength", Range(0, 0.2)) = 0.02
             [Group(reflspec_parallax)] _ParallaxOffset ("Offset (Height Bias)", Range(-1, 1)) = 0
             [Group(reflspec_parallax)] _ParallaxMipBias ("Mip Bias", Range(-2, 2)) = 0
-            [Toggle] [GroupToggle(reflspec_wetness)] _WetnessEnable ("Enable Wetness/Tearline", Float) = 0
+            [ToggleUI] [GroupToggle(reflspec_wetness)] _WetnessEnable ("Enable Wetness/Tearline", Float) = 0
             [Group(reflspec_wetness)] _WetnessMask ("Wetness Mask", 2D) = "black" {}
             [HDR] [Group(reflspec_wetness)] _WetnessColor ("Wetness Color", Color) = (1, 1, 1, 1)
             [Group(reflspec_wetness)] _WetnessStrength ("Strength", Range(0, 1)) = 0.5
-            [Toggle] [GroupToggle(reflspec_emission)] _EmissionEnable ("Enable Emission", Float) = 0
+            [ToggleUI] [GroupToggle(reflspec_emission)] _EmissionEnable ("Enable Emission", Float) = 0
             [Group(reflspec_emission)] _EmissionMap ("Emission Texture", 2D) = "white" {}
             [Group(reflspec_emission)] _EmissionMask ("Emission Mask", 2D) = "white" {}
             [HDR] [Group(reflspec_emission)] _EmissionColor ("Emission Color", Color) = (1, 1, 1, 1)
             [Group(reflspec_emission)] _EmissionStrength ("Emission Strength", Range(0, 8)) = 1
-            [Toggle] [Group(reflspec_emission)] _EmissionAlbedoTint ("Tint by Albedo", Float) = 0
+            [ToggleUI] [Group(reflspec_emission)] _EmissionAlbedoTint ("Tint by Albedo", Float) = 0
+            [Enum(Pulse, 0, Sweep Up, 1, Center Out Pulse, 2)] [Group(reflspec_emission_emal)] [ShowIf(_EmALEnable)] _EmMode ("Audio Mode", Float) = 0
+            [Group(reflspec_emission_emal)] [ShowIf(_EmMode, 2)] _EmPulseScale ("Center-Out Ring Spacing", Range(0, 20)) = 5
+            [Group(reflspec_emission_emal)] [ShowIf(_EmMode, 2)] _EmCenter ("Pulse Center (UV)", Vector) = (0.5, 0.5, 0, 0)
+            [ToggleUI] [Group(alenv)] _ALMasterEnable ("AudioLink Enabled", Float) = 1
+            [ToggleUI] [Group(alenv)] _ALEnvEnable ("Enable AudioLink Smoothing", Float) = 1
+            [Group(alenv)] [ShowIf(_ALEnvEnable)] _ALEnvRelease ("Release / Tail", Range(0, 1)) = 0.45
+            [ToggleUI] [GroupToggle(reflspec_emission_emal)] [ShowIf(_EmissionEnable)] _EmALEnable ("Enable AudioLink Reactivity", Float) = 0
+            [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(reflspec_emission_emal)] [ShowIf(_EmALEnable)] _EmBand ("Primary AL Band", Float) = 0
+            [Group(reflspec_emission_emal)] [ShowIf(_EmALEnable)] _EmAL ("AL Boost (reactive brightness)", Range(0, 8)) = 2
+            [ToggleUI] [Group(reflspec_emission_emal)] [ShowIf(_EmALEnable)] _EmHueOn ("AL Hue Shift", Float) = 0
+            [ToggleUI] [Group(reflspec_emission_emal)] [ShowIf(_EmALEnable)] _EmVolBoost ("Boost by Overall Volume", Float) = 0
+            [Group(reflspec_emission_emal)] [ShowIf(_EmVolBoost)] _EmVolAmt ("Volume Boost Amount", Range(0, 4)) = 1
+            [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(reflspec_emission_emal_adj)] [ShowIf(_EmALEnable)] _EmMultBand ("Multiplier Band", Float) = 0
+            [Group(reflspec_emission_emal_adj)] [ShowIf(_EmALEnable)] _EmMultAmt ("Multiplier Amount", Range(0, 4)) = 0
+            [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(reflspec_emission_emal_adj)] [ShowIf(_EmALEnable)] _EmAddBand ("Additive Band", Float) = 3
+            [Group(reflspec_emission_emal_adj)] [ShowIf(_EmALEnable)] _EmAddAmt ("Additive Amount", Range(0, 4)) = 0
+            [ToggleUI] [GroupToggle(reflspec_emission_emlb)] [ShowIf(_EmissionEnable)] _EmLightBased ("Enable Light-Based Emission", Float) = 0
+            [Group(reflspec_emission_emlb)] [ShowIf(_EmLightBased)] _EmMinEmiss ("Emission in Shadow", Range(0, 4)) = 1
+            [Group(reflspec_emission_emlb)] [ShowIf(_EmLightBased)] _EmMaxEmiss ("Emission in Light", Range(0, 4)) = 1
+            [Group(reflspec_emission_emlb)] [ShowIf(_EmLightBased)] _EmMinLight ("Min Lighting", Range(0, 1)) = 0
+            [Group(reflspec_emission_emlb)] [ShowIf(_EmLightBased)] _EmMaxLight ("Max Lighting", Range(0, 1)) = 1
+            [ToggleUI] [GroupToggle(reflspec_emission_emblink)] [ShowIf(_EmissionEnable)] _EmBlink ("Enable Blinking", Float) = 0
+            [Group(reflspec_emission_emblink)] [ShowIf(_EmBlink)] _EmBlinkSpeed ("Blink Speed", Range(0, 20)) = 3
+            [Group(reflspec_emission_emblink)] [ShowIf(_EmBlink)] _EmBlinkMin ("Blink Floor", Range(0, 1)) = 0
+            [ToggleUI] [GroupToggle(reflspec_emission_emscan)] [ShowIf(_EmissionEnable)] _EmScan ("Enable Scan / Sweep", Float) = 0
+            [Enum(UV, 0, Object Space, 1)] [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanSpace ("Sweep Space", Float) = 0
+            [Enum(Linear, 0, Radial, 1, Angular, 2)] [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 0)] _EmScanStyle ("Sweep Style", Float) = 0
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 0)] _EmScanAngle ("Sweep Angle", Range(0, 360)) = 0
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 0)] _EmScanCenter ("Sweep Center (UV)", Vector) = (0.5, 0.5, 0, 0)
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 1)] _EmScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 1)] _EmScanExtent ("Sweep Length (m)", Range(0.01, 4)) = 2
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 1)] _EmScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanPhase ("Phase Offset", Range(-1, 1)) = 0
+            [Enum(Loop, 0, Ping Pong, 1)] [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanMode ("Motion", Float) = 0
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanSpeed ("Speed", Range(0, 10)) = 1
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanWidth ("Band Width", Range(0.01, 1)) = 0.15
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanSoft ("Edge Softness", Range(0, 0.5)) = 0.05
+            [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [Toggle(LTCGI)] [GroupToggle(ltcgi)] _LTCGI ("LTCGI System", Float) = 0
         [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGIStrength ("LTCGI Strength", Range(0, 2)) = 1
-        [Toggle] [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGITintOn ("Tint LTCGI", Float) = 0
+        [ToggleUI] [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGITintOn ("Tint LTCGI", Float) = 0
         [Group(ltcgi)] [ShowIf(_LTCGI)] [ShowIf(_LTCGITintOn)] _LTCGIDiffuseTint ("LTCGI Diffuse Tint", Color) = (1, 1, 1, 1)
         [Group(ltcgi)] [ShowIf(_LTCGI)] [ShowIf(_LTCGITintOn)] _LTCGISpecularTint ("LTCGI Specular Tint", Color) = (1, 1, 1, 1)
         [Group(ltcgi)] [ShowIf(_LTCGI)] _LTCGIOcclusion ("LTCGI Occlusion", Range(0, 1)) = 1
         [Toggle(ZET_LIGHT_VOLUMES)] [GroupToggle(lightvolumes)] _LightVolumes ("Light Volumes System", Float) = 1
         [Group(lightvolumes)] _LightVolumesStrength ("Light Volumes Strength", Range(0, 2)) = 1
-        [Toggle] [Group(lightvolumes)] _LightVolumesSpec ("Light Volume Speculars", Float) = 1
+        [ToggleUI] [Group(lightvolumes)] _LightVolumesSpec ("Light Volume Speculars", Float) = 1
         [Group(lightvolumes)] _LVPointShading ("Point Light Shaping", Range(0, 4)) = 1
         // --- VRSL GI -------------------------------------------------------
         // No package required: the world publishes _Udon_VRSL_GI_LightTexture as
@@ -98,7 +138,7 @@ Shader "Zetph/ZetsFancyEyeShader"
         // so the light count reads 0 and the loop never runs.
         [Toggle(ZET_VRSLGI)] [GroupToggle(vrslgi)] _VRSLGI ("VRSL GI System", Float) = 0
         [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIStrength ("VRSL GI Strength", Range(0, 4)) = 1
-        [Toggle] [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecular ("VRSL GI Speculars", Float) = 1
+        [ToggleUI] [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecular ("VRSL GI Speculars", Float) = 1
         [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecularMult ("Specular Multiplier", Range(0, 4)) = 1
         [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGISpecularClamp ("Specular Clamp", Range(0, 8)) = 2
         [Group(vrslgi)] [ShowIf(_VRSLGI)] _VRSLGIOcclusion ("Apply AO", Range(0, 1)) = 1
@@ -137,6 +177,7 @@ Shader "Zetph/ZetsFancyEyeShader"
             Texture2D _EmissionMap; Texture2D _EmissionMask;
             TextureCube _BakedCubemap;
             CBUFFER_START(UnityPerMaterial)
+            float _ProbeDirLight; float _ProbeDirStrength;
             float _LightingModel; float4 _MainTex_ST; float _BumpScale;
             float _ShadowEdge; float _ShadowSoft; float _ShadowDither; float4 _ShadowTint;
             float _MaxBrightness; float _MinBrightness; float _ReceiveShadows;
@@ -160,6 +201,12 @@ Shader "Zetph/ZetsFancyEyeShader"
             float _DebugView;
             float _VRSLGI; float _VRSLGIStrength; float _VRSLGISpecular;
             float _VRSLGISpecularMult; float _VRSLGISpecularClamp; float _VRSLGIOcclusion;
+            float _EmMode; float _EmPulseScale; float4 _EmCenter;
+            float _ALMasterEnable; float _ALEnvEnable; float _ALEnvRelease; float _EmALEnable; float _EmBand; float _EmAL; float _EmHueOn; float _EmVolBoost; float _EmVolAmt;
+            float _EmMultBand; float _EmMultAmt; float _EmAddBand; float _EmAddAmt;
+            float _EmLightBased; float _EmMinEmiss; float _EmMaxEmiss; float _EmMinLight; float _EmMaxLight;
+            float _EmBlink; float _EmBlinkSpeed; float _EmBlinkMin;
+            float _EmScan; float _EmScanStyle; float _EmScanAngle; float4 _EmScanCenter; float _EmScanSpace; float4 _EmScanAxis; float _EmScanExtent; float _EmScanOrigin; float _EmScanPhase; float _EmScanMode; float _EmScanSpeed; float _EmScanWidth; float _EmScanSoft; float _EmScanFloor;
             float _EmissionEnable; float4 _EmissionMap_ST; float4 _EmissionColor; float _EmissionStrength; float _EmissionAlbedoTint;
             CBUFFER_END
             // --- Optional world lighting integrations ---
@@ -246,12 +293,188 @@ Shader "Zetph/ZetsFancyEyeShader"
                     }
                 }
             }
-            float3 EvalEmission(float2 baseUV, float3 albedo) {
+            // Physically based specular, matching the main shader. Blinn-Phong has no
+            // Fresnel and no shadowing term, so it gives a highlight and a lambert
+            // gradient and nothing toward the silhouette, which reads flat on a curved
+            // surface. GGX adds the Fresnel that carries edge shape.
+            // --- AudioLink ---------------------------------------------------------
+            // Read straight from the global the world publishes, so nothing needs
+            // installing and the shader costs nothing in worlds without it.
+            #define ALPASS_AUDIOLINK          uint2(0,0)
+            #if defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3) || (SHADER_TARGET < 45)
+                #define ZET_AL_STDIDX 1
+            #endif
+            uniform float4 _AudioTexture_TexelSize;
+            #ifdef ZET_AL_STDIDX
+                sampler2D _AudioTexture;
+                #define AudioLinkData(xycoord) tex2Dlod(_AudioTexture, float4(uint2(xycoord) * _AudioTexture_TexelSize.xy, 0, 0))
+            #else
+                uniform Texture2D<float4> _AudioTexture;
+                #define AudioLinkData(xycoord) _AudioTexture[uint2(xycoord)]
+            #endif
+            bool AudioLinkIsAvailable()
+            {
+                // Master switch. Every AudioLink read passes through here, so turning
+                // this off silences the lot at once. A plain float, so it animates from
+                // a menu and can kill a material's reactivity without touching each
+                // effect's own toggle.
+                if (_ALMasterEnable < 0.5) return false;
+                #ifndef ZET_AL_STDIDX
+                    int width, height;
+                    _AudioTexture.GetDimensions(width, height);
+                    return width > 16;
+                #else
+                    return _AudioTexture_TexelSize.z > 16;
+                #endif
+            }
+            // Matches the main shader's envelope exactly: fast attack, with a tail whose
+            // length follows the AudioLink Response settings. Without it an eye set to the
+            // same band as bodywork reacts more sharply and drops away faster, so the two
+            // visibly disagree on the same music.
+            float ALEnv(uint band) {
+                float env = AudioLinkData(ALPASS_AUDIOLINK + uint2(0, band)).r;
+                if (_ALEnvEnable < 0.5) return env;
+                uint stride = (uint)max(1.0, lerp(1.0, 8.0, saturate(_ALEnvRelease)));
+                [unroll]
+                for (uint k = 1u; k < 12u; k++)
+                    env = max(env, AudioLinkData(ALPASS_AUDIOLINK + uint2(k * stride, band)).r * exp2(-(float)k * 0.28));
+                return env;
+            }
+
+            // Same signal chain as the main shader, so an eye set to a band reacts
+            // identically to bodywork set to the same one.
+            float ZetALSignal(float enable, float band, float multBand, float multAmt,
+                              float addBand, float addAmt, float volBoost, float volAmt)
+            {
+                if (enable < 0.5 || !AudioLinkIsAvailable()) return 0.0;
+                float sig = ALEnv((uint)band);
+                sig *= (1.0 + ALEnv((uint)multBand) * multAmt);
+                sig += ALEnv((uint)addBand) * addAmt;
+                if (volBoost > 0.5) {
+                    float vol = (ALEnv(0) + ALEnv(1) + ALEnv(2) + ALEnv(3)) * 0.25;
+                    sig *= (1.0 + vol * volAmt);
+                }
+                return max(sig, 0.0);
+            }
+
+            half3 ZetEyeHueShift(half3 c, float a)
+            {
+                const half3 k = half3(0.57735, 0.57735, 0.57735);
+                half co = cos(a);
+                return c * co + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - co);
+            }
+
+            half3 ZetGGXSpecular(float3 n, float3 viewDir, float3 lightDir, float smoothness, half3 F0)
+            {
+                float3 H = normalize(viewDir + lightDir);
+                float nl = saturate(dot(n, lightDir));
+                float nv = saturate(dot(n, viewDir));
+                float nh = saturate(dot(n, H));
+                float vh = saturate(dot(viewDir, H));
+                float rough = max(1.0 - smoothness, 0.045);
+                float a = rough * rough;
+                float a2 = a * a;
+                float d = (nh * nh) * (a2 - 1.0) + 1.0;
+                float D = a2 / max(UNITY_PI * d * d, 1e-7);
+                float lv = nl * (nv * (1.0 - a) + a);
+                float ll = nv * (nl * (1.0 - a) + a);
+                float V = 0.5 / max(lv + ll, 1e-5);
+                half3 F = F0 + (1.0 - F0) * pow(1.0 - vh, 5.0);
+                return D * V * F * nl;
+            }
+
+            float3 EvalEmission(float2 baseUV, float3 albedo, float litFactor, float3 wPos) {
                 if (_EmissionEnable < 0.5) return 0.0;
                 float2 euv = baseUV * _EmissionMap_ST.xy + _EmissionMap_ST.zw;
                 float3 tex = _EmissionMap.Sample(sampler_MainTex, euv).rgb;
                 float mask = _EmissionMask.Sample(sampler_LinearRepeat, baseUV).r;
-                float3 emis = tex * _EmissionColor.rgb * _EmissionStrength * mask;
+                if (mask <= 0.001) return 0.0;
+
+                // AudioLink, using the same chain as the main shader so an eye set to a
+                // band reacts identically to bodywork set to the same one.
+                float sig = 0.0;
+                if (_EmALEnable > 0.5 && AudioLinkIsAvailable()) {
+                    if (_EmMode < 1.5) {
+                        // Pulse takes the band level directly; Sweep Up walks the band's
+                        // history up the eye so the audio travels rather than flashing.
+                        sig = (_EmMode < 0.5) ? ALEnv((uint)_EmBand)
+                                              : AudioLinkData(uint2(saturate(baseUV.y) * 127.0, (uint)_EmBand)).r;
+                    } else {
+                        float pulseDist = saturate(length(baseUV - _EmCenter.xy) * _EmPulseScale);
+                        sig = AudioLinkData(uint2(pulseDist * 126.0, (uint)_EmBand)).r;
+                    }
+                    sig *= (1.0 + ALEnv((uint)_EmMultBand) * _EmMultAmt);
+                    sig += ALEnv((uint)_EmAddBand) * _EmAddAmt;
+                    if (_EmVolBoost > 0.5) {
+                        float vol = (ALEnv(0) + ALEnv(1) + ALEnv(2) + ALEnv(3)) * 0.25;
+                        sig *= (1.0 + vol * _EmVolAmt);
+                    }
+                    sig = max(sig, 0.0);
+                }
+
+                half3 col = _EmissionColor.rgb;
+                if (_EmHueOn > 0.5) col = ZetEyeHueShift(col, saturate(sig) * 6.28318);
+
+                float bright = _EmissionStrength + sig * _EmAL;
+
+                // Light-based: dim or lift the glow by how lit the surface is, so an eye
+                // can stay dark in daylight or only light up in the dark.
+                if (_EmLightBased > 0.5) {
+                    float t = saturate((litFactor - _EmMinLight) / max(_EmMaxLight - _EmMinLight, 1e-4));
+                    bright *= lerp(_EmMinEmiss, _EmMaxEmiss, t);
+                }
+                if (_EmBlink > 0.5) {
+                    float b = sin(_Time.y * _EmBlinkSpeed) * 0.5 + 0.5;
+                    bright *= lerp(_EmBlinkMin, 1.0, b);
+                }
+                if (_EmScan > 0.5) {
+                    // UV space follows the unwrap; object space sweeps through the eye's
+                    // own space, so a band can cross it on any axis and be matched to a
+                    // sweep running across the body.
+                    float axis;
+                    if (_EmScanSpace > 0.5) {
+                        float3 op = mul(unity_WorldToObject, float4(wPos, 1.0)).xyz;
+                        float3 ax = _EmScanAxis.xyz;
+                        if (dot(ax, ax) < 1e-6) ax = float3(0, 1, 0);
+                        // Same ruler as the main shader: metres from the avatar's origin,
+                        // so an eye set to the same axis, start and length joins the same
+                        // wave instead of sweeping its own tiny space.
+                        axis = (dot(op, normalize(ax)) - _EmScanOrigin) / max(_EmScanExtent, 0.001);
+                    } else {
+                        // UV sweep. Linear travels along a freely chosen angle rather than
+                        // only the two texture axes. Radial rings outward from a point,
+                        // and Angular rotates around it, which are the two shapes an iris
+                        // actually wants and neither of which a straight band can give.
+                        float2 d2 = baseUV - _EmScanCenter.xy;
+                        if (_EmScanStyle < 0.5) {
+                            float ra = radians(_EmScanAngle);
+                            // Normalised by the projected extent: at a diagonal the
+                            // projection spans further than one UV unit, so without this
+                            // the band never reaches the corners and part of the surface
+                            // is simply never swept.
+                            float2 dir = float2(sin(ra), cos(ra));
+                            float extent = abs(dir.x) + abs(dir.y);
+                            axis = dot(d2, dir) / max(extent, 1e-4) + 0.5;
+                        } else if (_EmScanStyle < 1.5) {
+                            axis = saturate(length(d2) * 2.0);
+                        } else {
+                            axis = frac((atan2(d2.y, d2.x) / 6.28318) + 0.5 + _EmScanAngle / 360.0);
+                        }
+                    }
+                    float tt = _Time.y * _EmScanSpeed;
+                    float pos = (_EmScanMode > 0.5) ? abs(frac(tt * 0.5) * 2.0 - 1.0) : frac(tt);
+                    pos = frac(pos + _EmScanPhase);
+                    // Loop wraps, so the distance has to wrap with it: without this the
+                    // band reaches the end and vanishes instead of carrying on off one
+                    // edge and re-entering from the other. Ping Pong bounces and must not
+                    // wrap, or it would jump at the turnaround.
+                    float dband = abs(axis - pos);
+                    if (_EmScanMode < 0.5) dband = min(dband, 1.0 - dband);
+                    float band = 1.0 - smoothstep(_EmScanWidth * 0.5, _EmScanWidth * 0.5 + _EmScanSoft + 1e-4, dband);
+                    bright *= lerp(_EmScanFloor, 1.0, band);
+                }
+
+                float3 emis = tex * col * bright * mask;
                 if (_EmissionAlbedoTint > 0.5) emis *= albedo;
                 return emis;
             }
@@ -350,6 +573,23 @@ Shader "Zetph/ZetsFancyEyeShader"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 float3 viewDir = normalize(_WorldSpaceCameraPos - i.wPos);
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz - i.wPos * _WorldSpaceLightPos0.w);
+                // Most worlds have no realtime directional light, leaving the surface lit
+                // by near-constant ambient. The probes still carry a direction in their
+                // first-order coefficients, so it is recovered and used to shape the eye.
+                half3 zProbeCol = 0; float zProbeAmt = 0;
+                if (_ProbeDirLight > 0.5) {
+                    float3 shDir = unity_SHAr.xyz * 0.3 + unity_SHAg.xyz * 0.59 + unity_SHAb.xyz * 0.11;
+                    float shLen = length(shDir);
+                    if (shLen > 1e-4) {
+                        float3 pDir = shDir / shLen;
+                        float realtime = saturate(dot(_LightColor0.rgb, half3(0.3, 0.59, 0.11)) * 4.0);
+                        zProbeAmt = (1.0 - realtime) * _ProbeDirStrength;
+                        if (zProbeAmt > 0.001) {
+                            lightDir = (realtime > 0.001) ? normalize(lerp(pDir, lightDir, realtime)) : pDir;
+                            zProbeCol = max(ShadeSH9(half4(pDir, 1)), 0.0);
+                        }
+                    }
+                }
                 float3 N = normalize(i.wNrm); float3 T = normalize(i.wTan.xyz); float3 B = cross(N, T) * (i.wTan.w * unity_WorldTransformParams.w);
                 if (facing < 0) { N = -N; T = -T; B = -B; }
                 ApplyEyeFX(i.uv, viewDir, lightDir, N, T, B);
@@ -382,6 +622,9 @@ Shader "Zetph/ZetsFancyEyeShader"
                 half3 dbgLTCGI = 0, dbgRefl = 0;
                 half3 vrslDiffuse = 0, vrslSpec = 0;
                 half3 ambient = ShadeSH9(half4(n, 1)) * ao;
+                // Probe light adds on top of ambient, so world brightness is kept
+                // and only the shaping changes.
+                ambient += zProbeCol * saturate(dot(n, lightDir)) * zProbeAmt;
                 half3 lvSpecAdd = 0;
                 #if defined(ZET_LV_OK)
                     float3 lvL0, lvL1r, lvL1g, lvL1b;
@@ -440,9 +683,17 @@ Shader "Zetph/ZetsFancyEyeShader"
                 float3 H = normalize(lightDir + viewDir);
                 // PBR direct specular (Realistic mode only): gives a plain eye a catchlight
                 if (_LightingModel > 0.5) {
-                    half specPow = exp2(lerp(4.0, 10.0, smoothness));  // 16..1024, tuned so the lobe is visible at default smoothness
-                    half specTerm = pow(saturate(dot(n, H)), specPow) * (specPow + 8.0) * 0.03;
-                    col.rgb += specCol * lightCol * specTerm * _SpecStrength * ramp;
+                    // GGX rather than Blinn-Phong: atten not ramp, since the BRDF carries
+                    // its own N.L and multiplying by the lambert ramp would square it.
+                    col.rgb += specCol * lightCol
+                             * ZetGGXSpecular(n, viewDir, lightDir, smoothness, half3(1, 1, 1))
+                             * _SpecStrength * atten;
+                    // The probe light gets a matching lobe, or a smooth eye in an
+                    // ambient-only world has shaped diffuse but no catchlight.
+                    if (zProbeAmt > 0.001)
+                        col.rgb += specCol * zProbeCol
+                                 * ZetGGXSpecular(n, viewDir, lightDir, smoothness, specCol)
+                                 * _SpecStrength * zProbeAmt;
                 }
                 if (_AnisoEnable > 0.5) {
                     float3 anisoDir = normalize((_AnisoDir > 0.5 ? B : T) + n * _AnisoShift);
@@ -494,7 +745,10 @@ Shader "Zetph/ZetsFancyEyeShader"
                 if (_WetnessEnable > 0.5) {
                     col.rgb += _WetnessColor.rgb * _WetnessMask.Sample(sampler_LinearClamp, i.uv).r * _WetnessStrength * max(ramp, 0.2);
                 }
-                col.rgb += EvalEmission(i.uv, albedo.rgb);
+                // Lit factor for the light-based option: how bright the world is making
+                // this surface, direct plus ambient, matching the main shader's measure.
+                half zLit = saturate(dot(baseLight, half3(0.299, 0.587, 0.114)));
+                col.rgb += EvalEmission(i.uv, albedo.rgb, zLit, i.wPos);
 //ifex _DebugView==0
                 // Returns before fog: a debug view should show the raw term, not
                 // the term after the world's fog has been mixed into it.
@@ -567,6 +821,23 @@ Shader "Zetph/ZetsFancyEyeShader"
 //endex
                 float3 viewDir = normalize(_WorldSpaceCameraPos - i.wPos);
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz - i.wPos * _WorldSpaceLightPos0.w);
+                // Most worlds have no realtime directional light, leaving the surface lit
+                // by near-constant ambient. The probes still carry a direction in their
+                // first-order coefficients, so it is recovered and used to shape the eye.
+                half3 zProbeCol = 0; float zProbeAmt = 0;
+                if (_ProbeDirLight > 0.5) {
+                    float3 shDir = unity_SHAr.xyz * 0.3 + unity_SHAg.xyz * 0.59 + unity_SHAb.xyz * 0.11;
+                    float shLen = length(shDir);
+                    if (shLen > 1e-4) {
+                        float3 pDir = shDir / shLen;
+                        float realtime = saturate(dot(_LightColor0.rgb, half3(0.3, 0.59, 0.11)) * 4.0);
+                        zProbeAmt = (1.0 - realtime) * _ProbeDirStrength;
+                        if (zProbeAmt > 0.001) {
+                            lightDir = (realtime > 0.001) ? normalize(lerp(pDir, lightDir, realtime)) : pDir;
+                            zProbeCol = max(ShadeSH9(half4(pDir, 1)), 0.0);
+                        }
+                    }
+                }
                 float3 N = normalize(i.wNrm); float3 T = normalize(i.wTan.xyz); float3 B = cross(N, T) * (i.wTan.w * unity_WorldTransformParams.w);
                 if (facing < 0) { N = -N; T = -T; B = -B; }
                 ApplyEyeFX(i.uv, viewDir, lightDir, N, T, B);
@@ -592,9 +863,17 @@ Shader "Zetph/ZetsFancyEyeShader"
                 fixed4 col = fixed4(albedo.rgb * (1.0 - metallic) * lightCol * ramp, 1.0);
                 float3 H = normalize(lightDir + viewDir);
                 if (_LightingModel > 0.5) {
-                    half specPow = exp2(lerp(4.0, 10.0, smoothness));  // 16..1024, tuned so the lobe is visible at default smoothness
-                    half specTerm = pow(saturate(dot(n, H)), specPow) * (specPow + 8.0) * 0.03;
-                    col.rgb += specCol * lightCol * specTerm * _SpecStrength * ramp;
+                    // GGX rather than Blinn-Phong: atten not ramp, since the BRDF carries
+                    // its own N.L and multiplying by the lambert ramp would square it.
+                    col.rgb += specCol * lightCol
+                             * ZetGGXSpecular(n, viewDir, lightDir, smoothness, half3(1, 1, 1))
+                             * _SpecStrength * atten;
+                    // The probe light gets a matching lobe, or a smooth eye in an
+                    // ambient-only world has shaped diffuse but no catchlight.
+                    if (zProbeAmt > 0.001)
+                        col.rgb += specCol * zProbeCol
+                                 * ZetGGXSpecular(n, viewDir, lightDir, smoothness, specCol)
+                                 * _SpecStrength * zProbeAmt;
                 }
                 if (_AnisoEnable > 0.5) {
                     float3 anisoDir = normalize((_AnisoDir > 0.5 ? B : T) + n * _AnisoShift);

@@ -125,6 +125,58 @@ namespace Zetph.FancyShader.EditorUI
         /// before the Thry-compatible tag existed only carry the old one, which
         /// leaves external tooling unable to see them.
         /// </summary>
+        /// <summary>
+        /// Marks every section enable toggle on the selected materials as animated.
+        ///
+        /// These are the properties people drive from a menu - Scan / Sweep, Blinking,
+        /// Light Based, the AudioLink switches - and unmarked they get baked to a
+        /// constant at lock time, so the toggle silently stops working. Marking them
+        /// through the inspector means right-clicking each header one at a time, which
+        /// is tedious across a dozen materials and impossible if the row does not
+        /// answer the click. This does the lot in one action.
+        /// </summary>
+        [MenuItem("Tools/ZetsFancyShader/Mark Section Toggles Animated")]
+        private static void MarkSectionToggles()
+        {
+            int materials = 0, flags = 0;
+
+            foreach (UnityEngine.Object o in Selection.objects)
+            {
+                var m = o as Material;
+                if (m == null || m.shader == null) continue;
+
+                var data = ZetUIData.Load(ZetShaderLocker.ResolveSourceShader(m) ?? m.shader);
+                if (data == null || data.groups == null) continue;
+
+                var names = new List<string>();
+                foreach (GroupDef g in data.groups)
+                {
+                    if (string.IsNullOrEmpty(g.toggle)) continue;
+                    if (!m.HasProperty(g.toggle)) continue;
+                    if (IsAnimated(m, g.toggle)) continue;
+                    names.Add(g.toggle);
+                }
+
+                if (names.Count == 0) continue;
+
+                Undo.RecordObject(m, "Mark Section Toggles Animated");
+
+                foreach (string name in names)
+                {
+                    m.SetOverrideTag(TagPrefix + name, "1");
+                    m.SetOverrideTag(ThryTag(name), "1");
+                    flags++;
+                }
+
+                EditorUtility.SetDirty(m);
+                materials++;
+            }
+
+            AssetDatabase.SaveAssets();
+            Debug.Log("[ZetsFancyShader] Marked " + flags + " section toggle(s) animated across "
+                      + materials + " material(s). Relock affected materials for it to take effect.");
+        }
+
         [MenuItem("Tools/ZetsFancyShader/Resync Animated Tags")]
         private static void ResyncTags()
         {

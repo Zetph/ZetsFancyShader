@@ -457,6 +457,12 @@ namespace Zetph.FancyShader.EditorUI
             // quadratic in project size.
             foreach (Shader orphan in orphans) DeleteIfOrphaned(orphan);
 
+            // Flush to disk. SetDirty alone leaves the shader assignment in memory
+            // only, so the next domain reload - entering play mode, recompiling a
+            // script - reloads the material from disk and the assignment is gone,
+            // leaving a material with no shader at all.
+            if (locked > 0) AssetDatabase.SaveAssets();
+
             return locked;
         }
 
@@ -472,6 +478,15 @@ namespace Zetph.FancyShader.EditorUI
 
         public static bool Lock(Material material, out string message)
         {
+            // Never generate or assign shader assets during a play-mode transition.
+            // AssetDatabase work there can be rolled back, which leaves the material
+            // pointing at a shader that never imported.
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                message = "Cannot lock while entering or in play mode.";
+                return false;
+            }
+
             PendingLock entry;
             if (!Prepare(material, out entry, out message)) return false;
 
@@ -487,6 +502,10 @@ namespace Zetph.FancyShader.EditorUI
             }
 
             Apply(entry, generated);
+
+            // Persist immediately: without this the assignment is lost on the next
+            // domain reload and the material comes back with no shader.
+            AssetDatabase.SaveAssets();
 
             if (entry.Previous != null && entry.Previous != generated)
                 DeleteIfOrphaned(entry.Previous);
@@ -624,6 +643,7 @@ namespace Zetph.FancyShader.EditorUI
             material.SetOverrideTag(LockedKeyTag, string.Empty);
 
             EditorUtility.SetDirty(material);
+            AssetDatabase.SaveAssets();
 
             if (previous != source)
                 DeleteIfOrphaned(previous);

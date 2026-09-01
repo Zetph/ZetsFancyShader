@@ -34,7 +34,27 @@ namespace Zetph.FancyShader.EditorUI
 
         public bool OnPreprocessAvatar(GameObject avatar)
         {
-            if (!Enabled || avatar == null) return true;
+            if (avatar == null) return true;
+
+            // Say so rather than silently doing nothing. This runs once per upload, and
+            // the setting lives in EditorPrefs, so it survives restarts with nothing on
+            // screen to say it is off - which is how an unlocked material reaches an
+            // upload without anyone noticing until it renders wrong in-world.
+            if (!Enabled)
+            {
+                Debug.LogWarning("[ZetsFancyShader] Lock On Upload is disabled, so materials were "
+                                 + "uploaded unlocked. Re-enable it under Tools > ZetsFancyShader > "
+                                 + "Lock On Upload.");
+                return true;
+            }
+
+            // Entering play mode runs this too: VRCFury's PlayModeTrigger invokes the
+            // whole VRChat preprocess pipeline so avatars behave in-editor. Locking
+            // there is both pointless and destructive - it writes to the project's
+            // shared materials rather than the play-mode clone, and creates shader
+            // assets during a domain transition where AssetDatabase work can be rolled
+            // back, leaving materials pointing at a shader that never imported.
+            if (EditorApplication.isPlayingOrWillChangePlaymode) return true;
 
             var seen = new HashSet<Material>();
             var targets = new List<Material>();
@@ -59,6 +79,9 @@ namespace Zetph.FancyShader.EditorUI
             // plus a full-project orphan sweep each time - which is most of what
             // made a pre-upload lock feel like a hang on a twenty-material avatar.
             int locked = ZetShaderLocker.LockMany(targets, failures);
+
+            if (locked == 0 && targets.Count == 0)
+                Debug.Log("[ZetsFancyShader] Lock On Upload: every material was already locked.");
 
             if (locked > 0)
             {
@@ -105,10 +128,15 @@ namespace Zetph.FancyShader.EditorUI
         [MenuItem("Tools/ZetsFancyShader/Lock On Upload")]
         private static void Toggle() { Enabled = !Enabled; }
 
+        // A validate function must return bool: it tells Unity whether the item can be
+        // clicked. Returning void left the item permanently greyed out, so the setting
+        // could be read but never changed - which is how Lock On Upload could sit
+        // switched off with no way to switch it back on.
         [MenuItem("Tools/ZetsFancyShader/Lock On Upload", true)]
-        private static void ToggleValidate()
+        private static bool ToggleValidate()
         {
             Menu.SetChecked("Tools/ZetsFancyShader/Lock On Upload", Enabled);
+            return true;
         }
     }
 }

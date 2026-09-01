@@ -1,6 +1,6 @@
 // ==============================================================================
 // ZetsFancyShader
-// Version: v0.6.1
+// Version: v0.6.2
 // Author: Zetph
 //
 // Welcome to the source code!
@@ -44,6 +44,7 @@ Shader "Zetph/ZetsFancyShader"
         [ToggleUI] [GroupToggle(engine_prox)] _ProximityFade ("Enable Camera Proximity Fade", Float) = 0
         [Group(engine_prox)] [ShowIf(_ProximityFade)] _ProxMin ("Fade Start Distance (m)", Float) = 0.2
         [Group(engine_prox)] [ShowIf(_ProximityFade)] _ProxMax ("Fade End Distance (m)", Float) = 0.6
+        [ToggleUI] [Group(engine_alenv)] _ALMasterEnable ("AudioLink Enabled", Float) = 1
         [ToggleUI] [GroupToggle(engine_alenv)] _ALEnvEnable ("Enable AudioLink Smoothing", Float) = 1
         [Group(engine_alenv)] [ShowIf(_ALEnvEnable)] _ALEnvRelease ("Release / Tail", Range(0, 1)) = 0.45
         [ToggleUI] [GroupToggle(engine_cc)] _UseColorChord ("Enable AudioLink ColorChord", Float) = 0
@@ -251,6 +252,8 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lighting)] _MaxBrightness ("Max Light Brightness", Range(0, 5)) = 1.0
         [Group(lighting)] _MinBrightness ("Min Light Brightness", Range(0, 1)) = 0.0
         [Group(lighting)] _GrayscaleLighting ("Grayscale Lighting", Range(0, 1)) = 0.0
+        [ToggleUI] [Group(lighting)] _ProbeDirLight ("Shade From Probes", Float) = 1
+        [Group(lighting)] [ShowIf(_ProbeDirLight)] _ProbeDirStrength ("Probe Shading Strength", Range(0, 2)) = 1
         [Group(lighting)] _ReceiveShadows ("Receive Casted Shadows", Range(0, 1)) = 1.0
         [Toggle(ZET_SSS)] [GroupToggle(lighting_sss)] _SSSEnable ("Enable Subsurface Scattering", Float) = 0
         [Group(lighting_sss)] [ShowIf(_SSSEnable)] _SSSMask ("SSS Mask", 2D) = "white" {}
@@ -347,13 +350,13 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Map ("Emission 0 Map", 2D) = "white" {}
         [HideInInspector] _HasEm0Map ("", Float) = 0
         [HDR] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Color ("Emission 0 Color", Color) = (0, 1, 1, 1)
-        [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Intensity ("Emission Intensity", Range(0, 10)) = 1
+        [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Intensity ("Emission Intensity", Range(0, 30)) = 1
         [ToggleUI] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Hue ("AL Hue Shift", Float) = 0
-        [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Mode ("Audio Mode", Float) = 0
-        [NoScaleOffset] [Group(emission_em0)] [ShowIf(_Em0Enable)] [ShowIf(_Em0Mode, 3)] _Em0PathTex ("Path Gradient (black = start)", 2D) = "black" {}
-        [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Base ("Brightness Base", Range(0, 2)) = 0.15
+        [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0Base ("Base Brightness (always on)", Range(0, 2)) = 0.15
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0EdgeGlow ("Edge Glow", Range(0, 4)) = 0
         [Group(emission_em0)] [ShowIf(_Em0Enable)] _Em0EdgePower ("Edge Sharpness", Range(0.5, 8)) = 3
+        [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0Mode ("Audio Mode", Float) = 0
+        [NoScaleOffset] [Group(emission_em0)] [ShowIf(_Em0Enable)] [ShowIf(_Em0Mode, 3)] _Em0PathTex ("Path Gradient (black = start)", 2D) = "black" {}
         [ToggleUI] [GroupToggle(emission_em0_em0al)] _Em0ALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0Band ("Primary AL Band", Float) = 0
         [Group(emission_em0_em0al)] [ShowIf(_Em0ALEnable)] _Em0AL ("AL Boost (reactive brightness)", Range(0, 4)) = 1.5
@@ -378,7 +381,12 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em0_em0blink)] [ShowIf(_Em0Blink)] _Em0BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em0_em0blink)] [ShowIf(_Em0Blink)] _Em0BlinkMin ("Blink Minimum", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(emission_em0_em0scan)] _Em0Scan ("Enable Scan / Sweep", Float) = 0
-        [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanDir ("Direction", Float) = 0
+        [Enum(UV, 0, Object Space, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanSpace ("Sweep Space", Float) = 0
+        [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 0)] _Em0ScanDir ("Direction", Float) = 0
+        [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] _Em0ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] _Em0ScanExtent ("Sweep Length (m)", Range(0.1, 4)) = 2
+        [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] _Em0ScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
+        [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanPhase ("Phase Offset", Range(-1, 1)) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanMode ("Motion", Float) = 0
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanSpeed ("Speed", Range(0, 10)) = 1
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanWidth ("Band Width", Range(0.02, 1)) = 0.15
@@ -391,13 +399,13 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Map ("Emission 1 Map", 2D) = "white" {}
         [HideInInspector] _HasEm1Map ("", Float) = 0
         [HDR] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Color ("Emission 1 Color", Color) = (0, 1, 1, 1)
-        [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Intensity ("Emission Intensity", Range(0, 10)) = 1
+        [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Intensity ("Emission Intensity", Range(0, 30)) = 1
         [ToggleUI] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Hue ("AL Hue Shift", Float) = 0
-        [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Mode ("Audio Mode", Float) = 0
-        [NoScaleOffset] [Group(emission_em1)] [ShowIf(_Em1Enable)] [ShowIf(_Em1Mode, 3)] _Em1PathTex ("Path Gradient (black = start)", 2D) = "black" {}
-        [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Base ("Brightness Base", Range(0, 2)) = 0.1
+        [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1Base ("Base Brightness (always on)", Range(0, 2)) = 0.1
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1EdgeGlow ("Edge Glow", Range(0, 4)) = 0
         [Group(emission_em1)] [ShowIf(_Em1Enable)] _Em1EdgePower ("Edge Sharpness", Range(0.5, 8)) = 3
+        [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1Mode ("Audio Mode", Float) = 0
+        [NoScaleOffset] [Group(emission_em1)] [ShowIf(_Em1Enable)] [ShowIf(_Em1Mode, 3)] _Em1PathTex ("Path Gradient (black = start)", 2D) = "black" {}
         [ToggleUI] [GroupToggle(emission_em1_em1al)] _Em1ALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1Band ("Primary AL Band", Float) = 0
         [Group(emission_em1_em1al)] [ShowIf(_Em1ALEnable)] _Em1AL ("AL Boost (reactive brightness)", Range(0, 4)) = 1.5
@@ -422,7 +430,12 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em1_em1blink)] [ShowIf(_Em1Blink)] _Em1BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em1_em1blink)] [ShowIf(_Em1Blink)] _Em1BlinkMin ("Blink Minimum", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(emission_em1_em1scan)] _Em1Scan ("Enable Scan / Sweep", Float) = 0
-        [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanDir ("Direction", Float) = 0
+        [Enum(UV, 0, Object Space, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanSpace ("Sweep Space", Float) = 0
+        [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 0)] _Em1ScanDir ("Direction", Float) = 0
+        [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] _Em1ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] _Em1ScanExtent ("Sweep Length (m)", Range(0.1, 4)) = 2
+        [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] _Em1ScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
+        [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanPhase ("Phase Offset", Range(-1, 1)) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanMode ("Motion", Float) = 0
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanSpeed ("Speed", Range(0, 10)) = 1
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanWidth ("Band Width", Range(0.02, 1)) = 0.15
@@ -435,13 +448,13 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Map ("Emission 2 Map", 2D) = "white" {}
         [HideInInspector] _HasEm2Map ("", Float) = 0
         [HDR] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Color ("Emission 2 Color", Color) = (1, 0, 1, 1)
-        [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Intensity ("Emission Intensity", Range(0, 10)) = 1
+        [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Intensity ("Emission Intensity", Range(0, 30)) = 1
         [ToggleUI] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Hue ("AL Hue Shift", Float) = 0
-        [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Mode ("Audio Mode", Float) = 0
-        [NoScaleOffset] [Group(emission_em2)] [ShowIf(_Em2Enable)] [ShowIf(_Em2Mode, 3)] _Em2PathTex ("Path Gradient (black = start)", 2D) = "black" {}
-        [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Base ("Brightness Base", Range(0, 2)) = 0.15
+        [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2Base ("Base Brightness (always on)", Range(0, 2)) = 0.15
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2EdgeGlow ("Edge Glow", Range(0, 4)) = 0
         [Group(emission_em2)] [ShowIf(_Em2Enable)] _Em2EdgePower ("Edge Sharpness", Range(0.5, 8)) = 3
+        [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2Mode ("Audio Mode", Float) = 0
+        [NoScaleOffset] [Group(emission_em2)] [ShowIf(_Em2Enable)] [ShowIf(_Em2Mode, 3)] _Em2PathTex ("Path Gradient (black = start)", 2D) = "black" {}
         [ToggleUI] [GroupToggle(emission_em2_em2al)] _Em2ALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2Band ("Primary AL Band", Float) = 0
         [Group(emission_em2_em2al)] [ShowIf(_Em2ALEnable)] _Em2AL ("AL Boost (reactive brightness)", Range(0, 4)) = 1.5
@@ -466,7 +479,12 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em2_em2blink)] [ShowIf(_Em2Blink)] _Em2BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em2_em2blink)] [ShowIf(_Em2Blink)] _Em2BlinkMin ("Blink Minimum", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(emission_em2_em2scan)] _Em2Scan ("Enable Scan / Sweep", Float) = 0
-        [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanDir ("Direction", Float) = 0
+        [Enum(UV, 0, Object Space, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanSpace ("Sweep Space", Float) = 0
+        [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 0)] _Em2ScanDir ("Direction", Float) = 0
+        [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] _Em2ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] _Em2ScanExtent ("Sweep Length (m)", Range(0.1, 4)) = 2
+        [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] _Em2ScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
+        [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanPhase ("Phase Offset", Range(-1, 1)) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanMode ("Motion", Float) = 0
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanSpeed ("Speed", Range(0, 10)) = 1
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanWidth ("Band Width", Range(0.02, 1)) = 0.15
@@ -479,13 +497,13 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Map ("Emission 3 Map", 2D) = "white" {}
         [HideInInspector] _HasEm3Map ("", Float) = 0
         [HDR] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Color ("Emission 3 Color", Color) = (1, 1, 0, 1)
-        [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Intensity ("Emission Intensity", Range(0, 10)) = 1
+        [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Intensity ("Emission Intensity", Range(0, 30)) = 1
         [ToggleUI] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Hue ("AL Hue Shift", Float) = 0
-        [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Mode ("Audio Mode", Float) = 0
-        [NoScaleOffset] [Group(emission_em3)] [ShowIf(_Em3Enable)] [ShowIf(_Em3Mode, 3)] _Em3PathTex ("Path Gradient (black = start)", 2D) = "black" {}
-        [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Base ("Brightness Base", Range(0, 2)) = 0.15
+        [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3Base ("Base Brightness (always on)", Range(0, 2)) = 0.15
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3EdgeGlow ("Edge Glow", Range(0, 4)) = 0
         [Group(emission_em3)] [ShowIf(_Em3Enable)] _Em3EdgePower ("Edge Sharpness", Range(0.5, 8)) = 3
+        [Enum(Pulse, 0, Sweep Up Body, 1, Center Out Pulse, 2, Gradient Path, 3)] [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3Mode ("Audio Mode", Float) = 0
+        [NoScaleOffset] [Group(emission_em3)] [ShowIf(_Em3Enable)] [ShowIf(_Em3Mode, 3)] _Em3PathTex ("Path Gradient (black = start)", 2D) = "black" {}
         [ToggleUI] [GroupToggle(emission_em3_em3al)] _Em3ALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3Band ("Primary AL Band", Float) = 0
         [Group(emission_em3_em3al)] [ShowIf(_Em3ALEnable)] _Em3AL ("AL Boost (reactive brightness)", Range(0, 4)) = 1.5
@@ -510,7 +528,12 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em3_em3blink)] [ShowIf(_Em3Blink)] _Em3BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em3_em3blink)] [ShowIf(_Em3Blink)] _Em3BlinkMin ("Blink Minimum", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(emission_em3_em3scan)] _Em3Scan ("Enable Scan / Sweep", Float) = 0
-        [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanDir ("Direction", Float) = 0
+        [Enum(UV, 0, Object Space, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanSpace ("Sweep Space", Float) = 0
+        [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 0)] _Em3ScanDir ("Direction", Float) = 0
+        [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] _Em3ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] _Em3ScanExtent ("Sweep Length (m)", Range(0.1, 4)) = 2
+        [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] _Em3ScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
+        [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanPhase ("Phase Offset", Range(-1, 1)) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanMode ("Motion", Float) = 0
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanSpeed ("Speed", Range(0, 10)) = 1
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanWidth ("Band Width", Range(0.02, 1)) = 0.15
@@ -754,6 +777,9 @@ Shader "Zetph/ZetsFancyShader"
         [Enum(Base Color, 0, ColorChord, 1, Random Per Star, 2)] [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarColorMode ("Star Color Mode", Float) = 0
         [HDR] [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarColor ("Star Base Color", Color) = (1, 1, 1, 1)
         [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarSaturation ("Star Color Saturation", Range(0, 3)) = 1.5
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarSatRange ("Saturation Variation", Range(0, 1)) = 0.3
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarValRange ("Brightness Variation", Range(0, 1)) = 0.4
+        [Group(specialfx_style_stars_staradv)] [ShowIf(_StarEnable)] _StarLayerFade ("Layer Depth Fade", Range(0, 1)) = 0.35
         [ToggleUI] [GroupToggle(specialfx_style_stars_staral)] [ShowIf(_StarEnable)] _StarALEnable ("Enable AudioLink Reactivity", Float) = 1
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_stars_staral)] [ShowIf(_StarALEnable)] _StarBand ("Primary AL Band", Float) = 2
         [Group(specialfx_style_stars_staral)] [ShowIf(_StarALEnable)] _StarAL ("Star AL Pop Boost (0-10)", Range(0, 10)) = 3.0
@@ -779,6 +805,7 @@ Shader "Zetph/ZetsFancyShader"
         [HDR] [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineColor ("Line Color", Color) = (0.6, 0.8, 1.0, 1)
         [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineStrength ("Line Brightness", Range(0, 4)) = 1
         [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineThickness ("Line Thickness", Range(0, 100)) = 25
+        [Group(specialfx_style_stars_lines)] [ShowIf(_StarLineEnable)] _StarLineThickVar ("Thickness Variation", Range(0, 1)) = 0.4
         [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineMaxLen ("Max Connection Length", Range(0, 100)) = 55
         [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineFade ("Length Falloff", Range(0, 100)) = 50
         [Group(specialfx_style_stars_lines)] [ShowIf(_StarEnable)] _StarLineDepthFade ("Depth Fade", Range(0, 100)) = 40
@@ -913,11 +940,15 @@ Shader "Zetph/ZetsFancyShader"
         [HDR] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterColor ("Sparkle Color", Color) = (1, 1, 1, 1)
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterMask ("Glitter Mask", 2D) = "white" {}
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterDensity ("Density", Range(0, 1)) = 0.5
+        [Enum(Dots, 0, Flakes, 1, Hexagons, 2)] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterShape ("Flake Shape", Float) = 0
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterSize ("Flake Size", Range(0, 1)) = 0.3
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] [ShowIf(_GlitterShape, 1, ge)] _GlitterFlakeRot ("Flake Rotation", Range(0, 1)) = 1
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] [ShowIf(_GlitterShape, 1, ge)] _GlitterAspect ("Flake Elongation", Range(0, 0.9)) = 0
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterBrightness ("Brightness", Range(0, 10)) = 2
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterAmount ("Sparkle Amount", Range(0, 1)) = 0.5
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterViewRange ("Viewable Angle", Range(0, 1)) = 0.3
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterSpeed ("Twinkle Speed", Range(0, 20)) = 6
+        [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterSpeedVar ("Twinkle Variation", Range(0, 1)) = 0.7
         [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterFlow ("Drift Direction (XY)", Vector) = (0, 0, 0, 0)
         [Enum(UV, 0, World Triplanar, 1)] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterProjection ("Projection", Float) = 0
         [ToggleUI] [Group(specialfx_style_glitter)] [ShowIf(_GlitterEnable)] _GlitterLit ("Lit by World Lighting", Float) = 0
@@ -1251,7 +1282,7 @@ Shader "Zetph/ZetsFancyShader"
             float _ProxMin;
             float _ProxMax;
             float _UseColorChord;
-            float _ALEnvEnable;
+            float _ALMasterEnable; float _ALEnvEnable;
             float _ALEnvRelease;
             float _VertALEnable;
             float _VertALTransEnable; float4 _VertALTransMin; float4 _VertALTransMax;
@@ -1284,7 +1315,7 @@ Shader "Zetph/ZetsFancyShader"
             float _BaseHueBand;
             float _MinBrightness;
             float _MaxBrightness;
-            float _GrayscaleLighting;
+            float _GrayscaleLighting; float _ProbeDirLight; float _ProbeDirStrength;
             float _ReceiveShadows;
             float _SSSEnable;
             float4 _SSSColor;
@@ -1432,8 +1463,8 @@ Shader "Zetph/ZetsFancyShader"
             // substitutes property names for literals everywhere except here.
             float _HasEm0Map; float _HasEm1Map; float _HasEm2Map; float _HasEm3Map;
             float _ReflStrength;
-            float _GlitterEnable; float4 _GlitterColor; float _GlitterDensity; float _GlitterSize; float _GlitterBrightness;
-            float _GlitterAmount; float _GlitterViewRange; float _GlitterSpeed; float4 _GlitterFlow; float _GlitterProjection;
+            float _GlitterEnable; float4 _GlitterColor; float _GlitterDensity; float _GlitterSize; float _GlitterShape; float _GlitterFlakeRot; float _GlitterAspect; float _GlitterBrightness;
+            float _GlitterAmount; float _GlitterViewRange; float _GlitterSpeed; float _GlitterSpeedVar; float4 _GlitterFlow; float _GlitterProjection;
             float _GlitterLit; float _GlitterALEnable; float _GlitterBand; float _GlitterAL;
             float _DecalsEnable;
             float _Decal0ScaleY; float _Decal0ScaleLock; float _Decal0RotSpeed; float _Decal0Symmetry;
@@ -1461,6 +1492,10 @@ Shader "Zetph/ZetsFancyShader"
             float _BreakCoreGlow;
             float4 _Em0Color;
             float4 _Em0Center;
+            float _Em0ScanSpace; float _Em0ScanExtent; float4 _Em0ScanAxis; float _Em0ScanOrigin; float _Em0ScanPhase;
+            float _Em1ScanSpace; float _Em1ScanExtent; float4 _Em1ScanAxis; float _Em1ScanOrigin; float _Em1ScanPhase;
+            float _Em2ScanSpace; float _Em2ScanExtent; float4 _Em2ScanAxis; float _Em2ScanOrigin; float _Em2ScanPhase;
+            float _Em3ScanSpace; float _Em3ScanExtent; float4 _Em3ScanAxis; float _Em3ScanOrigin; float _Em3ScanPhase;
             float _Em0Enable;
             float _Em0Hue;
             float _Em0Base;
@@ -1664,7 +1699,7 @@ Shader "Zetph/ZetsFancyShader"
             float _StarGlassWarp;
             float _StarBand;
             float _StarColorMode;
-            float _StarSaturation;
+            float _StarSaturation; float _StarSatRange; float _StarValRange; float _StarLayerFade; float _StarLineThickVar;
             float _NebulaColorMode;
             float4 _NebGradColor0; float4 _NebGradColor1; float4 _NebGradColor2; float4 _NebGradColor3;
             float _NebGradPos1; float _NebGradPos2;
@@ -1893,7 +1928,7 @@ Shader "Zetph/ZetsFancyShader"
             // add it on top of their own base amount.
             float ZetALSignal(float enable, float band, float multBand, float multAmt,
                               float addBand, float addAmt, float volBoost, float volAmt) {
-                if (enable < 0.5 || !AudioLinkIsAvailable()) return 0.0;
+                if (enable < 0.5 || _ALMasterEnable < 0.5 || !AudioLinkIsAvailable()) return 0.0;
                 float sig = ALEnv((uint)band);
                 sig *= (1.0 + ALEnv((uint)multBand) * multAmt);
                 sig += ALEnv((uint)addBand) * addAmt;
@@ -2139,6 +2174,47 @@ Shader "Zetph/ZetsFancyShader"
             // each layer offset by the view direction, so the surface reads as a tunnel
             // receding into the mesh. Extracted from the emission slots into its own
             // effect, since it is a distinct look rather than a mode of a glow layer.
+
+            // Physically based specular for the Realistic model. The old lobe was
+            // Blinn-Phong: a power of N.H with no Fresnel, no shadowing term and no
+            // energy normalisation. That gives a highlight blob and a lambert gradient
+            // and nothing at all toward the silhouette, which is what made curved
+            // surfaces read flat. GGX adds the two terms that carry form: Fresnel,
+            // which brightens grazing angles, and Smith visibility, which keeps rough
+            // surfaces from over-brightening.
+            half3 ZetGGXSpecular(float3 n, float3 viewDir, float3 lightDir, float smoothness, half3 F0)
+            {
+                float3 H = normalize(viewDir + lightDir);
+                float nl = saturate(dot(n, lightDir));
+                float nv = saturate(dot(n, viewDir));
+                float nh = saturate(dot(n, H));
+                float vh = saturate(dot(viewDir, H));
+                // Roughness floored so a mirror surface still resolves to a finite lobe.
+                float rough = max(1.0 - smoothness, 0.045);
+                float a = rough * rough;
+                float a2 = a * a;
+                // Trowbridge-Reitz (GGX) normal distribution.
+                float d = (nh * nh) * (a2 - 1.0) + 1.0;
+                float D = a2 / max(UNITY_PI * d * d, 1e-7);
+                // Smith height-correlated visibility, already including the 1/(4 nl nv).
+                float lv = nl * (nv * (1.0 - a) + a);
+                float ll = nv * (nl * (1.0 - a) + a);
+                float V = 0.5 / max(lv + ll, 1e-5);
+                // Schlick Fresnel: the term that lifts the edges and gives shape.
+                half3 F = F0 + (1.0 - F0) * pow(1.0 - vh, 5.0);
+                return D * V * F * nl;
+            }
+
+            // Fresnel weight for environment reflections, so they strengthen toward
+            // grazing angles instead of sitting at a flat strength everywhere.
+            half3 ZetEnvFresnel(float3 n, float3 viewDir, float smoothness, half3 F0)
+            {
+                float nv = saturate(dot(n, viewDir));
+                float rough = 1.0 - smoothness;
+                // Roughness-aware Fresnel: rough surfaces have a weaker edge response.
+                half3 Fr = max(half3(1.0 - rough, 1.0 - rough, 1.0 - rough), F0) - F0;
+                return F0 + Fr * pow(1.0 - nv, 5.0);
+            }
 
             // Applies the colour of the world's light to an emissive colour. Only the hue
             // carries over, not the brightness: brightness is Light-Based Emission's job
@@ -2457,7 +2533,7 @@ Shader "Zetph/ZetsFancyShader"
                 float alEnable; float multBand; float multAmt; float addBand; float addAmt; float volBoost; float volAmt;
                 float intensity; float edgeStrength; float edgePower; float lightBased; float minEmiss; float maxEmiss; float minLight; float maxLight;
                 float blinkOn; float blinkSpeed; float blinkMin;
-                float scanOn; float scanDir; float scanMode; float scanSpeed; float scanWidth; float scanSoft; float scanFloor; float scanPixels; float scanGlitch;
+                float scanOn; float scanDir; float scanSpace; float scanExtent; float3 scanAxis; float scanOrigin; float scanPhase; float scanMode; float scanSpeed; float scanWidth; float scanSoft; float scanFloor; float scanPixels; float scanGlitch;
             };
             half3 EvalEmissionSlot(EmSlot s, Texture2D maskTex, Texture2D mapTex, float hasMap, Texture2D pathTex,
                 float2 uv, float3 wPos, float3 N, float3 viewDir, float2 vT, float proxAlpha, bool alAvail, float litFactor)
@@ -2499,12 +2575,12 @@ Shader "Zetph/ZetsFancyShader"
                     // base + sig * boost, which is meant to push into HDR bloom.
                     sig = max(sig, 0.0);
                 }
-                // Emission map: an RGB texture that colours the glow per pixel, tinted by
-                // the slot colour. The mask still decides where the slot emits at all, so a
-                // map can carry the pattern while the mask carries the coverage.
-                // Emission map: RGB that colours the glow per pixel, tinted by the slot
-                // colour. The mask still decides where the slot emits, so a map can carry
-                // the pattern while the mask carries the coverage.
+                // Emission map: colours the glow per pixel and carries its own gradients,
+                // so the pattern reads as painted rather than as a flat stencil. It
+                // multiplies the slot colour, which means a dark map genuinely dims the
+                // layer - that is correct, and Emission Intensity is the lever for it.
+                // Normalising per pixel was tried and is worse: it forces every non-black
+                // pixel to full brightness and flattens the map's shading entirely.
                 half3 finalCol = s.baseColor;
                 if (hasMap > 0.5) finalCol *= mapTex.Sample(sampler_LinearClamp, uv).rgb;
                 // hue phase uses the clamped signal so overdriven audio does not
@@ -2520,19 +2596,44 @@ Shader "Zetph/ZetsFancyShader"
                     bright *= lerp(s.blinkMin, 1.0, sin(_Time.y * s.blinkSpeed) * 0.5 + 0.5);
                 }
                 if (s.scanOn > 0.5) {
-                    // axis the band travels along: vertical -> uv.y, horizontal -> uv.x
-                    float axis = (s.scanDir < 0.5) ? uv.y : uv.x;
+                    // Axis the band travels along. UV space follows the unwrap, which does
+                    // not correspond to the body's own axes, so an object-space option is
+                    // offered for sweeps that should cross the avatar itself: up the body,
+                    // side to side, or front to back regardless of how it is unwrapped.
+                    float axis;
+                    if (s.scanSpace > 0.5) {
+                        // Free direction rather than a fixed axis, so the band can cross the
+                        // body any way round: up, side to side, back to front, or a diagonal.
+                        // Measured from the avatar's own origin in metres rather than in
+                        // this mesh's UVs. Several materials set to the same axis, start
+                        // and length then share one ruler, so a band crosses the whole
+                        // avatar as a single wave instead of each mesh sweeping its own
+                        // space at its own apparent speed.
+                        float3 op = mul(unity_WorldToObject, float4(wPos, 1.0)).xyz;
+                        float3 ax = s.scanAxis;
+                        if (dot(ax, ax) < 1e-6) ax = float3(0, 1, 0);
+                        float a = dot(op, normalize(ax));
+                        axis = (a - s.scanOrigin) / max(s.scanExtent, 0.001);
+                    } else {
+                        axis = (s.scanDir < 0.5) ? uv.y : uv.x;
+                    }
                     // retro pixelation: snap the axis to a block grid so the band reads chunky
                     if (s.scanPixels >= 1.0) axis = (floor(axis * s.scanPixels) + 0.5) / s.scanPixels;
                     float tt = _Time.y * s.scanSpeed;
                     // Loop = saw 0..1 wrap; Ping-Pong = triangle 0..1..0 (scanner bounce)
                     float pos = (s.scanMode > 0.5) ? abs(frac(tt * 0.5) * 2.0 - 1.0) : frac(tt);
+                    pos = frac(pos + s.scanPhase);
+                    // Loop wraps its position, so the distance must wrap with it, or the
+                    // band reaches the end and vanishes instead of carrying on off one
+                    // edge and re-entering from the other. Ping Pong bounces and must not
+                    // wrap, or it would jump at the turnaround.
                     float d = abs(axis - pos);
+                    if (s.scanMode < 0.5) d = min(d, 1.0 - d);
                     float band = 1.0 - smoothstep(s.scanWidth * 0.5, s.scanWidth * 0.5 + s.scanSoft + 1e-4, d);
                     // glitch: punch random pixels out of the band, refreshed ~8x/sec
                     if (s.scanGlitch > 0.001) {
                         float gpx = (s.scanPixels >= 1.0) ? s.scanPixels : 64.0;
-                        float other = (s.scanDir < 0.5) ? uv.x : uv.y;
+                        float other = (s.scanDir < 0.5) ? uv.x : uv.y;   // glitch cells stay in UV
                         float2 cell = floor(float2(other, axis) * gpx);
                         band *= step(s.scanGlitch, hash2(cell + floor(tt * 8.0)));
                     }
@@ -2720,7 +2821,10 @@ Shader "Zetph/ZetsFancyShader"
                 float3 center   = (i[0].objPos.xyz + i[1].objPos.xyz + i[2].objPos.xyz) / 3.0;
                 float3 faceNrm  = normalize(i[0].normal + i[1].normal + i[2].normal);
                 float2 uvCenter = (i[0].uv + i[1].uv + i[2].uv) / 3.0;
-                bool alAvail = AudioLinkIsAvailable();
+                // Master switch: every AudioLink read in this pass is guarded by alAvail,
+                // so clearing it here silences the lot. A plain float, so it animates from
+                // a menu without touching each effect's own toggle.
+                bool alAvail = AudioLinkIsAvailable() && _ALMasterEnable > 0.5;
                 float rnd = 0, t = 0, heat = 0;
                 if (_BreakEnable > 0.5) {
                     float mask = 0;
@@ -3033,7 +3137,10 @@ Shader "Zetph/ZetsFancyShader"
                 if (_RetroEnable > 0.5 && _RetroAffine > 0.5) i.uv = i.uvAffine;
                 i.uv = ZetMorphUV(i.uv);
                 if (_RetroEnable > 0.5 && _RetroPixelate > 0.5) i.uv = (floor(i.uv * _RetroPixelRes) + 0.5) / _RetroPixelRes;
-                bool alAvail = AudioLinkIsAvailable();
+                // Master switch: every AudioLink read in this pass is guarded by alAvail,
+                // so clearing it here silences the lot. A plain float, so it animates from
+                // a menu without touching each effect's own toggle.
+                bool alAvail = AudioLinkIsAvailable() && _ALMasterEnable > 0.5;
                 if (i.fx.w > 0.5) { 
                     float rPhase = i.fx.w - 1.0;
             
@@ -3330,8 +3437,32 @@ Shader "Zetph/ZetsFancyShader"
                 half ao = lerp(1.0, aoRaw, _OcclusionStrength);
                 
                 float dither = (frac(52.9829189 * frac(dot(i.pos.xy, float2(0.06711056, 0.00583715)))) - 0.5) * _ShadowDither;
-                float3 H = normalize(_WorldSpaceLightPos0.xyz + viewDir);
-                float ndl = dot(n, _WorldSpaceLightPos0.xyz);
+                // Most VRChat worlds have no realtime directional light, and with none
+                // the surface is lit purely by ambient, which is close to constant across
+                // the mesh: that is what makes an avatar look flat. The probes still carry
+                // a direction in their first-order coefficients, so it is recovered here
+                // and used to shade the surface. Where a real light exists it takes over
+                // and this contributes nothing.
+                float3 zLightDir = _WorldSpaceLightPos0.xyz;
+                half3  zProbeCol = 0;
+                float  zProbeAmt = 0;
+                if (_ProbeDirLight > 0.5) {
+                    float3 shDir = unity_SHAr.xyz * 0.3 + unity_SHAg.xyz * 0.59 + unity_SHAb.xyz * 0.11;
+                    float shLen = length(shDir);
+                    if (shLen > 1e-4) {
+                        float3 pDir = shDir / shLen;
+                        // Blend toward the probe direction only in proportion to how weak
+                        // the realtime light is, so lit worlds are left alone.
+                        float realtime = saturate(dot(_LightColor0.rgb, half3(0.3, 0.59, 0.11)) * 4.0);
+                        zProbeAmt = (1.0 - realtime) * _ProbeDirStrength;
+                        if (zProbeAmt > 0.001) {
+                            zLightDir = (realtime > 0.001) ? normalize(lerp(pDir, _WorldSpaceLightPos0.xyz, realtime)) : pDir;
+                            zProbeCol = max(ShadeSH9(half4(pDir, 1)), 0.0);
+                        }
+                    }
+                }
+                float3 H = normalize(zLightDir + viewDir);
+                float ndl = dot(n, zLightDir);
                 #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN)
                     float atten = 1.0;
                 #else
@@ -3506,7 +3637,16 @@ Shader "Zetph/ZetsFancyShader"
 //endex
                 direct += vrslDiffuse;
 
-                fixed4 col = fixed4(diffuseCol * (direct + ambient + sssAdd), 1.0);
+                // The probe light shades on top of ambient rather than replacing it, so a
+                // world's overall brightness is preserved and only its shaping changes.
+                half3 zProbeDirect = zProbeCol * saturate(ndl) * zProbeAmt;
+                // A specular lobe from the same direction, otherwise smooth surfaces get
+                // shaped diffuse but no highlight and still read oddly flat.
+                half3 zProbeSpec = (_LightingModel > 0.5 && _LightingModel < 1.5)
+                                 ? zProbeCol * ZetGGXSpecular(n, viewDir, zLightDir, smoothness, specCol) * zProbeAmt
+                                 : half3(0, 0, 0);
+                fixed4 col = fixed4(diffuseCol * (direct + ambient + zProbeDirect + sssAdd), 1.0);
+                col.rgb += zProbeSpec;
                 col.rgb += lvSpecAdd;
                 col.rgb += vrslSpec * specCol;
                 half spec = pow(saturate(dot(n, H)), exp2(smoothness * 9.0 + 1.0));
@@ -3539,7 +3679,12 @@ Shader "Zetph/ZetsFancyShader"
                 if (_LightingModel < 0.5) {
                     col.rgb += specColT * lightCol * smoothstep(0.5 - _SpecEdge, 0.5 + _SpecEdge, spec) * ramp;
                 } else if (_LightingModel < 1.5) {
-                    col.rgb += specColT * lightCol * spec * ramp;
+                    // Realistic: full GGX. atten rather than ramp, because the BRDF
+                    // already carries its own N.L term and multiplying by the lambert
+                    // ramp as well would square it and darken the surface.
+                    col.rgb += specColT * lightCol
+                             * ZetGGXSpecular(n, viewDir, zLightDir, smoothness, half3(1, 1, 1))
+                             * atten;
                 } else {
                     // Charlie sheen (Estevez-Kulla NDF, Neubelt-Pettineo visibility):
                     // an inverted-Gaussian lobe that peaks at grazing angles - the
@@ -3603,8 +3748,14 @@ Shader "Zetph/ZetsFancyShader"
                 // Metals keep full reflection; non-metals fade with roughness.
                 half reflStrength = _ReflStrength * lerp(smoothness, 1.0, metallic);
                 if (_ReflTintOn > 0.5) reflection *= _ReflTint.rgb;
-                dbgRefl = reflection * specCol * ao * reflStrength;
-                col.rgb += reflection * specCol * ao * reflStrength;
+                // Fresnel-weight the environment in the realistic model, so reflections
+                // ramp up at glancing angles the way a real surface does. Toon and cloth
+                // keep the flat weighting, which suits their stylised shading.
+                half3 reflW = (_LightingModel > 0.5 && _LightingModel < 1.5)
+                            ? ZetEnvFresnel(n, viewDir, smoothness, specCol)
+                            : specCol;
+                dbgRefl = reflection * reflW * ao * reflStrength;
+                col.rgb += reflection * reflW * ao * reflStrength;
                 }
                 #if defined(ZET_LTCGI)
                 // Purely additive, so the off-path needs nothing but the branch.
@@ -3637,7 +3788,7 @@ Shader "Zetph/ZetsFancyShader"
                 s0.mode = _Em0Mode; s0.pulseScale = _Em0PulseScale; s0.projCenter = _Em0Center.xy; s0.alEnable = _Em0ALEnable; s0.multBand = _Em0MultBand; s0.multAmt = _Em0MultAmt; s0.addBand = _Em0AddBand; s0.addAmt = _Em0AddAmt; s0.volBoost = _Em0VolBoost; s0.volAmt = _Em0VolAmt;
                 s0.intensity = _Em0Intensity; s0.edgeStrength = _Em0EdgeGlow; s0.edgePower = _Em0EdgePower; s0.lightBased = _Em0LightBased; s0.minEmiss = _Em0MinEmiss; s0.maxEmiss = _Em0MaxEmiss;
                 s0.minLight = _Em0MinLight; s0.maxLight = _Em0MaxLight; s0.blinkOn = _Em0Blink; s0.blinkSpeed = _Em0BlinkSpeed; s0.blinkMin = _Em0BlinkMin;
-                s0.scanOn = _Em0Scan; s0.scanDir = _Em0ScanDir; s0.scanMode = _Em0ScanMode; s0.scanSpeed = _Em0ScanSpeed; s0.scanWidth = _Em0ScanWidth; s0.scanSoft = _Em0ScanSoft; s0.scanFloor = _Em0ScanFloor; s0.scanPixels = _Em0ScanPixels; s0.scanGlitch = _Em0ScanGlitch;
+                s0.scanOn = _Em0Scan; s0.scanDir = _Em0ScanDir; s0.scanSpace = _Em0ScanSpace; s0.scanExtent = _Em0ScanExtent; s0.scanAxis = _Em0ScanAxis.xyz; s0.scanOrigin = _Em0ScanOrigin; s0.scanPhase = _Em0ScanPhase; s0.scanMode = _Em0ScanMode; s0.scanSpeed = _Em0ScanSpeed; s0.scanWidth = _Em0ScanWidth; s0.scanSoft = _Em0ScanSoft; s0.scanFloor = _Em0ScanFloor; s0.scanPixels = _Em0ScanPixels; s0.scanGlitch = _Em0ScanGlitch;
                 // Dissolve burn edge. Computed further up alongside the clip, but never
                 // added to the output, so the glow could not appear however wide the
                 // edge was set. Added here with the other emissive contributions.
@@ -3657,7 +3808,7 @@ Shader "Zetph/ZetsFancyShader"
                 s1.mode = _Em1Mode; s1.pulseScale = _Em1PulseScale; s1.projCenter = _Em1Center.xy; s1.alEnable = _Em1ALEnable; s1.multBand = _Em1MultBand; s1.multAmt = _Em1MultAmt; s1.addBand = _Em1AddBand; s1.addAmt = _Em1AddAmt; s1.volBoost = _Em1VolBoost; s1.volAmt = _Em1VolAmt;
                 s1.intensity = _Em1Intensity; s1.edgeStrength = _Em1EdgeGlow; s1.edgePower = _Em1EdgePower; s1.lightBased = _Em1LightBased; s1.minEmiss = _Em1MinEmiss; s1.maxEmiss = _Em1MaxEmiss;
                 s1.minLight = _Em1MinLight; s1.maxLight = _Em1MaxLight; s1.blinkOn = _Em1Blink; s1.blinkSpeed = _Em1BlinkSpeed; s1.blinkMin = _Em1BlinkMin;
-                s1.scanOn = _Em1Scan; s1.scanDir = _Em1ScanDir; s1.scanMode = _Em1ScanMode; s1.scanSpeed = _Em1ScanSpeed; s1.scanWidth = _Em1ScanWidth; s1.scanSoft = _Em1ScanSoft; s1.scanFloor = _Em1ScanFloor; s1.scanPixels = _Em1ScanPixels; s1.scanGlitch = _Em1ScanGlitch;
+                s1.scanOn = _Em1Scan; s1.scanDir = _Em1ScanDir; s1.scanSpace = _Em1ScanSpace; s1.scanExtent = _Em1ScanExtent; s1.scanAxis = _Em1ScanAxis.xyz; s1.scanOrigin = _Em1ScanOrigin; s1.scanPhase = _Em1ScanPhase; s1.scanMode = _Em1ScanMode; s1.scanSpeed = _Em1ScanSpeed; s1.scanWidth = _Em1ScanWidth; s1.scanSoft = _Em1ScanSoft; s1.scanFloor = _Em1ScanFloor; s1.scanPixels = _Em1ScanPixels; s1.scanGlitch = _Em1ScanGlitch;
                 col.rgb += ZetLightHarmony(EvalEmissionSlot(s1, _Em1Mask, _Em1Map, _HasEm1Map, _Em1PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em1Harmony, _Em1HarmonyAmt, _Em1HarmonyComp, _Em1HarmonyPurity);
                 #endif
                 #if defined(ZET_EM2)
@@ -3666,7 +3817,7 @@ Shader "Zetph/ZetsFancyShader"
                 s2.mode = _Em2Mode; s2.pulseScale = _Em2PulseScale; s2.projCenter = _Em2Center.xy; s2.alEnable = _Em2ALEnable; s2.multBand = _Em2MultBand; s2.multAmt = _Em2MultAmt; s2.addBand = _Em2AddBand; s2.addAmt = _Em2AddAmt; s2.volBoost = _Em2VolBoost; s2.volAmt = _Em2VolAmt;
                 s2.intensity = _Em2Intensity; s2.edgeStrength = _Em2EdgeGlow; s2.edgePower = _Em2EdgePower; s2.lightBased = _Em2LightBased; s2.minEmiss = _Em2MinEmiss; s2.maxEmiss = _Em2MaxEmiss;
                 s2.minLight = _Em2MinLight; s2.maxLight = _Em2MaxLight; s2.blinkOn = _Em2Blink; s2.blinkSpeed = _Em2BlinkSpeed; s2.blinkMin = _Em2BlinkMin;
-                s2.scanOn = _Em2Scan; s2.scanDir = _Em2ScanDir; s2.scanMode = _Em2ScanMode; s2.scanSpeed = _Em2ScanSpeed; s2.scanWidth = _Em2ScanWidth; s2.scanSoft = _Em2ScanSoft; s2.scanFloor = _Em2ScanFloor; s2.scanPixels = _Em2ScanPixels; s2.scanGlitch = _Em2ScanGlitch;
+                s2.scanOn = _Em2Scan; s2.scanDir = _Em2ScanDir; s2.scanSpace = _Em2ScanSpace; s2.scanExtent = _Em2ScanExtent; s2.scanAxis = _Em2ScanAxis.xyz; s2.scanOrigin = _Em2ScanOrigin; s2.scanPhase = _Em2ScanPhase; s2.scanMode = _Em2ScanMode; s2.scanSpeed = _Em2ScanSpeed; s2.scanWidth = _Em2ScanWidth; s2.scanSoft = _Em2ScanSoft; s2.scanFloor = _Em2ScanFloor; s2.scanPixels = _Em2ScanPixels; s2.scanGlitch = _Em2ScanGlitch;
                 col.rgb += ZetLightHarmony(EvalEmissionSlot(s2, _Em2Mask, _Em2Map, _HasEm2Map, _Em2PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em2Harmony, _Em2HarmonyAmt, _Em2HarmonyComp, _Em2HarmonyPurity);
                 #endif
                 #if defined(ZET_EM3)
@@ -3675,7 +3826,7 @@ Shader "Zetph/ZetsFancyShader"
                 s3.mode = _Em3Mode; s3.pulseScale = _Em3PulseScale; s3.projCenter = _Em3Center.xy; s3.alEnable = _Em3ALEnable; s3.multBand = _Em3MultBand; s3.multAmt = _Em3MultAmt; s3.addBand = _Em3AddBand; s3.addAmt = _Em3AddAmt; s3.volBoost = _Em3VolBoost; s3.volAmt = _Em3VolAmt;
                 s3.intensity = _Em3Intensity; s3.edgeStrength = _Em3EdgeGlow; s3.edgePower = _Em3EdgePower; s3.lightBased = _Em3LightBased; s3.minEmiss = _Em3MinEmiss; s3.maxEmiss = _Em3MaxEmiss;
                 s3.minLight = _Em3MinLight; s3.maxLight = _Em3MaxLight; s3.blinkOn = _Em3Blink; s3.blinkSpeed = _Em3BlinkSpeed; s3.blinkMin = _Em3BlinkMin;
-                s3.scanOn = _Em3Scan; s3.scanDir = _Em3ScanDir; s3.scanMode = _Em3ScanMode; s3.scanSpeed = _Em3ScanSpeed; s3.scanWidth = _Em3ScanWidth; s3.scanSoft = _Em3ScanSoft; s3.scanFloor = _Em3ScanFloor; s3.scanPixels = _Em3ScanPixels; s3.scanGlitch = _Em3ScanGlitch;
+                s3.scanOn = _Em3Scan; s3.scanDir = _Em3ScanDir; s3.scanSpace = _Em3ScanSpace; s3.scanExtent = _Em3ScanExtent; s3.scanAxis = _Em3ScanAxis.xyz; s3.scanOrigin = _Em3ScanOrigin; s3.scanPhase = _Em3ScanPhase; s3.scanMode = _Em3ScanMode; s3.scanSpeed = _Em3ScanSpeed; s3.scanWidth = _Em3ScanWidth; s3.scanSoft = _Em3ScanSoft; s3.scanFloor = _Em3ScanFloor; s3.scanPixels = _Em3ScanPixels; s3.scanGlitch = _Em3ScanGlitch;
                 col.rgb += ZetLightHarmony(EvalEmissionSlot(s3, _Em3Mask, _Em3Map, _HasEm3Map, _Em3PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em3Harmony, _Em3HarmonyAmt, _Em3HarmonyComp, _Em3HarmonyPurity);
                 #endif
                 col.rgb += decalEmiss;
@@ -3926,10 +4077,42 @@ Shader "Zetph/ZetsFancyShader"
                         float2 r2 = hash2D(cell);
                         float r1 = hash2D(cell + 31.7).x;
                         float2 fp = frac(grid) - r2;
-                        float flake = 1.0 - smoothstep(0.0, _GlitterSize * 0.5 + 0.03, length(fp));
+                        // Shape of each flake. A round dot is a radial distance; a square is a
+                        // box distance, and a diamond the same box rotated 45 degrees. Real
+                        // glitter is cut flakes rather than points, so each one also gets its
+                        // own rotation, otherwise a field of squares looks like a tiled grid.
+                        // Shape of each flake. A dot is a radial distance; a square is a box
+                        // distance; a hexagon is the box distance clipped against a second
+                        // pair of edges at 60 degrees, which is the shape real cut glitter
+                        // actually is. Each flake takes its own rotation, since a field of
+                        // aligned polygons reads as a tiled grid rather than scattered specks.
+                        float fdist;
+                        if (_GlitterShape < 0.5) {
+                            fdist = length(fp);
+                        } else {
+                            float fa = r1 * 6.28318 * _GlitterFlakeRot;
+                            float fc = cos(fa), fs = sin(fa);
+                            float2 rp = float2(fp.x * fc - fp.y * fs, fp.x * fs + fp.y * fc);
+                            // Elongation stretches one axis, turning flakes into shards.
+                            rp.x /= max(1.0 - _GlitterAspect, 0.1);
+                            rp = abs(rp);
+                            fdist = (_GlitterShape < 1.5)
+                                  ? max(rp.x, rp.y)
+                                  : max(rp.x * 0.86602 + rp.y * 0.5, rp.y);
+                        }
+                        float flake = 1.0 - smoothstep(0.0, _GlitterSize * 0.5 + 0.03, fdist);
                         float3 fn = normalize(n + (float3(r2, r1) * 2.0 - 1.0));
                         float lobe = pow(saturate(dot(fn, viewDir)), lerp(150.0, 3.0, saturate(_GlitterViewRange)));
-                        float twRaw = sin(_Time.y * _GlitterSpeed + r1 * 6.28318) * 0.5 + 0.5;
+                        // Every flake previously shared one frequency and differed only in
+                        // phase. Identical sine waves offset from each other light up in a
+                        // fixed repeating order, which reads as a wave sweeping across the
+                        // surface rather than as scattered glinting. Giving each flake its
+                        // own rate breaks the pattern, the way the constellation's stars
+                        // each drift at their own speed. A second hash is used so the rate
+                        // is not tied to the rotation, or shape and timing would correlate.
+                        float twHash = hash2D(cell + 71.3).x;
+                        float twFreq = _GlitterSpeed * lerp(1.0, 0.25 + twHash * 1.75, _GlitterSpeedVar);
+                        float twRaw = sin(_Time.y * twFreq + r1 * 6.28318) * 0.5 + 0.5;
                         float tw = smoothstep(1.0 - _GlitterAmount, 1.0, twRaw);
                         float spark = flake * lobe * tw;
                         float gAL = (_GlitterALEnable > 0.5 && alAvail) ? (1.0 + ALEnv((uint)_GlitterBand) * _GlitterAL) : 1.0;
@@ -4106,7 +4289,14 @@ Shader "Zetph/ZetsFancyShader"
                             half3 finalStarColor = _StarColor.rgb;
                             if (_StarColorMode == 1) finalStarColor = c_star;
                             else if (_StarColorMode == 2) finalStarColor = hueShift(half3(1.0, 0.2, 0.2), starHash * 6.28); 
-                            finalStarColor = max(0.0, lerp(dot(finalStarColor, half3(0.299, 0.587, 0.114)).xxx, finalStarColor, _StarSaturation));
+                            // Per-star saturation and brightness drawn from a range rather than
+                            // one value: a field where every star is identical reads as a
+                            // pattern, and the variation is what makes it look like a sky.
+                            float satJ = _StarSaturation * (1.0 - _StarSatRange * hash2(float2(starHash, 3.7)));
+                            finalStarColor = max(0.0, lerp(dot(finalStarColor, half3(0.299, 0.587, 0.114)).xxx, finalStarColor, satJ));
+                            finalStarColor *= 1.0 - _StarValRange * hash2(float2(starHash, 8.1));
+                            // Deeper parallax layers dim, so the field reads as having depth.
+                            finalStarColor *= lerp(1.0, 1.0 / depth, _StarLayerFade);
                             // Constellation lines: link this cell's star to neighbours in
                             // this layer's own 3x3, so both ends stay in the window and the
                             // link is never clipped. Depth comes from the layers themselves,
@@ -4122,7 +4312,8 @@ Shader "Zetph/ZetsFancyShader"
                                     float tt3 = saturate(dot(volP - volStar, ab3) / dot(ab3, ab3));
                                     float dPerp3 = length(volP - (volStar + ab3 * tt3));
                                     float taper3 = pow(abs(tt3 - 0.5) * 2.0, 1.6);
-                                    float w3 = lerp(_StarLineThickness * 0.0006, _StarLineThickness * 0.0014, taper3);
+                                    float tv3 = 1.0 - _StarLineThickVar * hash2(float2(starHash, 19.3));
+                                    float w3 = lerp(_StarLineThickness * 0.0006, _StarLineThickness * 0.0014, taper3) * tv3;
                                     float core3 = 1.0 - smoothstep(w3 * 0.2, w3, dPerp3);
                                     float fade3 = smoothstep(lmax3, lmax3 * 0.3, llen3);
                                     half3 lc3 = (_StarLineColorMode > 0.5) ? finalStarColor : _StarLineColor.rgb;
@@ -4130,7 +4321,9 @@ Shader "Zetph/ZetsFancyShader"
                                 }
                             }
                             else if (_StarLineEnable > 0.5 && starHash >= 0.5) {
-                                float lth    = _StarLineThickness * 0.0003 + 0.0004;
+                                // Per-link thickness variety, so the web does not look drawn with one pen.
+                                float lth    = (_StarLineThickness * 0.0003 + 0.0004)
+                                             * (1.0 - _StarLineThickVar * hash2(float2(starHash, 19.3)));
                                 float lmaxL  = _StarLineMaxLen * 0.02 + 0.2;
                                 float lfadeS = lerp(lmaxL, lmaxL * 0.3, saturate(_StarLineFade * 0.01));
                                 float lineAmt = 0;
@@ -4450,7 +4643,10 @@ Shader "Zetph/ZetsFancyShader"
                 float3 center   = (i[0].objPos.xyz + i[1].objPos.xyz + i[2].objPos.xyz) / 3.0;
                 float3 faceNrm  = normalize(i[0].normal + i[1].normal + i[2].normal);
                 float2 uvCenter = (i[0].uv + i[1].uv + i[2].uv) / 3.0;
-                bool alAvail = AudioLinkIsAvailable();
+                // Master switch: every AudioLink read in this pass is guarded by alAvail,
+                // so clearing it here silences the lot. A plain float, so it animates from
+                // a menu without touching each effect's own toggle.
+                bool alAvail = AudioLinkIsAvailable() && _ALMasterEnable > 0.5;
                 float rnd = 0, t = 0, heat = 0;
                 if (_BreakEnable > 0.5) {
                     float mask = 0;
@@ -4556,7 +4752,10 @@ Shader "Zetph/ZetsFancyShader"
                 if (_DebugView > 0.5) return fixed4(0, 0, 0, 0);
 //endex
                 float3 viewDir = normalize(_WorldSpaceCameraPos - i.wPos);
-                bool alAvail = AudioLinkIsAvailable();
+                // Master switch: every AudioLink read in this pass is guarded by alAvail,
+                // so clearing it here silences the lot. A plain float, so it animates from
+                // a menu without touching each effect's own toggle.
+                bool alAvail = AudioLinkIsAvailable() && _ALMasterEnable > 0.5;
                 if (i.fx.w > 0.5) return float4(0,0,0,1); 
             #if defined(ZET_DISSOLVE)
                 if (_DissolveEnable > 0.5) {
@@ -4728,7 +4927,11 @@ Shader "Zetph/ZetsFancyShader"
                 if (_LightingModel < 0.5) {
                     col.rgb += specCol * lightCol * smoothstep(0.5 - _SpecEdge, 0.5 + _SpecEdge, spec) * ramp;
                 } else if (_LightingModel < 1.5) {
-                    col.rgb += specCol * lightCol * spec * ramp;
+                    // Same GGX as the base pass, so a surface lit by several lights
+                    // shades consistently rather than switching model per light.
+                    col.rgb += specCol * lightCol
+                             * ZetGGXSpecular(n, viewDir, lightDir, smoothness, half3(1, 1, 1))
+                             * atten;
                 } else {
                     // Charlie sheen (Estevez-Kulla NDF, Neubelt-Pettineo visibility):
                     // an inverted-Gaussian lobe that peaks at grazing angles - the
@@ -4837,7 +5040,10 @@ Shader "Zetph/ZetsFancyShader"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 ZetViewVisClip();
                 if (_RetroEnable > 0.5 && _RetroPixelate > 0.5) i.uv = (floor(i.uv * _RetroPixelRes) + 0.5) / _RetroPixelRes;
-                bool alAvail = AudioLinkIsAvailable();
+                // Master switch: every AudioLink read in this pass is guarded by alAvail,
+                // so clearing it here silences the lot. A plain float, so it animates from
+                // a menu without touching each effect's own toggle.
+                bool alAvail = AudioLinkIsAvailable() && _ALMasterEnable > 0.5;
                 
             #if defined(ZET_DISSOLVE)
                 if (_DissolveEnable > 0.5) {

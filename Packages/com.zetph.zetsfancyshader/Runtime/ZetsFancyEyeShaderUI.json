@@ -1,11 +1,18 @@
 {
  "title": "ZetsFancyEyeShader",
- "version": "v0.6.1",
+ "version": "v0.6.2",
  "groups": [
   {
    "path": "base",
    "label": "Base & Color",
    "info": "",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "alenv",
+   "label": "AudioLink Response",
+   "info": "Master switch for AudioLink on this material, and how sharply reactions decay. Matches the main shader, so an eye and the bodywork set to the same band respond identically.",
    "toggle": "",
    "showIf": []
   },
@@ -73,6 +80,51 @@
    "info": "",
    "toggle": "_EmissionEnable",
    "showIf": []
+  },
+  {
+   "path": "reflspec_emission_emal",
+   "label": "AudioLink Settings",
+   "info": "Makes the eye's glow react to AudioLink, using the same bands and chain as the main shader so an eye can be matched to bodywork.",
+   "toggle": "_EmALEnable",
+   "showIf": [
+    "_EmissionEnable"
+   ]
+  },
+  {
+   "path": "reflspec_emission_emal_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_EmALEnable"
+   ]
+  },
+  {
+   "path": "reflspec_emission_emlb",
+   "label": "Light Based",
+   "info": "Dims or lifts the glow by how lit the eye is, so it can fade in daylight or only show in the dark.",
+   "toggle": "_EmLightBased",
+   "showIf": [
+    "_EmissionEnable"
+   ]
+  },
+  {
+   "path": "reflspec_emission_emblink",
+   "label": "Blinking",
+   "info": "",
+   "toggle": "_EmBlink",
+   "showIf": [
+    "_EmissionEnable"
+   ]
+  },
+  {
+   "path": "reflspec_emission_emscan",
+   "label": "Scan / Sweep",
+   "info": "A bright band that sweeps across the glow, matching the main shader's sweep so an eye can be synced to bodywork.",
+   "toggle": "_EmScan",
+   "showIf": [
+    "_EmissionEnable"
+   ]
   },
   {
    "path": "ltcgi",
@@ -165,6 +217,166 @@
   {
    "name": "_LVPointShading",
    "text": "How strongly Point Light Volumes are shaped by the surface normal. Only used when VRC Light Volumes 3.x or newer is installed - on 2.x the shader calls an overload that has no shading and this does nothing. 0 disables per-surface shading, 1 is the standard smooth gradient, higher is sharper. Leave at 1 unless you want a harder falloff: LV 3.x's own default when the argument is omitted is 3, which is what makes lighting snap between areas."
+  },
+  {
+   "name": "_ProbeDirLight",
+   "text": "Shades the eye using a light direction recovered from the world's light probes. Most VRChat worlds have no realtime directional light, and without one the eye is lit by flat ambient and loses its roundness."
+  },
+  {
+   "name": "_ProbeDirStrength",
+   "text": "How strongly the probe-derived light shapes the eye. It only applies where there is no strong realtime light, so raising it will not affect brightly lit worlds."
+  },
+  {
+   "name": "_EmMode",
+   "text": "How the audio drives the glow. Pulse takes the band level directly. Sweep Up walks the band's history up the eye so the audio travels. Center Out Pulse rings outward from a point."
+  },
+  {
+   "name": "_EmPulseScale",
+   "text": "Spacing of the rings in Center Out Pulse mode."
+  },
+  {
+   "name": "_EmCenter",
+   "text": "The point the pulse radiates from, in UV space."
+  },
+  {
+   "name": "_EmALEnable",
+   "text": "Turns AudioLink reactivity on for the eye's glow."
+  },
+  {
+   "name": "_EmBand",
+   "text": "Which frequency band drives the glow."
+  },
+  {
+   "name": "_EmAL",
+   "text": "How much the chosen band boosts brightness on top of the base emission."
+  },
+  {
+   "name": "_EmHueOn",
+   "text": "Rotates the glow's hue with the audio."
+  },
+  {
+   "name": "_EmVolBoost",
+   "text": "Scales the reaction by overall volume, so quiet passages react less."
+  },
+  {
+   "name": "_EmVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_EmMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_EmMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_EmAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_EmAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_EmLightBased",
+   "text": "Dims or lifts the glow depending on how lit the eye is."
+  },
+  {
+   "name": "_EmMinEmiss",
+   "text": "Glow multiplier when the eye is in shadow."
+  },
+  {
+   "name": "_EmMaxEmiss",
+   "text": "Glow multiplier when the eye is fully lit."
+  },
+  {
+   "name": "_EmMinLight",
+   "text": "Lighting level treated as fully dark."
+  },
+  {
+   "name": "_EmMaxLight",
+   "text": "Lighting level treated as fully lit."
+  },
+  {
+   "name": "_EmBlink",
+   "text": "Pulses the glow on and off over time."
+  },
+  {
+   "name": "_EmBlinkSpeed",
+   "text": "How fast the glow blinks."
+  },
+  {
+   "name": "_EmBlinkMin",
+   "text": "How dim the bottom of each blink gets. 0 blinks fully off."
+  },
+  {
+   "name": "_EmScan",
+   "text": "Sweeps a bright band across the glow, like a scanner."
+  },
+  {
+   "name": "_EmScanMode",
+   "text": "Loop jumps back to the start each cycle. Ping Pong bounces back and forth."
+  },
+  {
+   "name": "_EmScanSpeed",
+   "text": "How fast the band travels."
+  },
+  {
+   "name": "_EmScanWidth",
+   "text": "Thickness of the moving band."
+  },
+  {
+   "name": "_EmScanSoft",
+   "text": "How soft the band's edges are. 0 is a hard edge."
+  },
+  {
+   "name": "_EmScanFloor",
+   "text": "How much the rest of the glow still shows outside the band. 0 shows only the band."
+  },
+  {
+   "name": "_EmScanSpace",
+   "text": "Which space the band travels through. UV follows the texture unwrap. Object Space sweeps through the eye's own space, so a band can cross it on any axis and be matched to a sweep running across the body."
+  },
+  {
+   "name": "_EmScanAxis",
+   "text": "Which way the band travels through the eye's own space. 0,1,0 sweeps upward, 1,0,0 across, 0,0,1 front to back. Values in between give diagonals."
+  },
+  {
+   "name": "_EmScanExtent",
+   "text": "How far the sweep travels in metres. Match this across every material that should share the same wave."
+  },
+  {
+   "name": "_EmScanStyle",
+   "text": "Shape of the sweep. Linear is a straight band travelling along the angle below. Radial rings outward from the centre, which suits an iris. Angular rotates around the centre like a clock hand."
+  },
+  {
+   "name": "_EmScanAngle",
+   "text": "Direction the band travels in Linear, or the starting point of the rotation in Angular. 0 sweeps upward, 90 sweeps across."
+  },
+  {
+   "name": "_EmScanCenter",
+   "text": "The point Radial and Angular sweeps revolve around, in UV space. Set it to the pupil for an iris effect."
+  },
+  {
+   "name": "_EmScanOrigin",
+   "text": "Where the sweep begins, in metres along the chosen direction from the avatar's origin. Set every material on the avatar to the same start and length and a single band will cross all of them as one wave."
+  },
+  {
+   "name": "_EmScanPhase",
+   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+  },
+  {
+   "name": "_ALMasterEnable",
+   "text": "Master switch for AudioLink on this material. Off silences every reactive effect at once, without touching each one's own toggle. It is a plain float, so it animates from a menu: use it to turn a whole avatar's reactivity on and off in one control."
+  },
+  {
+   "name": "_ALEnvEnable",
+   "text": "Smooths AudioLink reactions: a fast rise on the beat with a tunable tail, so the eye pulses musically rather than flickering."
+  },
+  {
+   "name": "_ALEnvRelease",
+   "text": "How long reactions take to fall after a beat. Low is snappy, high holds and glides. Match this to the main shader so an eye and the body decay together."
   }
  ],
  "lockCritical": [
@@ -192,6 +404,36 @@
     "UV0",
     "VRSL GI",
     "VRSL Light Count"
+   ]
+  },
+  {
+   "name": "_EmMode",
+   "options": [
+    "Pulse",
+    "Sweep Up",
+    "Center Out Pulse"
+   ]
+  },
+  {
+   "name": "_EmScanMode",
+   "options": [
+    "Loop",
+    "Ping Pong"
+   ]
+  },
+  {
+   "name": "_EmScanSpace",
+   "options": [
+    "UV",
+    "Object Space"
+   ]
+  },
+  {
+   "name": "_EmScanStyle",
+   "options": [
+    "Linear",
+    "Radial",
+    "Angular"
    ]
   }
  ]

@@ -636,6 +636,11 @@ namespace Zetph.FancyShader.EditorUI
 
             MaterialProperty toggle = FindToggle(node);
 
+            // The section's own enable counts toward the animated badge as well. It is
+            // not one of the rows inside the group, so without this a marked header
+            // shows no badge and looks unmarked.
+            if (toggle != null && _animated.Contains(toggle.name)) animated = true;
+
             if (toggle != null)
             {
                 // A section with an enable switch is judged by that switch alone.
@@ -855,6 +860,19 @@ namespace Zetph.FancyShader.EditorUI
             // The visible box is 15px; the target is the full header height and a
             // few pixels either side, which is far easier to hit.
             var toggleHit = new Rect(toggleRect.x - 5f, row.y, toggleRect.width + 10f, row.height);
+
+            // Register the whole header row, not just the checkbox, so right-clicking
+            // anywhere on the bar opens the property menu. Without this a group toggle
+            // cannot be marked animated at all, and tools that read the animated tag
+            // (VRCFury among them) report the property as un-animated even though it is
+            // being driven - and the locker bakes it to a constant, so the toggle then
+            // genuinely stops working.
+            // Repaint only. GUILayoutUtility.GetRect returns a placeholder on Layout
+            // and event passes, so registering unconditionally overwrote the valid
+            // rect with a zero one and the hit test could never match - which is why
+            // right-clicking the header appeared to do nothing at all.
+            if (toggle != null && Event.current.type == EventType.Repaint)
+                _rowRects[toggle.name] = row;
 
             // Reserve the badge column unconditionally so a label never reflows
             // when something inside becomes animated.
