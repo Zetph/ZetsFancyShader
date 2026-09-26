@@ -455,7 +455,7 @@ namespace Zetph.FancyShader.EditorUI
             // One sweep for the batch. DeleteIfOrphaned walks every material in
             // the project, so calling it per material made locking an avatar
             // quadratic in project size.
-            foreach (Shader orphan in orphans) DeleteIfOrphaned(orphan);
+            DeleteOrphanedBatch(orphans);
 
             // Flush to disk. SetDirty alone leaves the shader assignment in memory
             // only, so the next domain reload - entering play mode, recompiling a
@@ -657,6 +657,44 @@ namespace Zetph.FancyShader.EditorUI
         /// touches files under the generated folder, so a hand-written shader can
         /// never be deleted by this even if something goes wrong upstream.
         /// </summary>
+        /// <summary>
+        /// Batch form of DeleteIfOrphaned. The single form scans every material in
+        /// the project per call, so calling it once per orphan made relocking an
+        /// avatar quadratic: fifteen materials in a two-thousand-material project
+        /// meant thirty thousand asset loads. This walks the project once, notes
+        /// which candidates are still referenced, and deletes the rest.
+        /// </summary>
+        private static void DeleteOrphanedBatch(List<Shader> candidates)
+        {
+            var unique = new HashSet<Shader>();
+            for (int i = 0; i < candidates.Count; i++)
+                if (candidates[i] != null) unique.Add(candidates[i]);
+            if (unique.Count == 0) return;
+
+            var inUse = new HashSet<Shader>();
+            foreach (string guid in AssetDatabase.FindAssets("t:Material"))
+            {
+                var m = AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(guid));
+                if (m == null || m.shader == null) continue;
+                if (unique.Contains(m.shader))
+                {
+                    inUse.Add(m.shader);
+                    // Everything still referenced: nothing will be deleted, so the
+                    // rest of the scan is pointless.
+                    if (inUse.Count == unique.Count) return;
+                }
+            }
+
+            foreach (Shader sh in unique)
+            {
+                if (inUse.Contains(sh)) continue;
+                string path = AssetDatabase.GetAssetPath(sh);
+                if (string.IsNullOrEmpty(path)) continue;
+                if (!path.Replace('\\', '/').StartsWith(OutputFolder + "/", StringComparison.Ordinal)) continue;
+                AssetDatabase.DeleteAsset(path);
+            }
+        }
+
         public static void DeleteIfOrphaned(Shader generated)
         {
             if (generated == null) return;

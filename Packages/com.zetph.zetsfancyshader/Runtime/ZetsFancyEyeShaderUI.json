@@ -1,6 +1,6 @@
 {
  "title": "ZetsFancyEyeShader",
- "version": "v0.6.2",
+ "version": "v0.7.0",
  "groups": [
   {
    "path": "base",
@@ -336,7 +336,7 @@
   },
   {
    "name": "_EmScanSpace",
-   "text": "Which space the band travels through. UV follows the texture unwrap. Object Space sweeps through the eye's own space, so a band can cross it on any axis and be matched to a sweep running across the body."
+   "text": "Which space the band travels through. UV follows the texture unwrap and is unaffected by pose, so it is the steadier choice on limbs that move a lot. World Space sweeps through actual space, which lets several materials share one wave, but the band crosses a raised arm at a different time than a lowered one, because the arm really is somewhere else."
   },
   {
    "name": "_EmScanAxis",
@@ -364,7 +364,7 @@
   },
   {
    "name": "_EmScanPhase",
-   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+   "text": "Shifts this material's place in the sweep cycle. Materials at the same speed already run in step, so leave this at 0 unless you deliberately want a part to lead or trail the rest."
   },
   {
    "name": "_ALMasterEnable",
@@ -377,6 +377,34 @@
   {
    "name": "_ALEnvRelease",
    "text": "How long reactions take to fall after a beat. Low is snappy, high holds and glides. Match this to the main shader so an eye and the body decay together."
+  },
+  {
+   "name": "_EmScanAnchor",
+   "text": "Measures the sweep from this mesh's own origin instead of from world space. Leave it off when several materials should share one wave: renderers on an avatar sit at different origins, so anchoring makes each measure from a different point and they drift apart. Useful for a sweep on a single mesh."
+  },
+  {
+   "name": "_EmissionEnable",
+   "text": "Makes parts of the eye glow, unaffected by world lighting."
+  },
+  {
+   "name": "_EmissionMap",
+   "text": "Colour texture for the glow, with its own tiling and offset. White uses the Emission Color alone; a drawn texture glows in its own colours."
+  },
+  {
+   "name": "_EmissionMask",
+   "text": "Where the eye may glow. White allows, black blocks. Uses the base UVs, unaffected by the map's tiling."
+  },
+  {
+   "name": "_EmissionColor",
+   "text": "Colour of the glow. HDR, so push past white for bloom."
+  },
+  {
+   "name": "_EmissionStrength",
+   "text": "How brightly the emission glows."
+  },
+  {
+   "name": "_EmissionAlbedoTint",
+   "text": "Tints the glow by the eye's own base colour, so it reads as the iris lighting up rather than a layer over it."
   }
  ],
  "lockCritical": [
@@ -425,7 +453,7 @@
    "name": "_EmScanSpace",
    "options": [
     "UV",
-    "Object Space"
+    "World Space"
    ]
   },
   {

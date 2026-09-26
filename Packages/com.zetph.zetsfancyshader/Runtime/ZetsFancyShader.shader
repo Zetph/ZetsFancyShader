@@ -1,6 +1,6 @@
 // ==============================================================================
 // ZetsFancyShader
-// Version: v0.6.2
+// Version: v0.7.0
 // Author: Zetph
 //
 // Welcome to the source code!
@@ -92,6 +92,8 @@ Shader "Zetph/ZetsFancyShader"
         [Group(engine_vertal_valuv)] [ShowIf(_VertALUVEnable)] _VertALUVSpeed ("UV Direction / Speed (X,Y)", Vector) = (0.25, 0, 0, 0)
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(engine_vertal_valuv)] [ShowIf(_VertALUVEnable)] _VertALUVBand ("UV Band", Float) = 0
         [Group(base)] _MainTex ("Base Texture (Albedo)", 2D) = "white" {}
+        [Enum(UV0, 0, UV1, 1, UV2, 2, UV3, 3)] [Group(base)] _MainTexUV ("Base Texture UV Channel", Float) = 0
+        [Group(base)] _Color ("Base Color", Color) = (1, 1, 1, 1)
         [Normal] [Group(base)] _BumpMap ("Normal Map (Surface Detail)", 2D) = "bump" {}
         [Group(base)] _BumpScale ("Normal Strength", Range(0, 2)) = 1
         [ZetRenderMode] [Group(base)] _AlphaMode ("Transparency Mode", Float) = 0
@@ -110,6 +112,20 @@ Shader "Zetph/ZetsFancyShader"
         [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueShift ("Static Hue Shift", Range(0, 1)) = 0.0
         [ToggleUI] [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueShiftAL ("AudioLink Hue Shift", Float) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(base)] [ShowIf(_ColorAdjustEnable)] _BaseHueBand ("AL Hue Band", Float) = 0
+        [ToggleUI] [GroupToggle(base_regiontint)] _RegionTintEnable ("Enable Region Tint", Float) = 0
+        [NoScaleOffset] [Group(base_regiontint)] _RegionMask ("Region Mask (RGBA)", 2D) = "black" {}
+        [Group(base_regiontint)] _RegionRColor ("Red Zone Tint", Color) = (1, 1, 1, 1)
+        [Group(base_regiontint)] _RegionRStrength ("Red Zone Strength", Range(0, 1)) = 1
+        [Group(base_regiontint)] _RegionRHue ("Red Zone Hue Shift", Range(0, 1)) = 0
+        [Group(base_regiontint)] _RegionGColor ("Green Zone Tint", Color) = (1, 1, 1, 1)
+        [Group(base_regiontint)] _RegionGStrength ("Green Zone Strength", Range(0, 1)) = 1
+        [Group(base_regiontint)] _RegionGHue ("Green Zone Hue Shift", Range(0, 1)) = 0
+        [Group(base_regiontint)] _RegionBColor ("Blue Zone Tint", Color) = (1, 1, 1, 1)
+        [Group(base_regiontint)] _RegionBStrength ("Blue Zone Strength", Range(0, 1)) = 1
+        [Group(base_regiontint)] _RegionBHue ("Blue Zone Hue Shift", Range(0, 1)) = 0
+        [Group(base_regiontint)] _RegionAColor ("Alpha Zone Tint", Color) = (1, 1, 1, 1)
+        [Group(base_regiontint)] _RegionAStrength ("Alpha Zone Strength", Range(0, 1)) = 0
+        [Group(base_regiontint)] _RegionAHue ("Alpha Zone Hue Shift", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(base_decals)] _DecalsEnable ("Enable Decals", Float) = 0
         [Group(base_decals)] _DecalRGBAMask ("Decal RGBA Mask (shared)", 2D) = "white" {}
         [ToggleUI] [GroupToggle(base_decals_decal0)] _Decal0Enable ("Enable Decal 0", Float) = 0
@@ -277,22 +293,22 @@ Shader "Zetph/ZetsFancyShader"
         [Group(lighting_reflspec)] [ShowIf(_ReflectionsEnable)] _ReflStrength ("Reflection Strength", Range(0, 2)) = 1
         [Enum(ZFS Packed, 0, Unity MetalSmooth, 1)] [Group(lighting_reflspec)] _PackMode ("Packed Map Format", Float) = 0
         [NoScaleOffset] [Group(lighting_reflspec)] _PackedMap ("Packed PBR Map (R=Metallic  G=AO  B=Smoothness)", 2D) = "white" {}
-        [ToggleUI] [Group(lighting_reflspec)] _InvSmooth ("Map uses Roughness (invert smoothness)", Float) = 0
-        [Group(lighting_reflspec)] _PackedTiling ("Packed Tiling (X,Y)", Vector) = (1, 1, 0, 0)
-        [Group(lighting_reflspec)] _PackedOffset ("Packed Offset (X,Y)", Vector) = (0, 0, 0, 0)
-        [Group(lighting_reflspec)] _PackedPan ("Packed Panning (X,Y)", Vector) = (0, 0, 0, 0)
-        [ToggleUI] [Group(lighting_reflspec)] _PackedStochastic ("Stochastic Sampling", Float) = 0
-        [Group(lighting_reflspec)] _Metallic ("Metallic", Range(0, 1)) = 0
-        [Group(lighting_reflspec)] _Smoothness ("Smoothness", Range(0, 1)) = 0.5
-        [ToggleUI] [Group(lighting_reflspec)] _AdvancedRemap ("Advanced Map Remapping", Float) = 0
-        [Group(lighting_reflspec)] [ShowIf(_AdvancedRemap)] _MetallicMin ("Metallic Floor (map black)", Range(0, 1)) = 0
-        [Group(lighting_reflspec)] [ShowIf(_AdvancedRemap)] _SmoothnessMin ("Smoothness Floor (map black)", Range(0, 1)) = 0
-        [Group(lighting_reflspec)] _OcclusionStrength ("AO Strength", Range(0, 1)) = 1
-        [ToggleUI] [Group(lighting_reflspec)] _ReflTintOn ("Tint Reflections", Float) = 0
-        [Group(lighting_reflspec)] [ShowIf(_ReflTintOn)] _ReflTint ("Reflection Tint", Color) = (1, 1, 1, 1)
-        [ToggleUI] [Group(lighting_reflspec)] _SpecTintOn ("Tint Specular", Float) = 0
-        [Group(lighting_reflspec)] [ShowIf(_SpecTintOn)] _SpecTint ("Specular Tint", Color) = (1, 1, 1, 1)
-        [ZetMapPacker] [Group(lighting_reflspec)] _MapPackerUI ("Map Packer", Float) = 0
+        [ToggleUI] [Group(lighting_reflspec_packedcfg)] _InvSmooth ("Map uses Roughness (invert smoothness)", Float) = 0
+        [Group(lighting_reflspec_packedcfg)] _PackedTiling ("Packed Tiling (X,Y)", Vector) = (1, 1, 0, 0)
+        [Group(lighting_reflspec_packedcfg)] _PackedOffset ("Packed Offset (X,Y)", Vector) = (0, 0, 0, 0)
+        [Group(lighting_reflspec_packedcfg)] _PackedPan ("Packed Panning (X,Y)", Vector) = (0, 0, 0, 0)
+        [ToggleUI] [Group(lighting_reflspec_packedcfg)] _PackedStochastic ("Stochastic Sampling", Float) = 0
+        [Group(lighting_reflspec_packedcfg)] _Metallic ("Metallic", Range(0, 1)) = 0
+        [Group(lighting_reflspec_packedcfg)] _Smoothness ("Smoothness", Range(0, 1)) = 0.5
+        [ToggleUI] [Group(lighting_reflspec_packedcfg)] _AdvancedRemap ("Advanced Map Remapping", Float) = 0
+        [Group(lighting_reflspec_packedcfg)] [ShowIf(_AdvancedRemap)] _MetallicMin ("Metallic Floor (map black)", Range(0, 1)) = 0
+        [Group(lighting_reflspec_packedcfg)] [ShowIf(_AdvancedRemap)] _SmoothnessMin ("Smoothness Floor (map black)", Range(0, 1)) = 0
+        [Group(lighting_reflspec_packedcfg)] _OcclusionStrength ("AO Strength", Range(0, 1)) = 1
+        [ToggleUI] [Group(lighting_reflspec_packedcfg)] _ReflTintOn ("Tint Reflections", Float) = 0
+        [Group(lighting_reflspec_packedcfg)] [ShowIf(_ReflTintOn)] _ReflTint ("Reflection Tint", Color) = (1, 1, 1, 1)
+        [ToggleUI] [Group(lighting_reflspec_packedcfg)] _SpecTintOn ("Tint Specular", Float) = 0
+        [Group(lighting_reflspec_packedcfg)] [ShowIf(_SpecTintOn)] _SpecTint ("Specular Tint", Color) = (1, 1, 1, 1)
+        [ZetMapPacker] [Group(lighting_reflspec_packer)] _MapPackerUI ("Map Packer", Float) = 0
         [Toggle(ZET_ANISO)] [GroupToggle(lighting_reflspec_aniso)] _AnisoEnable ("Enable Anisotropic Highlights", Float) = 0
         [HDR] [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoColor ("Anisotropic Color", Color) = (1, 1, 1, 1)
         [Enum(Tangent, 0, Bitangent, 1)] [Group(lighting_reflspec_aniso)] [ShowIf(_AnisoEnable)] _AnisoDir ("Highlight Direction", Float) = 0
@@ -381,16 +397,23 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em0_em0blink)] [ShowIf(_Em0Blink)] _Em0BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em0_em0blink)] [ShowIf(_Em0Blink)] _Em0BlinkMin ("Blink Minimum", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(emission_em0_em0scan)] _Em0Scan ("Enable Scan / Sweep", Float) = 0
-        [Enum(UV, 0, Object Space, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanSpace ("Sweep Space", Float) = 0
+        [Enum(UV, 0, World Space, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanSpace ("Sweep Space", Float) = 0
         [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 0)] _Em0ScanDir ("Direction", Float) = 0
-        [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] _Em0ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Enum(Planar, 0, Radial, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] _Em0ScanShape ("Sweep Shape", Float) = 0
+        [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] [ShowIf(_Em0ScanShape, 0)] _Em0ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] [ShowIf(_Em0ScanShape, 1)] _Em0ScanCenter ("Radial Center (m, from avatar)", Vector) = (0, 1, 0, 0)
         [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] _Em0ScanExtent ("Sweep Length (m)", Range(0.1, 4)) = 2
+        [ToggleUI] [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] _Em0ScanAnchor ("Anchor To This Mesh", Float) = 0
         [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanSpace, 1)] _Em0ScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanPhase ("Phase Offset", Range(-1, 1)) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanMode ("Motion", Float) = 0
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanSpeed ("Speed", Range(0, 10)) = 1
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanWidth ("Band Width", Range(0.02, 1)) = 0.15
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanSoft ("Edge Softness", Range(0, 0.5)) = 0.05
+        [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanTrail ("Trail", Range(0, 1)) = 0
+        [ToggleUI] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanCurveOn ("Use Curve", Float) = 0
+        [ZetCurve] [Group(emission_em0_em0scan)] [ShowIf(_Em0ScanCurveOn)] _Em0ScanRamp ("Curve", 2D) = "white" {}
+        [IntRange] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanCount ("Band Count", Range(1, 8)) = 1
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em0_em0scan)] [ShowIf(_Em0Scan)] _Em0ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
@@ -430,16 +453,23 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em1_em1blink)] [ShowIf(_Em1Blink)] _Em1BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em1_em1blink)] [ShowIf(_Em1Blink)] _Em1BlinkMin ("Blink Minimum", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(emission_em1_em1scan)] _Em1Scan ("Enable Scan / Sweep", Float) = 0
-        [Enum(UV, 0, Object Space, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanSpace ("Sweep Space", Float) = 0
+        [Enum(UV, 0, World Space, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanSpace ("Sweep Space", Float) = 0
         [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 0)] _Em1ScanDir ("Direction", Float) = 0
-        [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] _Em1ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Enum(Planar, 0, Radial, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] _Em1ScanShape ("Sweep Shape", Float) = 0
+        [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] [ShowIf(_Em1ScanShape, 0)] _Em1ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] [ShowIf(_Em1ScanShape, 1)] _Em1ScanCenter ("Radial Center (m, from avatar)", Vector) = (0, 1, 0, 0)
         [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] _Em1ScanExtent ("Sweep Length (m)", Range(0.1, 4)) = 2
+        [ToggleUI] [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] _Em1ScanAnchor ("Anchor To This Mesh", Float) = 0
         [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanSpace, 1)] _Em1ScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanPhase ("Phase Offset", Range(-1, 1)) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanMode ("Motion", Float) = 0
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanSpeed ("Speed", Range(0, 10)) = 1
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanWidth ("Band Width", Range(0.02, 1)) = 0.15
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanSoft ("Edge Softness", Range(0, 0.5)) = 0.05
+        [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanTrail ("Trail", Range(0, 1)) = 0
+        [ToggleUI] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanCurveOn ("Use Curve", Float) = 0
+        [ZetCurve] [Group(emission_em1_em1scan)] [ShowIf(_Em1ScanCurveOn)] _Em1ScanRamp ("Curve", 2D) = "white" {}
+        [IntRange] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanCount ("Band Count", Range(1, 8)) = 1
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em1_em1scan)] [ShowIf(_Em1Scan)] _Em1ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
@@ -479,16 +509,23 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em2_em2blink)] [ShowIf(_Em2Blink)] _Em2BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em2_em2blink)] [ShowIf(_Em2Blink)] _Em2BlinkMin ("Blink Minimum", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(emission_em2_em2scan)] _Em2Scan ("Enable Scan / Sweep", Float) = 0
-        [Enum(UV, 0, Object Space, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanSpace ("Sweep Space", Float) = 0
+        [Enum(UV, 0, World Space, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanSpace ("Sweep Space", Float) = 0
         [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 0)] _Em2ScanDir ("Direction", Float) = 0
-        [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] _Em2ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Enum(Planar, 0, Radial, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] _Em2ScanShape ("Sweep Shape", Float) = 0
+        [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] [ShowIf(_Em2ScanShape, 0)] _Em2ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] [ShowIf(_Em2ScanShape, 1)] _Em2ScanCenter ("Radial Center (m, from avatar)", Vector) = (0, 1, 0, 0)
         [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] _Em2ScanExtent ("Sweep Length (m)", Range(0.1, 4)) = 2
+        [ToggleUI] [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] _Em2ScanAnchor ("Anchor To This Mesh", Float) = 0
         [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanSpace, 1)] _Em2ScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanPhase ("Phase Offset", Range(-1, 1)) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanMode ("Motion", Float) = 0
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanSpeed ("Speed", Range(0, 10)) = 1
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanWidth ("Band Width", Range(0.02, 1)) = 0.15
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanSoft ("Edge Softness", Range(0, 0.5)) = 0.05
+        [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanTrail ("Trail", Range(0, 1)) = 0
+        [ToggleUI] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanCurveOn ("Use Curve", Float) = 0
+        [ZetCurve] [Group(emission_em2_em2scan)] [ShowIf(_Em2ScanCurveOn)] _Em2ScanRamp ("Curve", 2D) = "white" {}
+        [IntRange] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanCount ("Band Count", Range(1, 8)) = 1
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em2_em2scan)] [ShowIf(_Em2Scan)] _Em2ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
@@ -528,16 +565,23 @@ Shader "Zetph/ZetsFancyShader"
         [Group(emission_em3_em3blink)] [ShowIf(_Em3Blink)] _Em3BlinkSpeed ("Blink Speed", Range(0, 20)) = 3
         [Group(emission_em3_em3blink)] [ShowIf(_Em3Blink)] _Em3BlinkMin ("Blink Minimum", Range(0, 1)) = 0
         [ToggleUI] [GroupToggle(emission_em3_em3scan)] _Em3Scan ("Enable Scan / Sweep", Float) = 0
-        [Enum(UV, 0, Object Space, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanSpace ("Sweep Space", Float) = 0
+        [Enum(UV, 0, World Space, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanSpace ("Sweep Space", Float) = 0
         [Enum(Vertical, 0, Horizontal, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 0)] _Em3ScanDir ("Direction", Float) = 0
-        [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] _Em3ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Enum(Planar, 0, Radial, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] _Em3ScanShape ("Sweep Shape", Float) = 0
+        [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] [ShowIf(_Em3ScanShape, 0)] _Em3ScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
+        [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] [ShowIf(_Em3ScanShape, 1)] _Em3ScanCenter ("Radial Center (m, from avatar)", Vector) = (0, 1, 0, 0)
         [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] _Em3ScanExtent ("Sweep Length (m)", Range(0.1, 4)) = 2
+        [ToggleUI] [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] _Em3ScanAnchor ("Anchor To This Mesh", Float) = 0
         [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanSpace, 1)] _Em3ScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanPhase ("Phase Offset", Range(-1, 1)) = 0
         [Enum(Loop, 0, Ping Pong, 1)] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanMode ("Motion", Float) = 0
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanSpeed ("Speed", Range(0, 10)) = 1
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanWidth ("Band Width", Range(0.02, 1)) = 0.15
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanSoft ("Edge Softness", Range(0, 0.5)) = 0.05
+        [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanTrail ("Trail", Range(0, 1)) = 0
+        [ToggleUI] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanCurveOn ("Use Curve", Float) = 0
+        [ZetCurve] [Group(emission_em3_em3scan)] [ShowIf(_Em3ScanCurveOn)] _Em3ScanRamp ("Curve", 2D) = "white" {}
+        [IntRange] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanCount ("Band Count", Range(1, 8)) = 1
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanFloor ("Outside-Band Glow", Range(0, 1)) = 0
         [IntRange] [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanPixels ("Pixelation", Range(0, 128)) = 0
         [Group(emission_em3_em3scan)] [ShowIf(_Em3Scan)] _Em3ScanGlitch ("Glitch Flicker", Range(0, 1)) = 0
@@ -665,6 +709,10 @@ Shader "Zetph/ZetsFancyShader"
         [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffTwist ("Direction Twist", Range(-180, 180)) = 0
         [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffSpecOnly ("Follow Highlights", Range(0, 1)) = 0.7
         [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffTintAmt ("Apply to Base Color", Range(0, 1)) = 0.3
+        [NoScaleOffset] [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffRamp ("Colour Palette", 2D) = "white" {}
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffRampAmt ("Palette Blend", Range(0, 1)) = 0
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffSat ("Saturation", Range(0, 3)) = 1
+        [Group(specialfx_style_diffract)] [ShowIf(_DiffEnable)] _DiffHue ("Hue Shift", Range(0, 1)) = 0
         [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] _IridMask ("Iridescence Mask", 2D) = "white" {}
         [Group(specialfx_style_irid)] [ShowIf(_IridEnable)] _IridMode ("Iridescence Model", Float) = 0
         [Group(specialfx_style_irid_iridfilm)] [ShowIf(_IridMode, 1)] _IridFilmNm ("Film Thickness (nm)", Range(80, 1200)) = 380
@@ -766,6 +814,26 @@ Shader "Zetph/ZetsFancyShader"
         [Group(specialfx_style_infinity_infal_adj)] [ShowIf(_InfALEnable)] _InfMultAmt ("Multiplier Amount", Range(0, 4)) = 0
         [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_infinity_infal_adj)] [ShowIf(_InfALEnable)] _InfAddBand ("Additive Band", Float) = 3
         [Group(specialfx_style_infinity_infal_adj)] [ShowIf(_InfALEnable)] _InfAddAmt ("Additive Amount", Range(0, 4)) = 0
+        [Toggle(ZET_STARFALL)] [GroupToggle(specialfx_style_starfall)] _SFEnable ("Enable Star Fall FX", Float) = 0
+        [HDR] [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFColor ("Streak Color", Color) = (0.6, 0.8, 1, 1)
+        [NoScaleOffset] [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFMask ("Mask", 2D) = "white" {}
+        [Enum(UV, 0, World Space, 1)] [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFSpace ("Travel Space", Float) = 0
+        [Enum(Fixed Angle, 0, World Guided, 1, Flow Map, 2)] [Group(specialfx_style_starfall)] [ShowIf(_SFSpace, 0)] _SFDirMode ("UV Direction From", Float) = 1
+        [Group(specialfx_style_starfall)] [ShowIf(_SFDirMode, 0)] _SFAngle ("Travel Angle", Range(0, 360)) = 180
+        [ToggleUI] [Group(specialfx_style_starfall)] [ShowIf(_SFDirMode, 0)] _SFFixMirror ("Fix Mirrored UVs", Float) = 1
+        [NoScaleOffset] [Group(specialfx_style_starfall)] [ShowIf(_SFDirMode, 2)] _SFFlowMap ("Direction Flow Map (RG)", 2D) = "grey" {}
+        [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFDir ("Travel Direction (XYZ)", Vector) = (0.35, -1, 0, 0)
+        [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFDensity ("Streak Density", Range(0.5, 96)) = 6
+        [Group(specialfx_style_starfall)] [ShowIf(_SFSpace, 1)] _SFSpan ("Fall Distance (m)", Range(0.2, 6)) = 2
+        [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFThick ("Streak Thickness", Range(0.005, 0.35)) = 0.06
+        [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFTail ("Tail Length", Range(0.02, 1)) = 0.3
+        [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFSpeed ("Fall Speed", Range(0, 10)) = 1.2
+        [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFSpeedVar ("Speed Variation", Range(0, 1)) = 0.5
+        [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFFill ("Sky Fill", Range(0.05, 1)) = 0.5
+        [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFBrightness ("Brightness", Range(0, 20)) = 3
+        [ToggleUI] [Group(specialfx_style_starfall)] [ShowIf(_SFEnable)] _SFALEnable ("AudioLink Boost", Float) = 0
+        [Enum(Bass, 0, Low Mids, 1, High Mids, 2, Treble, 3)] [Group(specialfx_style_starfall)] [ShowIf(_SFALEnable)] _SFBand ("AL Band", Float) = 0
+        [Group(specialfx_style_starfall)] [ShowIf(_SFALEnable)] _SFAL ("AL Boost Amount", Range(0, 6)) = 1.5
         [Toggle(ZET_STARS)] [GroupToggle(specialfx_style_stars)] _StarEnable ("Enable Constellation FX", Float) = 0
         [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _StarMask ("Constellation Mask (optional)", 2D) = "white" {}
         [Group(specialfx_style_stars)] [ShowIf(_StarEnable)] _ConstellationBlend ("Blend Mode", Float) = 0
@@ -1175,14 +1243,20 @@ Shader "Zetph/ZetsFancyShader"
             #endif
             #if defined(ZET_EM0)
                 Texture2D _Em0Map;
+                Texture2D _Em0ScanRamp;
             #endif
             Texture2D _OutlineMask;
             Texture2D _OutlineStdMask;
+            #if defined(ZET_STARFALL)
+                Texture2D _SFMask;
+                Texture2D _SFFlowMap;
+            #endif
             #if defined(ZET_STARS)
                 Texture2D _StarMask;
             #endif
             #if defined(ZET_DIFFRACT)
                 Texture2D _DiffMask;
+                Texture2D _DiffRamp;
             #endif
             #if defined(ZET_IRID)
                 Texture2D _IridMask;
@@ -1225,6 +1299,7 @@ Shader "Zetph/ZetsFancyShader"
             #endif
             Texture2D _StyleSpecMask;
             Texture2D _DecalRGBAMask;
+            Texture2D _RegionMask;
             Texture2D _Decal0Tex;
             #if defined(ZET_GLITTER)
                 Texture2D _GlitterMask;
@@ -1276,6 +1351,7 @@ Shader "Zetph/ZetsFancyShader"
             // --- Material properties: one-per-line in UnityPerMaterial so the
             //     Thry optimizer can regenerate this block cleanly when locking. ---
             CBUFFER_START(UnityPerMaterial)
+            float4 _Color;
             float _LightingModel;
             float _ProximityFade;
             float _SpeakerMaskBlur;
@@ -1362,7 +1438,7 @@ Shader "Zetph/ZetsFancyShader"
             float _DispEnable; float _DispStrength; float _DispCenter;
             float _DispTess; float _DispTessNear; float _DispTessFar;
             float _DiffEnable; float _DiffStrength; float _DiffPitch; float _DiffOrders;
-            float _DiffSharp; float _DiffAxis; float _DiffTwist; float _DiffSpecOnly; float _DiffTintAmt;
+            float _DiffSharp; float _DiffAxis; float _DiffTwist; float _DiffSpecOnly; float _DiffTintAmt; float _DiffRampAmt; float _DiffSat; float _DiffHue;
             float _IridEnable;
             float _IridALEnable; float _IridVolBoost; float _IridVolAmt;
             float _IridMultBand; float _IridMultAmt; float _IridAddBand; float _IridAddAmt;
@@ -1435,6 +1511,20 @@ Shader "Zetph/ZetsFancyShader"
             float _Spec2Smoothness;
             float4 _Spec2Color;
             float4 _MainTex_ST;
+            float _MainTexUV;
+            float _RegionTintEnable;
+            float4 _RegionRColor;
+            float _RegionRStrength;
+            float _RegionRHue;
+            float4 _RegionGColor;
+            float _RegionGStrength;
+            float _RegionGHue;
+            float4 _RegionBColor;
+            float _RegionBStrength;
+            float _RegionBHue;
+            float4 _RegionAColor;
+            float _RegionAStrength;
+            float _RegionAHue;
             float _BumpScale;
             float _AlphaMode;
             float _Cutoff;
@@ -1492,10 +1582,10 @@ Shader "Zetph/ZetsFancyShader"
             float _BreakCoreGlow;
             float4 _Em0Color;
             float4 _Em0Center;
-            float _Em0ScanSpace; float _Em0ScanExtent; float4 _Em0ScanAxis; float _Em0ScanOrigin; float _Em0ScanPhase;
-            float _Em1ScanSpace; float _Em1ScanExtent; float4 _Em1ScanAxis; float _Em1ScanOrigin; float _Em1ScanPhase;
-            float _Em2ScanSpace; float _Em2ScanExtent; float4 _Em2ScanAxis; float _Em2ScanOrigin; float _Em2ScanPhase;
-            float _Em3ScanSpace; float _Em3ScanExtent; float4 _Em3ScanAxis; float _Em3ScanOrigin; float _Em3ScanPhase;
+            float _Em0ScanSpace; float _Em0ScanExtent; float4 _Em0ScanAxis; float _Em0ScanOrigin; float _Em0ScanPhase; float _Em0ScanAnchor; float _Em0ScanShape; float4 _Em0ScanCenter; float _Em0ScanTrail; float _Em0ScanCount; float _Em0ScanCurveOn;
+            float _Em1ScanSpace; float _Em1ScanExtent; float4 _Em1ScanAxis; float _Em1ScanOrigin; float _Em1ScanPhase; float _Em1ScanAnchor; float _Em1ScanShape; float4 _Em1ScanCenter; float _Em1ScanTrail; float _Em1ScanCount; float _Em1ScanCurveOn;
+            float _Em2ScanSpace; float _Em2ScanExtent; float4 _Em2ScanAxis; float _Em2ScanOrigin; float _Em2ScanPhase; float _Em2ScanAnchor; float _Em2ScanShape; float4 _Em2ScanCenter; float _Em2ScanTrail; float _Em2ScanCount; float _Em2ScanCurveOn;
+            float _Em3ScanSpace; float _Em3ScanExtent; float4 _Em3ScanAxis; float _Em3ScanOrigin; float _Em3ScanPhase; float _Em3ScanAnchor; float _Em3ScanShape; float4 _Em3ScanCenter; float _Em3ScanTrail; float _Em3ScanCount; float _Em3ScanCurveOn;
             float _Em0Enable;
             float _Em0Hue;
             float _Em0Base;
@@ -1691,6 +1781,9 @@ Shader "Zetph/ZetsFancyShader"
             float _InfALEnable; float _InfBand; float _InfALBoost; float _InfALDepth;
             float _InfVolBoost; float _InfVolAmt; float _InfMultBand; float _InfMultAmt;
             float _InfAddBand; float _InfAddAmt;
+            float _SFEnable; float4 _SFColor; float4 _SFDir; float _SFSpace; float _SFAngle; float _SFDirMode; float _SFFixMirror; float _SFDensity; float _SFSpan;
+            float _SFThick; float _SFTail; float _SFSpeed; float _SFSpeedVar; float _SFFill;
+            float _SFBrightness; float _SFALEnable; float _SFBand; float _SFAL;
             float _StarEnable; float _ConstellationBlend; float _ConstellationEmission; float _StarUVSource; float _StarTriScale; float _StarVolDepth;
             float _StarDensity;
             float _StarSize; float _StarScatter;
@@ -2026,6 +2119,34 @@ Shader "Zetph/ZetsFancyShader"
                 half co = cos(a);
                 return c * co + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - co);
             }
+            // Region Tint: per-zone recolor driven by the RGBA region mask avatar
+            // bases ship, so zones (markings, tufts, accents) retint in-shader
+            // without editing the albedo. Per channel: the base color is hue-shifted,
+            // multiplied by the zone tint, and blended in by mask * strength.
+            // Strength doubles as the fix for masks painted below full value (a
+            // known export failure: zones at ~50% grey). Alpha-zone strength
+            // DEFAULTS TO 0 because RGB-only masks import with alpha = 1
+            // everywhere - at default 1 the A tint would repaint the whole body.
+            // Sampled with the albedo's UV (uvA) so zones stay glued to the base
+            // texture under Base Texture UV Channel.
+            // Deliberately NOT wrapped in //ifex: the outline pass calls this and
+            // that pass is already inside //ifex _OutlineStdEnable==0 - the locker
+            // rejects nested ifex, and stripping the helper while the outline call
+            // survived would break the locked compile. _RegionTintEnable bakes to a
+            // literal at lock, so the branch folds and the compiler removes the
+            // sample anyway; the ifex would only have improved the stripped-line
+            // count, not the compiled cost.
+            half3 ZetRegionTint(half3 baseCol, float2 uv)
+            {
+                half4 zm = _RegionMask.Sample(sampler_MainTex, uv);
+                half3 c = baseCol;
+                half3 zt;
+                zt = hueShift(baseCol, _RegionRHue * 6.28318) * _RegionRColor.rgb; c = lerp(c, zt, saturate(zm.r) * _RegionRStrength);
+                zt = hueShift(baseCol, _RegionGHue * 6.28318) * _RegionGColor.rgb; c = lerp(c, zt, saturate(zm.g) * _RegionGStrength);
+                zt = hueShift(baseCol, _RegionBHue * 6.28318) * _RegionBColor.rgb; c = lerp(c, zt, saturate(zm.b) * _RegionBStrength);
+                zt = hueShift(baseCol, _RegionAHue * 6.28318) * _RegionAColor.rgb; c = lerp(c, zt, saturate(zm.a) * _RegionAStrength);
+                return c;
+            }
             // One RGBA texture carries a mask for each decal, a channel apiece, so four
             // masks cost a single texture slot rather than four.
             float ZetDecalMask(float channel, float2 uv) {
@@ -2163,11 +2284,30 @@ Shader "Zetph/ZetsFancyShader"
                         // Narrow response so each order reads as a distinct streak rather
                         // than smearing into a wash.
                         float band = pow(saturate(1.0 - abs(ss) * 0.15), _DiffSharp * 0.05);
-                        acc += ZetWavelengthRGB(nm) * band / (float)m;
+                        // The grating decides which wavelengths land where; the palette
+                        // decides what colour those bands are. Mapping 380-780nm across
+                        // the ramp keeps the physical layout and swaps only the hues, so
+                        // a gold-and-teal streak still fans out like a real spectrum.
+                        half3 spectral = ZetWavelengthRGB(nm);
+                        // Guarded to match the texture's own declaration. This function
+                        // lives in the shared include and so compiles in every pass,
+                        // including ones that never set ZET_DIFFRACT - where the texture
+                        // does not exist and referencing it fails to compile.
+                        #if defined(ZET_DIFFRACT)
+                        if (_DiffRampAmt > 0.001) {
+                            half3 pal = _DiffRamp.Sample(sampler_LinearClamp,
+                                                         float2(saturate((nm - 380.0) / 400.0), 0.5)).rgb;
+                            spectral = lerp(spectral, pal, _DiffRampAmt);
+                        }
+                        #endif
+                        acc += spectral * band / (float)m;
                     }
                 }
                 // Tie it to where light actually reflects, so streaks radiate from highlights.
                 float spec = lerp(1.0, pow(nd, 8.0) * 4.0, _DiffSpecOnly);
+                if (_DiffHue > 0.001) acc = hueShift(acc, _DiffHue * 6.28318);
+                if (abs(_DiffSat - 1.0) > 0.001)
+                    acc = max(0.0, lerp(dot(acc, half3(0.299, 0.587, 0.114)).xxx, acc, _DiffSat));
                 return acc * spec * _DiffStrength;
             }
             // Infinity Mirror. Samples a pattern repeatedly at increasing parallax depth,
@@ -2533,9 +2673,9 @@ Shader "Zetph/ZetsFancyShader"
                 float alEnable; float multBand; float multAmt; float addBand; float addAmt; float volBoost; float volAmt;
                 float intensity; float edgeStrength; float edgePower; float lightBased; float minEmiss; float maxEmiss; float minLight; float maxLight;
                 float blinkOn; float blinkSpeed; float blinkMin;
-                float scanOn; float scanDir; float scanSpace; float scanExtent; float3 scanAxis; float scanOrigin; float scanPhase; float scanMode; float scanSpeed; float scanWidth; float scanSoft; float scanFloor; float scanPixels; float scanGlitch;
+                float scanOn; float scanDir; float scanSpace; float scanExtent; float3 scanAxis; float scanOrigin; float scanPhase; float scanAnchor; float scanShape; float3 scanCenter; float scanTrail; float scanCount; float scanCurveOn; float scanMode; float scanSpeed; float scanWidth; float scanSoft; float scanFloor; float scanPixels; float scanGlitch;
             };
-            half3 EvalEmissionSlot(EmSlot s, Texture2D maskTex, Texture2D mapTex, float hasMap, Texture2D pathTex,
+            half3 EvalEmissionSlot(EmSlot s, Texture2D maskTex, Texture2D mapTex, float hasMap, Texture2D pathTex, Texture2D scanRamp,
                 float2 uv, float3 wPos, float3 N, float3 viewDir, float2 vT, float proxAlpha, bool alAvail, float litFactor)
             {
                 if (s.enable < 0.5) return half3(0, 0, 0);
@@ -2609,11 +2749,36 @@ Shader "Zetph/ZetsFancyShader"
                         // and length then share one ruler, so a band crosses the whole
                         // avatar as a single wave instead of each mesh sweeping its own
                         // space at its own apparent speed.
-                        float3 op = mul(unity_WorldToObject, float4(wPos, 1.0)).xyz;
+                        // Measured in world space, not the renderer's own space. Pushing a
+                        // skinned position back through unity_WorldToObject reinterprets the
+                        // direction through that renderer's rotation and origin, so separate
+                        // renderers disagreed about which way "up" was and the band jumped
+                        // between them - and a raised limb could sweep the wrong way.
+                        // World space gives every material one absolute direction.
+                        float3 origin = float3(unity_ObjectToWorld._m03,
+                                               unity_ObjectToWorld._m13,
+                                               unity_ObjectToWorld._m23);
+                        // Pure world space by default, so every material shares one ruler and syncs
+                        // automatically at a given speed with no offsets to tune. Anchoring instead
+                        // subtracts each renderer's own origin, and renderers on an avatar do not
+                        // share one - a body at the root and an outfit from its own prefab measure
+                        // from different points and drift apart. Anchor only for a single mesh.
+                        float3 p = (s.scanAnchor > 0.5) ? (wPos - origin) : wPos;
                         float3 ax = s.scanAxis;
                         if (dot(ax, ax) < 1e-6) ax = float3(0, 1, 0);
-                        float a = dot(op, normalize(ax));
-                        axis = (a - s.scanOrigin) / max(s.scanExtent, 0.001);
+                        if (s.scanShape > 0.5) {
+                            // Radial: a sphere expanding from a point rather than a plane
+                            // sliding one way. A plane can only travel in one direction, so
+                            // it cannot run along both an arm and a leg at once - and a UV
+                            // sweep lights each hair card separately, because every card is
+                            // its own island. A sphere travels outward along every limb
+                            // simultaneously and is continuous across islands, so one
+                            // setting covers the whole avatar.
+                            float3 c = origin + s.scanCenter;
+                            axis = (length(wPos - c) - s.scanOrigin) / max(s.scanExtent, 0.001);
+                        } else {
+                            axis = (dot(p, normalize(ax)) - s.scanOrigin) / max(s.scanExtent, 0.001);
+                        }
                     } else {
                         axis = (s.scanDir < 0.5) ? uv.y : uv.x;
                     }
@@ -2621,15 +2786,49 @@ Shader "Zetph/ZetsFancyShader"
                     if (s.scanPixels >= 1.0) axis = (floor(axis * s.scanPixels) + 0.5) / s.scanPixels;
                     float tt = _Time.y * s.scanSpeed;
                     // Loop = saw 0..1 wrap; Ping-Pong = triangle 0..1..0 (scanner bounce)
+                    // The cyclic distance below only holds when the coordinate lies inside
+                    // 0..1. In UV space it always does; in world space it is metres over a
+                    // span, so it runs negative and past 1 and the wrap produced a second,
+                    // spurious band - the jump seen before the sweep faded. Loop wraps the
+                    // coordinate so the band simply repeats every Sweep Length; Ping Pong
+                    // clamps, since it is meant to traverse once and turn around.
+                    axis = (s.scanMode > 0.5) ? saturate(axis) : frac(axis);
                     float pos = (s.scanMode > 0.5) ? abs(frac(tt * 0.5) * 2.0 - 1.0) : frac(tt);
                     pos = frac(pos + s.scanPhase);
                     // Loop wraps its position, so the distance must wrap with it, or the
                     // band reaches the end and vanishes instead of carrying on off one
                     // edge and re-entering from the other. Ping Pong bounces and must not
                     // wrap, or it would jump at the turnaround.
-                    float d = abs(axis - pos);
+                    float band;
+                    // Band Count repeats the band evenly through the cycle, so several
+                    // travel together rather than one lonely bar.
+                    // Whole bands only: fractional counts leave a partial band at the cycle
+                    // seam that pops in and out as it wraps.
+                    float cyc = max(floor(s.scanCount + 0.5), 1.0);
+                    float dAxis = frac(axis * cyc);
+                    float dPos  = frac(pos * cyc);
+                    float d = abs(dAxis - dPos);
                     if (s.scanMode < 0.5) d = min(d, 1.0 - d);
-                    float band = 1.0 - smoothstep(s.scanWidth * 0.5, s.scanWidth * 0.5 + s.scanSoft + 1e-4, d);
+                    if (s.scanCurveOn > 0.5) {
+                        // The curve is the band's whole profile, painted: brightness over
+                        // the distance behind the band's position, left edge at the band.
+                        // Width, softness and trail are all expressed by the texture, so
+                        // they are skipped - echoes and double-pulses come free.
+                        float cu = (s.scanMode < 0.5) ? frac(dPos - dAxis) : abs(dPos - dAxis);
+                        band = scanRamp.Sample(sampler_LinearClamp, float2(cu, 0.5)).r;
+                    } else if (s.scanTrail > 0.001) {
+                        // A comet rather than a bar: sharp at the leading edge, fading
+                        // behind. Symmetric falloff reads as a bar sliding past; the
+                        // asymmetry is what makes it look like something travelling.
+                        float sd = dAxis - dPos;
+                        if (s.scanMode < 0.5 && abs(sd) > 0.5) sd -= sign(sd);
+                        float tail = s.scanWidth * 0.5 + s.scanTrail * 0.5;
+                        band = (sd <= 0.0)
+                             ? 1.0 - smoothstep(s.scanWidth * 0.5, s.scanWidth * 0.5 + s.scanSoft + 1e-4, -sd)
+                             : 1.0 - smoothstep(s.scanWidth * 0.25, tail + 1e-4, sd);
+                    } else {
+                        band = 1.0 - smoothstep(s.scanWidth * 0.5, s.scanWidth * 0.5 + s.scanSoft + 1e-4, d);
+                    }
                     // glitch: punch random pixels out of the band, refreshed ~8x/sec
                     if (s.scanGlitch > 0.001) {
                         float gpx = (s.scanPixels >= 1.0) ? s.scanPixels : 64.0;
@@ -2668,6 +2867,7 @@ Shader "Zetph/ZetsFancyShader"
             #pragma shader_feature_local _ ZET_GLITCH
             #pragma shader_feature_local _ ZET_IRID
             #pragma shader_feature_local _ ZET_STARS
+            #pragma shader_feature_local _ ZET_STARFALL
             #pragma shader_feature_local _ ZET_GLITTER
             #pragma shader_feature_local _ ZET_DIFFRACT
             #pragma shader_feature_local _ ZET_INFINITY
@@ -2709,16 +2909,19 @@ Shader "Zetph/ZetsFancyShader"
                 #if defined(ZET_EM1)
                     Texture2D _Em1Mask;
                     Texture2D _Em1Map;
+                    Texture2D _Em1ScanRamp;
             Texture2D _Em1PathTex;
                 #endif
                 #if defined(ZET_EM2)
                     Texture2D _Em2Mask;
                     Texture2D _Em2Map;
+                    Texture2D _Em2ScanRamp;
             Texture2D _Em2PathTex;
                 #endif
                 #if defined(ZET_EM3)
                     Texture2D _Em3Mask;
                     Texture2D _Em3Map;
+                    Texture2D _Em3ScanRamp;
             Texture2D _Em3PathTex;
                 #endif
                 #if defined(ZET_DEC1)
@@ -2731,11 +2934,11 @@ Shader "Zetph/ZetsFancyShader"
                     Texture2D _Decal3Tex;
                 #endif
             struct appdata {
-                float4 vertex : POSITION; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0; float2 uv1 : TEXCOORD1;
+                float4 vertex : POSITION; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0; float2 uv1 : TEXCOORD1; float2 uv2 : TEXCOORD2; float2 uv3 : TEXCOORD3;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct v2g {
-                float4 objPos : TEXCOORD1; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0;
+                float4 objPos : TEXCOORD1; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0; float2 uvA : TEXCOORD2;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct g2f {
@@ -2752,6 +2955,7 @@ Shader "Zetph/ZetsFancyShader"
                 float3 vLights : TEXCOORD8;
                 #endif
                 noperspective float2 uvAffine : TEXCOORD9;
+                float2 uvA : TEXCOORD10;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             v2g vert(appdata v) {
@@ -2764,6 +2968,15 @@ Shader "Zetph/ZetsFancyShader"
                 float3 zn = v.normal;
                 float3 zt = v.tangent.xyz;
                 ZetApplyVertexAL(zp, zn, zt, v.uv, o.uv);
+                // Base albedo UV channel select. UV0 rides the existing ST-transformed
+                // uv untouched (AL vertex morphs included), so the default path is
+                // bit-identical to before this feature; other channels get the same
+                // _MainTex tiling/offset applied.
+                o.uvA = o.uv;
+                if (_MainTexUV > 0.5) {
+                    float2 zUVSel = (_MainTexUV < 1.5) ? v.uv1 : (_MainTexUV < 2.5) ? v.uv2 : v.uv3;
+                    o.uvA = zUVSel * _MainTex_ST.xy + _MainTex_ST.zw;
+                }
                 ZetApplyPlasmaDisplace(zp, zn);
                 o.objPos = float4(zp, v.vertex.w);
                 o.normal = zn;
@@ -2804,6 +3017,7 @@ Shader "Zetph/ZetsFancyShader"
                 o.normal  = normalize(patch[0].normal * b.x + patch[1].normal * b.y + patch[2].normal * b.z);
                 o.tangent = float4(normalize(patch[0].tangent.xyz * b.x + patch[1].tangent.xyz * b.y + patch[2].tangent.xyz * b.z), patch[0].tangent.w);
                 o.uv      = patch[0].uv * b.x + patch[1].uv * b.y + patch[2].uv * b.z;
+                o.uvA     = patch[0].uvA * b.x + patch[1].uvA * b.y + patch[2].uvA * b.z;
                 // Push the new vertex along its normal by the height map. Sampled at LOD 0
                 // because the domain stage has no screen-space derivatives, and centred on
                 // Surface Level so mid-grey means no change and the map can carve inward
@@ -2871,7 +3085,7 @@ Shader "Zetph/ZetsFancyShader"
                         g2f o; UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                         float3 p = i[k].objPos.xyz - i[k].normal * 0.005;
                         o.pos = ZetVertexSnap(UnityObjectToClipPos(float4(p, 1)));
-                        o.uv = i[k].uv; o.uvAffine = o.uv; o.fx = float4(-1.0, heat, 0, 0.0);
+                        o.uv = i[k].uv; o.uvA = i[k].uvA; o.uvAffine = o.uv; o.fx = float4(-1.0, heat, 0, 0.0);
                         o.wNrm = UnityObjectToWorldNormal(i[k].normal);
                         o.wTan = float4(UnityObjectToWorldDir(i[k].tangent.xyz), i[k].tangent.w);
                         o.wPos = mul(unity_ObjectToWorld, float4(p, 1)).xyz;
@@ -2918,7 +3132,7 @@ Shader "Zetph/ZetsFancyShader"
                         p += glitchDir * _GlitchIntensity * glitchAmt * active;
                     }
                     o.pos = ZetVertexSnap(UnityObjectToClipPos(float4(p, 1)));
-                    o.uv = i[j].uv; o.uvAffine = o.uv; o.fx = float4(t, heat, glitchAmt, 0.0);
+                    o.uv = i[j].uv; o.uvA = i[j].uvA; o.uvAffine = o.uv; o.fx = float4(t, heat, glitchAmt, 0.0);
                     o.wNrm = UnityObjectToWorldNormal(rotAround(i[j].normal, axis, ang));
                     o.wTan = float4(UnityObjectToWorldDir(rotAround(i[j].tangent.xyz, axis, ang)), i[j].tangent.w);
                     o.wPos = mul(unity_ObjectToWorld, float4(p, 1)).xyz;
@@ -3029,7 +3243,7 @@ Shader "Zetph/ZetsFancyShader"
                                 p += n * rPhase * _SpeakerIntensity; 
                                 p += n * (rPhase * rPhase * _SpeakerExpansion); 
                                 o.pos = ZetVertexSnap(UnityObjectToClipPos(float4(p, 1))); 
-                                o.uv = i[idx].uv; o.uvAffine = o.uv; 
+                                o.uv = i[idx].uv; o.uvA = i[idx].uvA; o.uvAffine = o.uv; 
                                 // fx: y = birth flash, z = beat strength, w = phase + 1
                                 o.fx = float4(0, ringFlash[rr], ringAud[rr], rPhase + 1.0); 
                                 
@@ -3174,7 +3388,9 @@ Shader "Zetph/ZetsFancyShader"
                     if (pMask > 0.001) {
                         float2 pdir = vT / max(dot(viewDir, N), 0.1);
                         float2 pUV = ParallaxOcclusion(_HeightMap, sampler_MainTex, i.uv, pdir, _ParallaxStrength, _ParallaxOffset, _ParallaxMipBias);
-                        i.uv = lerp(i.uv, pUV, pMask);
+                        float2 zPDelta = lerp(i.uv, pUV, pMask) - i.uv;
+                        i.uv += zPDelta;
+                        i.uvA += zPDelta;   // albedo follows the same height offset on its own channel
                     }
                 }
                 half proxAlpha = 1.0; if (_ProximityFade > 0.5) proxAlpha = smoothstep(_ProxMin, _ProxMax, distance(_WorldSpaceCameraPos, i.wPos));
@@ -3234,7 +3450,13 @@ Shader "Zetph/ZetsFancyShader"
                     }
                     N = -N; B = -B; vT.y = -vT.y;   // v64: flip the whole frame
                 }
-                fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uv);
+                fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uvA);
+                // Base tint, rgb and alpha both. Without the alpha multiply there was
+                // no way to make an untextured material transparent: the default white
+                // sample carries alpha 1, so Transparent mode blended correctly but
+                // always with full opacity.
+                albedo *= _Color;
+                if (_RegionTintEnable > 0.5) albedo.rgb = ZetRegionTint(albedo.rgb, i.uvA);
             #if defined(ZET_DETAIL)
                 if (_DetailEnable > 0.5) {
                     half dMask = _DetailMask.Sample(sampler_LinearRepeat, i.uv).r;
@@ -3246,7 +3468,7 @@ Shader "Zetph/ZetsFancyShader"
             #endif
                 half outAlpha = 1.0;
                 if (_AlphaMode > 0.5) {
-                    half op = GetOpacity(albedo.a, i.uv);
+                    half op = GetOpacity(albedo.a, i.uvA);
                     if (_AlphaMode > 1.5) {
                         // Transparent: straight alpha blend
                         outAlpha = saturate(op);
@@ -3260,7 +3482,7 @@ Shader "Zetph/ZetsFancyShader"
                 }
                 if (i.fx.z > 0.001) {
                     float2 split = float2(_GlitchRGBSplit * i.fx.z, 0);
-                    albedo.r = _MainTex.Sample(sampler_MainTex, i.uv + split).r; albedo.b = _MainTex.Sample(sampler_MainTex, i.uv - split).b;
+                    albedo.r = _MainTex.Sample(sampler_MainTex, i.uvA + split).r; albedo.b = _MainTex.Sample(sampler_MainTex, i.uvA - split).b;
                     if (_GlitchHue > 0.001) {
                         float3 voxel = floor(i.wPos * _GlitchSlices); float2 seed = float2(voxel.x * 3.1 + voxel.z * 7.3, voxel.y * 5.1 + floor(_Time.y * 15.0));
                         if (step(0.7, hash2(seed)) > 0.5) {
@@ -3461,7 +3683,10 @@ Shader "Zetph/ZetsFancyShader"
                         }
                     }
                 }
-                float3 H = normalize(zLightDir + viewDir);
+                // Built from the real light: the anisotropic streak and the stylised
+                // specular both read this, and neither should swing to a probe-derived
+                // direction when a world happens to have no realtime light.
+                float3 H = normalize(_WorldSpaceLightPos0.xyz + viewDir);
                 float ndl = dot(n, zLightDir);
                 #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN)
                     float atten = 1.0;
@@ -3497,7 +3722,12 @@ Shader "Zetph/ZetsFancyShader"
                 // eliminates the writes.
                 half3 dbgLTCGI = 0;
                 half3 dbgRefl  = 0;
-                half3 ambient = ShadeSH9(half4(n, 1)) * ao;
+                // max() matters: second-order SH goes NEGATIVE on away-facing normals
+                // in high-contrast probe worlds (dark room, one bright opening), and
+                // unclamped it subtracts per-channel - crushed, hue-skewed shadows in
+                // exactly those worlds. The probe-direction path below already guards
+                // its own ShadeSH9 the same way.
+                half3 ambient = max(ShadeSH9(half4(n, 1)), 0.0) * ao;
                 half3 lvSpecAdd = half3(0, 0, 0);
                 #if defined(ZET_LV_OK)
                     // VRC Light Volumes: per-pixel voxel probes replace the blended
@@ -3520,7 +3750,7 @@ Shader "Zetph/ZetsFancyShader"
                         #endif
                         // ambient already holds the ShadeSH9 value, so the off-path
                         // needs no else branch.
-                        ambient = LightVolumeEvaluate(n, lvL0, lvL1r, lvL1g, lvL1b) * ao * _LightVolumesStrength;
+                        ambient = max(LightVolumeEvaluate(n, lvL0, lvL1r, lvL1g, lvL1b), 0.0) * ao * _LightVolumesStrength;
                         // Speculars are added to col later, NOT multiplied by albedo
                         // (the specColor variant already carries the F0 tint).
                         if (_LightVolumesSpec > 0.5)
@@ -3645,7 +3875,17 @@ Shader "Zetph/ZetsFancyShader"
                 half3 zProbeSpec = (_LightingModel > 0.5 && _LightingModel < 1.5)
                                  ? zProbeCol * ZetGGXSpecular(n, viewDir, zLightDir, smoothness, specCol) * zProbeAmt
                                  : half3(0, 0, 0);
-                fixed4 col = fixed4(diffuseCol * (direct + ambient + zProbeDirect + sssAdd), 1.0);
+                half3 zDiffLight = direct + ambient + zProbeDirect + sssAdd;
+                // Opt-in floor for pitch-black worlds: at the default Min of 0 this
+                // branch never fires and the composition is identical to before. When
+                // raised, the total light fades toward a NEUTRAL grey floor as it
+                // approaches black, so near-dark shadows desaturate instead of
+                // collapsing into the albedo's hue. Floors the total (ambient
+                // included), which the realtime-only clamp above cannot do.
+                half zDLum = dot(zDiffLight, half3(0.299, 0.587, 0.114));
+                if (zDLum < _MinBrightness)
+                    zDiffLight = lerp(half3(_MinBrightness, _MinBrightness, _MinBrightness), zDiffLight, zDLum / max(_MinBrightness, 1e-4));
+                fixed4 col = fixed4(diffuseCol * zDiffLight, 1.0);
                 col.rgb += zProbeSpec;
                 col.rgb += lvSpecAdd;
                 col.rgb += vrslSpec * specCol;
@@ -3788,12 +4028,12 @@ Shader "Zetph/ZetsFancyShader"
                 s0.mode = _Em0Mode; s0.pulseScale = _Em0PulseScale; s0.projCenter = _Em0Center.xy; s0.alEnable = _Em0ALEnable; s0.multBand = _Em0MultBand; s0.multAmt = _Em0MultAmt; s0.addBand = _Em0AddBand; s0.addAmt = _Em0AddAmt; s0.volBoost = _Em0VolBoost; s0.volAmt = _Em0VolAmt;
                 s0.intensity = _Em0Intensity; s0.edgeStrength = _Em0EdgeGlow; s0.edgePower = _Em0EdgePower; s0.lightBased = _Em0LightBased; s0.minEmiss = _Em0MinEmiss; s0.maxEmiss = _Em0MaxEmiss;
                 s0.minLight = _Em0MinLight; s0.maxLight = _Em0MaxLight; s0.blinkOn = _Em0Blink; s0.blinkSpeed = _Em0BlinkSpeed; s0.blinkMin = _Em0BlinkMin;
-                s0.scanOn = _Em0Scan; s0.scanDir = _Em0ScanDir; s0.scanSpace = _Em0ScanSpace; s0.scanExtent = _Em0ScanExtent; s0.scanAxis = _Em0ScanAxis.xyz; s0.scanOrigin = _Em0ScanOrigin; s0.scanPhase = _Em0ScanPhase; s0.scanMode = _Em0ScanMode; s0.scanSpeed = _Em0ScanSpeed; s0.scanWidth = _Em0ScanWidth; s0.scanSoft = _Em0ScanSoft; s0.scanFloor = _Em0ScanFloor; s0.scanPixels = _Em0ScanPixels; s0.scanGlitch = _Em0ScanGlitch;
+                s0.scanOn = _Em0Scan; s0.scanDir = _Em0ScanDir; s0.scanSpace = _Em0ScanSpace; s0.scanExtent = _Em0ScanExtent; s0.scanAxis = _Em0ScanAxis.xyz; s0.scanOrigin = _Em0ScanOrigin; s0.scanPhase = _Em0ScanPhase; s0.scanAnchor = _Em0ScanAnchor; s0.scanShape = _Em0ScanShape; s0.scanTrail = _Em0ScanTrail; s0.scanCount = _Em0ScanCount; s0.scanCurveOn = _Em0ScanCurveOn; s0.scanCenter = _Em0ScanCenter.xyz; s0.scanMode = _Em0ScanMode; s0.scanSpeed = _Em0ScanSpeed; s0.scanWidth = _Em0ScanWidth; s0.scanSoft = _Em0ScanSoft; s0.scanFloor = _Em0ScanFloor; s0.scanPixels = _Em0ScanPixels; s0.scanGlitch = _Em0ScanGlitch;
                 // Dissolve burn edge. Computed further up alongside the clip, but never
                 // added to the output, so the glow could not appear however wide the
                 // edge was set. Added here with the other emissive contributions.
                 col.rgb += ZetLightHarmony(burnGlow * _DissolveGlow, zAmbient, zDirect, _Em0Harmony, _Em0HarmonyAmt, _Em0HarmonyComp, _Em0HarmonyPurity);
-                col.rgb += ZetLightHarmony(EvalEmissionSlot(s0, _Em0Mask, _Em0Map, _HasEm0Map, _Em0PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em0Harmony, _Em0HarmonyAmt, _Em0HarmonyComp, _Em0HarmonyPurity);
+                col.rgb += ZetLightHarmony(EvalEmissionSlot(s0, _Em0Mask, _Em0Map, _HasEm0Map, _Em0PathTex, _Em0ScanRamp, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em0Harmony, _Em0HarmonyAmt, _Em0HarmonyComp, _Em0HarmonyPurity);
             #endif
             #if defined(ZET_INFINITY)
                 col.rgb += ZetLightHarmony(
@@ -3808,8 +4048,8 @@ Shader "Zetph/ZetsFancyShader"
                 s1.mode = _Em1Mode; s1.pulseScale = _Em1PulseScale; s1.projCenter = _Em1Center.xy; s1.alEnable = _Em1ALEnable; s1.multBand = _Em1MultBand; s1.multAmt = _Em1MultAmt; s1.addBand = _Em1AddBand; s1.addAmt = _Em1AddAmt; s1.volBoost = _Em1VolBoost; s1.volAmt = _Em1VolAmt;
                 s1.intensity = _Em1Intensity; s1.edgeStrength = _Em1EdgeGlow; s1.edgePower = _Em1EdgePower; s1.lightBased = _Em1LightBased; s1.minEmiss = _Em1MinEmiss; s1.maxEmiss = _Em1MaxEmiss;
                 s1.minLight = _Em1MinLight; s1.maxLight = _Em1MaxLight; s1.blinkOn = _Em1Blink; s1.blinkSpeed = _Em1BlinkSpeed; s1.blinkMin = _Em1BlinkMin;
-                s1.scanOn = _Em1Scan; s1.scanDir = _Em1ScanDir; s1.scanSpace = _Em1ScanSpace; s1.scanExtent = _Em1ScanExtent; s1.scanAxis = _Em1ScanAxis.xyz; s1.scanOrigin = _Em1ScanOrigin; s1.scanPhase = _Em1ScanPhase; s1.scanMode = _Em1ScanMode; s1.scanSpeed = _Em1ScanSpeed; s1.scanWidth = _Em1ScanWidth; s1.scanSoft = _Em1ScanSoft; s1.scanFloor = _Em1ScanFloor; s1.scanPixels = _Em1ScanPixels; s1.scanGlitch = _Em1ScanGlitch;
-                col.rgb += ZetLightHarmony(EvalEmissionSlot(s1, _Em1Mask, _Em1Map, _HasEm1Map, _Em1PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em1Harmony, _Em1HarmonyAmt, _Em1HarmonyComp, _Em1HarmonyPurity);
+                s1.scanOn = _Em1Scan; s1.scanDir = _Em1ScanDir; s1.scanSpace = _Em1ScanSpace; s1.scanExtent = _Em1ScanExtent; s1.scanAxis = _Em1ScanAxis.xyz; s1.scanOrigin = _Em1ScanOrigin; s1.scanPhase = _Em1ScanPhase; s1.scanAnchor = _Em1ScanAnchor; s1.scanShape = _Em1ScanShape; s1.scanTrail = _Em1ScanTrail; s1.scanCount = _Em1ScanCount; s1.scanCurveOn = _Em1ScanCurveOn; s1.scanCenter = _Em1ScanCenter.xyz; s1.scanMode = _Em1ScanMode; s1.scanSpeed = _Em1ScanSpeed; s1.scanWidth = _Em1ScanWidth; s1.scanSoft = _Em1ScanSoft; s1.scanFloor = _Em1ScanFloor; s1.scanPixels = _Em1ScanPixels; s1.scanGlitch = _Em1ScanGlitch;
+                col.rgb += ZetLightHarmony(EvalEmissionSlot(s1, _Em1Mask, _Em1Map, _HasEm1Map, _Em1PathTex, _Em1ScanRamp, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em1Harmony, _Em1HarmonyAmt, _Em1HarmonyComp, _Em1HarmonyPurity);
                 #endif
                 #if defined(ZET_EM2)
                 EmSlot s2;
@@ -3817,8 +4057,8 @@ Shader "Zetph/ZetsFancyShader"
                 s2.mode = _Em2Mode; s2.pulseScale = _Em2PulseScale; s2.projCenter = _Em2Center.xy; s2.alEnable = _Em2ALEnable; s2.multBand = _Em2MultBand; s2.multAmt = _Em2MultAmt; s2.addBand = _Em2AddBand; s2.addAmt = _Em2AddAmt; s2.volBoost = _Em2VolBoost; s2.volAmt = _Em2VolAmt;
                 s2.intensity = _Em2Intensity; s2.edgeStrength = _Em2EdgeGlow; s2.edgePower = _Em2EdgePower; s2.lightBased = _Em2LightBased; s2.minEmiss = _Em2MinEmiss; s2.maxEmiss = _Em2MaxEmiss;
                 s2.minLight = _Em2MinLight; s2.maxLight = _Em2MaxLight; s2.blinkOn = _Em2Blink; s2.blinkSpeed = _Em2BlinkSpeed; s2.blinkMin = _Em2BlinkMin;
-                s2.scanOn = _Em2Scan; s2.scanDir = _Em2ScanDir; s2.scanSpace = _Em2ScanSpace; s2.scanExtent = _Em2ScanExtent; s2.scanAxis = _Em2ScanAxis.xyz; s2.scanOrigin = _Em2ScanOrigin; s2.scanPhase = _Em2ScanPhase; s2.scanMode = _Em2ScanMode; s2.scanSpeed = _Em2ScanSpeed; s2.scanWidth = _Em2ScanWidth; s2.scanSoft = _Em2ScanSoft; s2.scanFloor = _Em2ScanFloor; s2.scanPixels = _Em2ScanPixels; s2.scanGlitch = _Em2ScanGlitch;
-                col.rgb += ZetLightHarmony(EvalEmissionSlot(s2, _Em2Mask, _Em2Map, _HasEm2Map, _Em2PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em2Harmony, _Em2HarmonyAmt, _Em2HarmonyComp, _Em2HarmonyPurity);
+                s2.scanOn = _Em2Scan; s2.scanDir = _Em2ScanDir; s2.scanSpace = _Em2ScanSpace; s2.scanExtent = _Em2ScanExtent; s2.scanAxis = _Em2ScanAxis.xyz; s2.scanOrigin = _Em2ScanOrigin; s2.scanPhase = _Em2ScanPhase; s2.scanAnchor = _Em2ScanAnchor; s2.scanShape = _Em2ScanShape; s2.scanTrail = _Em2ScanTrail; s2.scanCount = _Em2ScanCount; s2.scanCurveOn = _Em2ScanCurveOn; s2.scanCenter = _Em2ScanCenter.xyz; s2.scanMode = _Em2ScanMode; s2.scanSpeed = _Em2ScanSpeed; s2.scanWidth = _Em2ScanWidth; s2.scanSoft = _Em2ScanSoft; s2.scanFloor = _Em2ScanFloor; s2.scanPixels = _Em2ScanPixels; s2.scanGlitch = _Em2ScanGlitch;
+                col.rgb += ZetLightHarmony(EvalEmissionSlot(s2, _Em2Mask, _Em2Map, _HasEm2Map, _Em2PathTex, _Em2ScanRamp, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em2Harmony, _Em2HarmonyAmt, _Em2HarmonyComp, _Em2HarmonyPurity);
                 #endif
                 #if defined(ZET_EM3)
                 EmSlot s3;
@@ -3826,8 +4066,8 @@ Shader "Zetph/ZetsFancyShader"
                 s3.mode = _Em3Mode; s3.pulseScale = _Em3PulseScale; s3.projCenter = _Em3Center.xy; s3.alEnable = _Em3ALEnable; s3.multBand = _Em3MultBand; s3.multAmt = _Em3MultAmt; s3.addBand = _Em3AddBand; s3.addAmt = _Em3AddAmt; s3.volBoost = _Em3VolBoost; s3.volAmt = _Em3VolAmt;
                 s3.intensity = _Em3Intensity; s3.edgeStrength = _Em3EdgeGlow; s3.edgePower = _Em3EdgePower; s3.lightBased = _Em3LightBased; s3.minEmiss = _Em3MinEmiss; s3.maxEmiss = _Em3MaxEmiss;
                 s3.minLight = _Em3MinLight; s3.maxLight = _Em3MaxLight; s3.blinkOn = _Em3Blink; s3.blinkSpeed = _Em3BlinkSpeed; s3.blinkMin = _Em3BlinkMin;
-                s3.scanOn = _Em3Scan; s3.scanDir = _Em3ScanDir; s3.scanSpace = _Em3ScanSpace; s3.scanExtent = _Em3ScanExtent; s3.scanAxis = _Em3ScanAxis.xyz; s3.scanOrigin = _Em3ScanOrigin; s3.scanPhase = _Em3ScanPhase; s3.scanMode = _Em3ScanMode; s3.scanSpeed = _Em3ScanSpeed; s3.scanWidth = _Em3ScanWidth; s3.scanSoft = _Em3ScanSoft; s3.scanFloor = _Em3ScanFloor; s3.scanPixels = _Em3ScanPixels; s3.scanGlitch = _Em3ScanGlitch;
-                col.rgb += ZetLightHarmony(EvalEmissionSlot(s3, _Em3Mask, _Em3Map, _HasEm3Map, _Em3PathTex, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em3Harmony, _Em3HarmonyAmt, _Em3HarmonyComp, _Em3HarmonyPurity);
+                s3.scanOn = _Em3Scan; s3.scanDir = _Em3ScanDir; s3.scanSpace = _Em3ScanSpace; s3.scanExtent = _Em3ScanExtent; s3.scanAxis = _Em3ScanAxis.xyz; s3.scanOrigin = _Em3ScanOrigin; s3.scanPhase = _Em3ScanPhase; s3.scanAnchor = _Em3ScanAnchor; s3.scanShape = _Em3ScanShape; s3.scanTrail = _Em3ScanTrail; s3.scanCount = _Em3ScanCount; s3.scanCurveOn = _Em3ScanCurveOn; s3.scanCenter = _Em3ScanCenter.xyz; s3.scanMode = _Em3ScanMode; s3.scanSpeed = _Em3ScanSpeed; s3.scanWidth = _Em3ScanWidth; s3.scanSoft = _Em3ScanSoft; s3.scanFloor = _Em3ScanFloor; s3.scanPixels = _Em3ScanPixels; s3.scanGlitch = _Em3ScanGlitch;
+                col.rgb += ZetLightHarmony(EvalEmissionSlot(s3, _Em3Mask, _Em3Map, _HasEm3Map, _Em3PathTex, _Em3ScanRamp, i.uv, i.wPos, N, viewDir, vT, proxAlpha, alAvail, ramp), zAmbient, zDirect, _Em3Harmony, _Em3HarmonyAmt, _Em3HarmonyComp, _Em3HarmonyPurity);
                 #endif
                 col.rgb += decalEmiss;
 //ifex _RefractEnable==0
@@ -4360,6 +4600,110 @@ Shader "Zetph/ZetsFancyShader"
                     }
                 }
             #endif
+
+            #if defined(ZET_STARFALL)
+                if (_SFEnable > 0.5) {
+                    // Shooting stars: thin lines of light falling through space, each with
+                    // a bright head and a comet tail. Space is divided into cells along
+                    // BOTH axes perpendicular to the fall direction - one axis alone gives
+                    // slabs, which wrap the body as bands rather than reading as streaks.
+                    // Each cell holds one line at a hashed offset, with its own phase and
+                    // speed, and the surface lights up where a line passes through it.
+                    // Two spaces. UV travels along the surface itself - wrist to
+                    // fingertip on a sleeve - which is what "streaks running along the
+                    // material" means, and needs no world direction to aim. World space
+                    // is volumetric rain passing through the avatar, which syncs across
+                    // materials but cannot follow a limb. UV is the default because it
+                    // is the one that behaves without adjustment.
+                    float2 cellUV; float sfAlong;
+                    if (_SFSpace < 0.5) {
+                        float ra = radians(_SFAngle);
+                        float2 sfDir2 = float2(sin(ra), cos(ra));
+                        // A single angle cannot serve islands laid out differently - an
+                        // arm running across the UV and a leg running down it want
+                        // different directions on the same material. The flow map paints
+                        // the direction per pixel, the same way the aniso flow map does.
+                        if (_SFDirMode > 1.5) {
+                            // Painted per-pixel direction: handles any island layout,
+                            // and lets streaks curve.
+                            float2 fl = _SFFlowMap.Sample(sampler_LinearRepeat, i.uv).rg * 2.0 - 1.0;
+                            if (dot(fl, fl) > 1e-4) sfDir2 = normalize(fl);
+                        } else if (_SFDirMode > 0.5) {
+                            // World Guided: project a world direction into UV through the
+                            // tangent frame. The frame rotates with each island, so one
+                            // setting flows correctly on islands that are rotated or
+                            // mirrored copies of each other - the case no fixed angle can
+                            // reconcile, because in UV alone the information is not there.
+                            float3 gT = normalize(i.wTan.xyz);
+                            float3 gB = cross(normalize(i.wNrm), gT) * i.wTan.w;
+                            float3 gW = _SFDir.xyz;
+                            if (dot(gW, gW) < 1e-6) gW = float3(0, -1, 0);
+                            float2 g = float2(dot(gW, gT), dot(gW, gB));
+                            if (dot(g, g) > 1e-5) sfDir2 = normalize(g);
+                        } else if (_SFFixMirror > 0.5) {
+                            // Fixed angle: at least correct true mirrored islands, whose
+                            // flip the tangent's w records. Rotated islands need one of
+                            // the modes above.
+                            sfDir2.x *= (i.wTan.w < 0.0) ? -1.0 : 1.0;
+                        }
+                        float2 sfPerp = float2(sfDir2.y, -sfDir2.x);
+                        // One perpendicular carries the columns; travel distance uses the
+                        // full UV so the streak crosses the island end to end.
+                        cellUV = float2(dot(i.uv, sfPerp) * _SFDensity, 0.0);
+                        sfAlong = dot(i.uv, sfDir2);
+                    } else {
+                        float3 sfAx = _SFDir.xyz;
+                        if (dot(sfAx, sfAx) < 1e-6) sfAx = float3(0, -1, 0);
+                        sfAx = normalize(sfAx);
+                        float3 sfRef = (abs(sfAx.y) < 0.9) ? float3(0, 1, 0) : float3(1, 0, 0);
+                        float3 sfU = normalize(cross(sfAx, sfRef));
+                        float3 sfV = cross(sfAx, sfU);
+                        float3 sfOrigin = float3(unity_ObjectToWorld._m03,
+                                                 unity_ObjectToWorld._m13,
+                                                 unity_ObjectToWorld._m23);
+                        float3 sfP = i.wPos - sfOrigin;
+                        cellUV = float2(dot(sfP, sfU), dot(sfP, sfV)) * _SFDensity;
+                        sfAlong = dot(sfP, sfAx) / max(_SFSpan, 0.001);
+                    }
+                    float2 sfCell = floor(cellUV);
+                    float2 rnd = hash2D(sfCell + 41.7);
+                    // Sky Fill: not every cell holds a streak, or high densities read as
+                    // uniform rain rather than scattered shooting stars.
+                    if (rnd.x < _SFFill) {
+                        float2 h2 = hash2D(sfCell + 7.3);
+                        float2 lineOff = (h2 - 0.5) * 0.7;
+                        // In UV mode the second cell axis is unused, so the distance is
+                        // one-dimensional there and radial in world mode.
+                        float2 cellFrac = frac(cellUV) - 0.5;
+                        float perp = (_SFSpace < 0.5) ? abs(cellFrac.x - lineOff.x)
+                                                      : length(cellFrac - lineOff);
+                        float across = 1.0 - smoothstep(_SFThick, _SFThick * 2.0 + 0.01, perp);
+                        if (across > 0.001) {
+                            float spd = 1.0 + (rnd.y - 0.5) * 2.0 * _SFSpeedVar;
+                            // Phase reuses the offset hash's second channel: one fewer
+                            // hash per pixel, still uncorrelated with the speed hash.
+                            float head = frac(_Time.y * _SFSpeed * spd * 0.25 + h2.y * 7.31);
+                            float dline = frac(head - sfAlong);
+                            // The head is an ellipse, not a box: measured jointly along
+                            // and across, so it reads as a round glowing point instead of
+                            // the rectangle a strip-times-cutoff intersection gives. The
+                            // tail tapers as it trails, which is what makes the comet
+                            // shape - wide and hot at the head, narrowing to a point.
+                            float tailN = dline / max(_SFTail, 0.02);
+                            float2 hd = float2(perp / max(_SFThick, 1e-3), dline / 0.035);
+                            float headG = 1.0 - smoothstep(0.5, 1.0, length(hd));
+                            float taperT = _SFThick * lerp(1.0, 0.2, saturate(tailN));
+                            float acrossT = 1.0 - smoothstep(taperT, taperT * 2.0 + 0.005, perp);
+                            float tailG = (1.0 - smoothstep(0.0, 1.0, tailN)) * acrossT * 0.55;
+                            float sfMaskV = _SFMask.Sample(sampler_LinearRepeat, i.uv).r;
+                            float sfSig = (_SFALEnable > 0.5 && alAvail) ? ALEnv((uint)_SFBand) : 0.0;
+                            col.rgb += _SFColor.rgb * (headG + tailG)
+                                     * _SFBrightness * (1.0 + sfSig * _SFAL)
+                                     * sfMaskV * proxAlpha;
+                        }
+                    }
+                }
+            #endif
                 
                 if (_EQEnable > 0.5 && alAvail) {
                     float eqMask = _EQMask.Sample(sampler_LinearClamp, i.uv).r;
@@ -4451,13 +4795,17 @@ Shader "Zetph/ZetsFancyShader"
             Name "OUTLINE"
             Tags { "LightMode" = "ForwardBase" }
             Cull Front
+            // Matches the material's blend so an outline on a transparent material
+            // fades with it instead of drawing an opaque shell through the surface.
+            Blend [_SrcBlend] [_DstBlend]
+            ZWrite [_ZWrite]
             CGPROGRAM
             #pragma vertex vertOL
             #pragma fragment fragOL
             #pragma target 5.0
             #pragma multi_compile_fog
-            struct appdataOL { float4 vertex : POSITION; float3 normal : NORMAL; float2 uv : TEXCOORD0; float2 uv1 : TEXCOORD1; float4 color : COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
-            struct v2fOL { float4 pos : SV_POSITION; float2 uv : TEXCOORD0; float3 wNrm : TEXCOORD1; UNITY_FOG_COORDS(2) UNITY_VERTEX_OUTPUT_STEREO };
+            struct appdataOL { float4 vertex : POSITION; float3 normal : NORMAL; float2 uv : TEXCOORD0; float2 uv1 : TEXCOORD1; float2 uv2 : TEXCOORD2; float2 uv3 : TEXCOORD3; float4 color : COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct v2fOL { float4 pos : SV_POSITION; float2 uv : TEXCOORD0; float3 wNrm : TEXCOORD1; UNITY_FOG_COORDS(2) float2 uvA : TEXCOORD3; UNITY_VERTEX_OUTPUT_STEREO };
             v2fOL vertOL(appdataOL v) {
                 v2fOL o;
                 UNITY_SETUP_INSTANCE_ID(v);
@@ -4469,6 +4817,13 @@ Shader "Zetph/ZetsFancyShader"
                     ZetApplyVertexAL(zp, zn, zt, v.uv, o.uv);
                     ZetApplyPlasmaDisplace(zp, zn);
                     v.vertex.xyz = zp; v.normal = zn;
+                }
+                // Albedo UV channel select - must match the lit passes or the outline
+                // tint/cutout reads a different texture region than the surface.
+                o.uvA = o.uv;
+                if (_MainTexUV > 0.5) {
+                    float2 zUVSel = (_MainTexUV < 1.5) ? v.uv1 : (_MainTexUV < 2.5) ? v.uv2 : v.uv3;
+                    o.uvA = zUVSel * _MainTex_ST.xy + _MainTex_ST.zw;
                 }
                 o.wNrm = UnityObjectToWorldNormal(v.normal);
                 float m = _OutlineStdMask.SampleLevel(sampler_LinearClamp, o.uv, 0).r;
@@ -4500,8 +4855,20 @@ Shader "Zetph/ZetsFancyShader"
                 ZetViewVisClip();
                 if (_RetroEnable > 0.5 && _RetroPixelate > 0.5) i.uv = (floor(i.uv * _RetroPixelRes) + 0.5) / _RetroPixelRes;
                 clip(_OutlineStdEnable - 0.5);
-                fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uv);
-                if (_AlphaMode > 0.5) clip(GetOpacity(albedo.a, i.uv) - _Cutoff);   // respect cutout/transparent shape
+                fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uvA);
+                // Base tint, rgb and alpha both. Without the alpha multiply there was
+                // no way to make an untextured material transparent: the default white
+                // sample carries alpha 1, so Transparent mode blended correctly but
+                // always with full opacity.
+                albedo *= _Color;
+                if (_RegionTintEnable > 0.5) albedo.rgb = ZetRegionTint(albedo.rgb, i.uvA);
+                half zOp = 1.0;
+                if (_AlphaMode > 0.5) {
+                    zOp = GetOpacity(albedo.a, i.uvA);
+                    // Cutout clips at the cutoff; the transparent family only discards
+                    // fully invisible pixels - cutoff is a cutout concept.
+                    clip(zOp - ((_AlphaMode > 1.5) ? 0.001 : _Cutoff));
+                }
                 half3 oc = _OutlineStdColor.rgb;
                 oc = lerp(oc, oc * albedo.rgb, saturate(_OutlineStdTexTint));
                 if (_OutlineStdLit > 0.5) {
@@ -4509,7 +4876,7 @@ Shader "Zetph/ZetsFancyShader"
                     half ndl = saturate(dot(n, _WorldSpaceLightPos0.xyz)) * 0.5 + 0.5;
                     oc *= saturate(_LightColor0.rgb * ndl + ShadeSH9(half4(n, 1)));
                 }
-                fixed4 col = fixed4(oc, 1.0);
+                fixed4 col = fixed4(oc, (_AlphaMode > 1.5) ? saturate(zOp) : 1.0);
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
@@ -4553,11 +4920,11 @@ Shader "Zetph/ZetsFancyShader"
                     Texture2D _Decal3Tex;
                 #endif
             struct appdata {
-                float4 vertex : POSITION; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0; float2 uv1 : TEXCOORD1;
+                float4 vertex : POSITION; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0; float2 uv1 : TEXCOORD1; float2 uv2 : TEXCOORD2; float2 uv3 : TEXCOORD3;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct v2g {
-                float4 objPos : TEXCOORD1; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0;
+                float4 objPos : TEXCOORD1; float3 normal : NORMAL; float4 tangent : TANGENT; float2 uv : TEXCOORD0; float2 uvA : TEXCOORD2;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct g2f {
@@ -4574,6 +4941,7 @@ Shader "Zetph/ZetsFancyShader"
                 float3 vLights : TEXCOORD8;
                 #endif
                 noperspective float2 uvAffine : TEXCOORD9;
+                float2 uvA : TEXCOORD10;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             v2g vert(appdata v) {
@@ -4586,6 +4954,15 @@ Shader "Zetph/ZetsFancyShader"
                 float3 zn = v.normal;
                 float3 zt = v.tangent.xyz;
                 ZetApplyVertexAL(zp, zn, zt, v.uv, o.uv);
+                // Base albedo UV channel select. UV0 rides the existing ST-transformed
+                // uv untouched (AL vertex morphs included), so the default path is
+                // bit-identical to before this feature; other channels get the same
+                // _MainTex tiling/offset applied.
+                o.uvA = o.uv;
+                if (_MainTexUV > 0.5) {
+                    float2 zUVSel = (_MainTexUV < 1.5) ? v.uv1 : (_MainTexUV < 2.5) ? v.uv2 : v.uv3;
+                    o.uvA = zUVSel * _MainTex_ST.xy + _MainTex_ST.zw;
+                }
                 ZetApplyPlasmaDisplace(zp, zn);
                 o.objPos = float4(zp, v.vertex.w);
                 o.normal = zn;
@@ -4626,6 +5003,7 @@ Shader "Zetph/ZetsFancyShader"
                 o.normal  = normalize(patch[0].normal * b.x + patch[1].normal * b.y + patch[2].normal * b.z);
                 o.tangent = float4(normalize(patch[0].tangent.xyz * b.x + patch[1].tangent.xyz * b.y + patch[2].tangent.xyz * b.z), patch[0].tangent.w);
                 o.uv      = patch[0].uv * b.x + patch[1].uv * b.y + patch[2].uv * b.z;
+                o.uvA     = patch[0].uvA * b.x + patch[1].uvA * b.y + patch[2].uvA * b.z;
                 // Push the new vertex along its normal by the height map. Sampled at LOD 0
                 // because the domain stage has no screen-space derivatives, and centred on
                 // Surface Level so mid-grey means no change and the map can carve inward
@@ -4714,7 +5092,7 @@ Shader "Zetph/ZetsFancyShader"
                         p += glitchDir * _GlitchIntensity * glitchAmt * active;
                     }
                     o.pos = ZetVertexSnap(UnityObjectToClipPos(float4(p, 1)));
-                    o.uv = i[j].uv; o.uvAffine = o.uv; o.fx = float4(t, heat, glitchAmt, 0.0);
+                    o.uv = i[j].uv; o.uvA = i[j].uvA; o.uvAffine = o.uv; o.fx = float4(t, heat, glitchAmt, 0.0);
                     o.wNrm = UnityObjectToWorldNormal(rotAround(i[j].normal, axis, ang));
                     o.wTan = float4(UnityObjectToWorldDir(rotAround(i[j].tangent.xyz, axis, ang)), i[j].tangent.w);
                     o.wPos = mul(unity_ObjectToWorld, float4(p, 1)).xyz;
@@ -4771,7 +5149,13 @@ Shader "Zetph/ZetsFancyShader"
                 if (i.fx.x < -0.5 || (facing < 0 && i.fx.x > 0.001)) return float4(0,0,0,1);
                 float bFade = _BreakFade; if (_BreakManual < 0.5) { float _bg = _BreakCoreGlow; ApplyBreakStyle(_BreakStyle, _bg, bFade); }
                 if (bFade > 0.001 && i.fx.x > 0.001) { float fadeN = hash2(i.uv * 97.0); clip(fadeN - saturate(i.fx.x) * bFade); }
-                fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uv);
+                fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uvA);
+                // Base tint, rgb and alpha both. Without the alpha multiply there was
+                // no way to make an untextured material transparent: the default white
+                // sample carries alpha 1, so Transparent mode blended correctly but
+                // always with full opacity.
+                albedo *= _Color;
+                if (_RegionTintEnable > 0.5) albedo.rgb = ZetRegionTint(albedo.rgb, i.uvA);
             #if defined(ZET_DETAIL)
                 if (_DetailEnable > 0.5) {
                     half dMask = _DetailMask.Sample(sampler_LinearRepeat, i.uv).r;
@@ -4781,14 +5165,19 @@ Shader "Zetph/ZetsFancyShader"
                     }
                 }
             #endif
+                half zOp = 1.0;
                 if (_AlphaMode > 0.5) {
-                    half op = GetOpacity(albedo.a, i.uv);
-                    if (_AlphaMode > 1.5) albedo.rgb *= saturate(op);   // additive light respects coverage when transparent
+                    half op = GetOpacity(albedo.a, i.uvA);
+                    // The whole pass output scales at the return, not albedo here:
+                    // specular, anisotropy and rim in this pass do not ride albedo,
+                    // so scaling albedo alone left them at full strength - a bright
+                    // haze of light over a nearly invisible surface.
+                    if (_AlphaMode > 1.5) zOp = saturate(op);
                     else clip(op - _Cutoff);
                 }
                 if (i.fx.z > 0.001) {
                     float2 split = float2(_GlitchRGBSplit * i.fx.z, 0);
-                    albedo.r = _MainTex.Sample(sampler_MainTex, i.uv + split).r; albedo.b = _MainTex.Sample(sampler_MainTex, i.uv - split).b;
+                    albedo.r = _MainTex.Sample(sampler_MainTex, i.uvA + split).r; albedo.b = _MainTex.Sample(sampler_MainTex, i.uvA - split).b;
                     if (_GlitchHue > 0.001) {
                         float3 voxel = floor(i.wPos * _GlitchSlices); float2 seed = float2(voxel.x * 3.1 + voxel.z * 7.3, voxel.y * 5.1 + floor(_Time.y * 15.0));
                         if (step(0.7, hash2(seed)) > 0.5) {
@@ -4985,6 +5374,8 @@ Shader "Zetph/ZetsFancyShader"
                 }
 //endex
                 UNITY_APPLY_FOG(i.fogCoord, col);
+                // Blend One One ignores alpha, so opacity must scale the colour.
+                col.rgb *= zOp;
                 return fixed4(col.rgb, 1.0);
             }
             ENDCG
@@ -5007,6 +5398,8 @@ Shader "Zetph/ZetsFancyShader"
                 float3 normal : NORMAL;
                 float4 texcoord : TEXCOORD0;
                 float2 uv1 : TEXCOORD1;
+                float2 uv2 : TEXCOORD2;
+                float2 uv3 : TEXCOORD3;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct v2f_shadow { 
@@ -5014,6 +5407,7 @@ Shader "Zetph/ZetsFancyShader"
                 float2 uv : TEXCOORD1; 
                 float heightW : TEXCOORD2; 
                 float3 objPos : TEXCOORD3;   // for the directional dissolve gradient
+                float2 uvA : TEXCOORD4;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             v2f_shadow vertShadow(appdata_shadow v) {
@@ -5032,6 +5426,14 @@ Shader "Zetph/ZetsFancyShader"
                 TRANSFER_SHADOW_CASTER_NORMALOFFSET(o); // Added the critical semicolon here
                 
                 o.uv = stUV;
+                // Albedo UV channel select - the cutout test must read alpha from the
+                // same channel the lit passes sample, or shadows clip differently
+                // than the surface renders.
+                o.uvA = stUV;
+                if (_MainTexUV > 0.5) {
+                    float2 zUVSel = (_MainTexUV < 1.5) ? v.uv1 : (_MainTexUV < 2.5) ? v.uv2 : v.uv3;
+                    o.uvA = zUVSel * _MainTex_ST.xy + _MainTex_ST.zw;
+                }
                 o.heightW = mul(unity_ObjectToWorld, v.vertex).y - unity_ObjectToWorld._m13;
                 o.objPos  = v.vertex.xyz;
                 return o;
@@ -5072,7 +5474,7 @@ Shader "Zetph/ZetsFancyShader"
                     if (bFade > 0.001) { float fadeN = hash2(i.uv * 97.0); clip(fadeN - drive * bFade); }
                 }
                 
-                if (_AlphaMode > 0.5) clip(GetOpacity(_MainTex.Sample(sampler_MainTex, i.uv).a, i.uv) - _Cutoff);
+                if (_AlphaMode > 0.5) clip(GetOpacity(_MainTex.Sample(sampler_MainTex, i.uvA).a, i.uvA) - _Cutoff);
                 SHADOW_CASTER_FRAGMENT(i)
             }
             ENDCG

@@ -1,6 +1,6 @@
 {
  "title": "ZetsFancyShader",
- "version": "v0.6.2",
+ "version": "v0.7.0",
  "groups": [
   {
    "path": "engine",
@@ -113,6 +113,13 @@
    "showIf": []
   },
   {
+   "path": "base_regiontint",
+   "label": "Region Tint (RGBA Mask)",
+   "info": "Recolor zones using the RGBA region mask shipped with many avatar bases: each mask channel is a zone with its own tint, strength, and hue shift, applied over the base colour without editing the albedo. The mask follows the Base Texture UV Channel.",
+   "toggle": "_RegionTintEnable",
+   "showIf": []
+  },
+  {
    "path": "base_decals",
    "label": "Decals",
    "info": "Up to four image decals layered over the base colour, for tattoos, logos, or markings. Each has its own placement, blend, tint, and optional glow. Use textures with transparent edges so they sit cleanly.",
@@ -206,6 +213,20 @@
    "path": "lighting_reflspec",
    "label": "Reflections & Specular",
    "info": "Metallic reflections, smoothness, anisotropic highlights, and clear coat. Reads the packed PBR map (R metallic, G AO, B smoothness).",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "lighting_reflspec_packedcfg",
+   "label": "Packed Map Settings",
+   "info": "Tiling, panning, the Metallic / Smoothness / AO sliders, remapping, and reflection tinting for the packed map above. Most materials only ever touch the map slot and leave these at default.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "lighting_reflspec_packer",
+   "label": "Map Packer  (R = Metallic, G = AO, B = Smoothness)",
+   "info": "Packs separate Metallic, AO, and Roughness/Smoothness textures into one ZFS Packed map and assigns it to this material. The packed PNG is saved next to your source textures. Collapse this section when you are done - it is a tool, not a setting.",
    "toggle": "",
    "showIf": []
   },
@@ -319,7 +340,7 @@
   {
    "path": "emission_em0_em0scan",
    "label": "Scan / Sweep",
-   "info": "A bright band that sweeps across this emission, vertically or horizontally, like a scanner. The same band travels, it does not reveal a bigger pattern underneath. Add Pixelation and Glitch Flicker for a chunky 32-bit look. Outside-Band Glow sets how much the rest of the mask still glows.",
+   "info": "A bright band that travels across this layer's glow, like a scanner.",
    "toggle": "_Em0Scan",
    "showIf": []
   },
@@ -363,7 +384,7 @@
   {
    "path": "emission_em1_em1scan",
    "label": "Scan / Sweep",
-   "info": "",
+   "info": "A bright band that travels across this layer's glow, like a scanner.",
    "toggle": "_Em1Scan",
    "showIf": []
   },
@@ -407,7 +428,7 @@
   {
    "path": "emission_em2_em2scan",
    "label": "Scan / Sweep",
-   "info": "",
+   "info": "A bright band that travels across this layer's glow, like a scanner.",
    "toggle": "_Em2Scan",
    "showIf": []
   },
@@ -451,7 +472,7 @@
   {
    "path": "emission_em3_em3scan",
    "label": "Scan / Sweep",
-   "info": "",
+   "info": "A bright band that travels across this layer's glow, like a scanner.",
    "toggle": "_Em3Scan",
    "showIf": []
   },
@@ -836,6 +857,13 @@
    ]
   },
   {
+   "path": "specialfx_style_starfall",
+   "label": "Star Fall",
+   "info": "Shooting stars: thin streaks of light with bright heads and comet tails, falling through space around the surface. Aim the direction down for meteors or neon rain; sideways for driving snow.",
+   "toggle": "_SFEnable",
+   "showIf": []
+  },
+  {
    "path": "specialfx_style_stars",
    "label": "Constellation / Nebula",
    "info": "A starfield and nebula. Leave the Constellation Mask empty to cover the whole material, or assign one (white shows, black hides) to confine it to specific areas, like a window into space.",
@@ -1172,6 +1200,10 @@
    "text": "Your main colour texture, the albedo."
   },
   {
+   "name": "_MainTexUV",
+   "text": "Which mesh UV channel the base albedo (and its alpha/cutout) samples. UV0 is the default; other maps stay on UV0. Uses the base texture's tiling and offset."
+  },
+  {
    "name": "_BumpMap",
    "text": "Tangent space normal map for surface detail."
   },
@@ -1181,7 +1213,7 @@
   },
   {
    "name": "_AlphaMode",
-   "text": "Opaque is solid (alpha ignored). Cutout uses albedo alpha for hard-edged transparency like hair and lashes, with anti-aliased alpha-to-coverage edges. Transparent is true alpha blending for glass, ghosts, and fades. Switching this auto-sets blending, depth write, and render queue."
+   "text": "How the material meets what is behind it. Opaque covers it; Cutout hard-clips by alpha; Transparent blends by alpha. Additive brightens the scene behind (black is invisible), Soft Additive adds without blowing out bright areas, Multiplicative darkens (white is invisible), 2x Multiplicative darkens or brightens around mid-grey."
   },
   {
    "name": "_Cutoff",
@@ -1589,7 +1621,7 @@
   },
   {
    "name": "_MinBrightness",
-   "text": "Raises the darkest the surface can get so it never goes fully black."
+   "text": "Keeps the avatar readable in dark worlds: floors the total light (ambient included) and fades it toward neutral grey near black, so shadows do not collapse into a single saturated hue. 0 = off (default, unchanged behaviour). Try 0.03-0.08."
   },
   {
    "name": "_GrayscaleLighting",
@@ -3820,10 +3852,6 @@
    "text": "Size of the imperfections in the pane. Low is broad gentle waviness, high is fine rippled texture."
   },
   {
-   "name": "_RoomGlassStreak",
-   "text": "Stretches the imperfections vertically, like the draw marks in old rolled or antique glass. 0 keeps them evenly blobby."
-  },
-  {
    "name": "_RoomGlassSpeed",
    "text": "How fast the ripple moves, for the animated glass type."
   },
@@ -4437,7 +4465,7 @@
   },
   {
    "name": "_Em0ScanSpace",
-   "text": "Which space the band travels through. UV follows the texture unwrap, which does not line up with the body's own axes. Object Space sweeps across the avatar itself, so the band crosses left to right or up the body regardless of how the mesh is unwrapped."
+   "text": "Which space the band travels through. UV follows the texture unwrap and is unaffected by pose, so it is the steadier choice on limbs that move a lot. World Space sweeps through actual space, which lets several materials share one wave, but the band crosses a raised arm at a different time than a lowered one, because the arm really is somewhere else."
   },
   {
    "name": "_Em0ScanExtent",
@@ -4445,7 +4473,7 @@
   },
   {
    "name": "_Em1ScanSpace",
-   "text": "Which space the band travels through. UV follows the texture unwrap, which does not line up with the body's own axes. Object Space sweeps across the avatar itself, so the band crosses left to right or up the body regardless of how the mesh is unwrapped."
+   "text": "Which space the band travels through. UV follows the texture unwrap and is unaffected by pose, so it is the steadier choice on limbs that move a lot. World Space sweeps through actual space, which lets several materials share one wave, but the band crosses a raised arm at a different time than a lowered one, because the arm really is somewhere else."
   },
   {
    "name": "_Em1ScanExtent",
@@ -4453,7 +4481,7 @@
   },
   {
    "name": "_Em2ScanSpace",
-   "text": "Which space the band travels through. UV follows the texture unwrap, which does not line up with the body's own axes. Object Space sweeps across the avatar itself, so the band crosses left to right or up the body regardless of how the mesh is unwrapped."
+   "text": "Which space the band travels through. UV follows the texture unwrap and is unaffected by pose, so it is the steadier choice on limbs that move a lot. World Space sweeps through actual space, which lets several materials share one wave, but the band crosses a raised arm at a different time than a lowered one, because the arm really is somewhere else."
   },
   {
    "name": "_Em2ScanExtent",
@@ -4461,7 +4489,7 @@
   },
   {
    "name": "_Em3ScanSpace",
-   "text": "Which space the band travels through. UV follows the texture unwrap, which does not line up with the body's own axes. Object Space sweeps across the avatar itself, so the band crosses left to right or up the body regardless of how the mesh is unwrapped."
+   "text": "Which space the band travels through. UV follows the texture unwrap and is unaffected by pose, so it is the steadier choice on limbs that move a lot. World Space sweeps through actual space, which lets several materials share one wave, but the band crosses a raised arm at a different time than a lowered one, because the arm really is somewhere else."
   },
   {
    "name": "_Em3ScanExtent",
@@ -4525,7 +4553,7 @@
   },
   {
    "name": "_Em0ScanPhase",
-   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+   "text": "Shifts this material's place in the sweep cycle. Materials at the same speed already run in step, so leave this at 0 unless you deliberately want a part to lead or trail the rest."
   },
   {
    "name": "_Em1ScanOrigin",
@@ -4533,7 +4561,7 @@
   },
   {
    "name": "_Em1ScanPhase",
-   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+   "text": "Shifts this material's place in the sweep cycle. Materials at the same speed already run in step, so leave this at 0 unless you deliberately want a part to lead or trail the rest."
   },
   {
    "name": "_Em2ScanOrigin",
@@ -4541,7 +4569,7 @@
   },
   {
    "name": "_Em2ScanPhase",
-   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+   "text": "Shifts this material's place in the sweep cycle. Materials at the same speed already run in step, so leave this at 0 unless you deliberately want a part to lead or trail the rest."
   },
   {
    "name": "_Em3ScanOrigin",
@@ -4549,7 +4577,7 @@
   },
   {
    "name": "_Em3ScanPhase",
-   "text": "Shifts where this material sits in the sweep cycle. Leave at 0 when several materials should move as one; nudge it to make a part lead or trail the rest."
+   "text": "Shifts this material's place in the sweep cycle. Materials at the same speed already run in step, so leave this at 0 unless you deliberately want a part to lead or trail the rest."
   },
   {
    "name": "_ALMasterEnable",
@@ -4558,6 +4586,270 @@
   {
    "name": "_GlitterSpeedVar",
    "text": "How much each flake's twinkle rate differs from the rest. At 0 every flake shares one rate and the field pulses together in a repeating wave; higher values scatter the timing so flakes glint independently."
+  },
+  {
+   "name": "_Em0ScanAnchor",
+   "text": "Measures the sweep from this mesh instead of the world. The band then travels with this mesh, but stops syncing with other materials. Leave off for avatar-wide waves."
+  },
+  {
+   "name": "_Em1ScanAnchor",
+   "text": "Measures the sweep from this mesh instead of the world. The band then travels with this mesh, but stops syncing with other materials. Leave off for avatar-wide waves."
+  },
+  {
+   "name": "_Em2ScanAnchor",
+   "text": "Measures the sweep from this mesh instead of the world. The band then travels with this mesh, but stops syncing with other materials. Leave off for avatar-wide waves."
+  },
+  {
+   "name": "_Em3ScanAnchor",
+   "text": "Measures the sweep from this mesh instead of the world. The band then travels with this mesh, but stops syncing with other materials. Leave off for avatar-wide waves."
+  },
+  {
+   "name": "_Em0ScanShape",
+   "text": "Shape of the travelling light. Planar is a flat wall sliding one way, suiting a sweep up the body. Radial is a sphere expanding from a point, running outward along every limb at once. For falling streaks with comet tails, use the standalone Star Fall effect under Stylized."
+  },
+  {
+   "name": "_Em0ScanCenter",
+   "text": "Where the radial sweep expands from, in metres relative to the avatar. Roughly chest height (0, 1, 0) reads as a pulse spreading out from the body."
+  },
+  {
+   "name": "_Em1ScanShape",
+   "text": "Shape of the travelling light. Planar is a flat wall sliding one way, suiting a sweep up the body. Radial is a sphere expanding from a point, running outward along every limb at once. For falling streaks with comet tails, use the standalone Star Fall effect under Stylized."
+  },
+  {
+   "name": "_Em1ScanCenter",
+   "text": "Where the radial sweep expands from, in metres relative to the avatar. Roughly chest height (0, 1, 0) reads as a pulse spreading out from the body."
+  },
+  {
+   "name": "_Em2ScanShape",
+   "text": "Shape of the travelling light. Planar is a flat wall sliding one way, suiting a sweep up the body. Radial is a sphere expanding from a point, running outward along every limb at once. For falling streaks with comet tails, use the standalone Star Fall effect under Stylized."
+  },
+  {
+   "name": "_Em2ScanCenter",
+   "text": "Where the radial sweep expands from, in metres relative to the avatar. Roughly chest height (0, 1, 0) reads as a pulse spreading out from the body."
+  },
+  {
+   "name": "_Em3ScanShape",
+   "text": "Shape of the travelling light. Planar is a flat wall sliding one way, suiting a sweep up the body. Radial is a sphere expanding from a point, running outward along every limb at once. For falling streaks with comet tails, use the standalone Star Fall effect under Stylized."
+  },
+  {
+   "name": "_Em3ScanCenter",
+   "text": "Where the radial sweep expands from, in metres relative to the avatar. Roughly chest height (0, 1, 0) reads as a pulse spreading out from the body."
+  },
+  {
+   "name": "_DiffRamp",
+   "text": "Optional colour palette read left to right across the visible spectrum. The grating still decides which bands land where and how they fan out; the palette only changes what colour those bands are, so you can get a gold-and-teal streak that still behaves like a real spectrum."
+  },
+  {
+   "name": "_DiffRampAmt",
+   "text": "How far the natural spectrum is replaced by the palette. 0 keeps the physically derived rainbow, 1 uses the palette entirely."
+  },
+  {
+   "name": "_DiffSat",
+   "text": "How saturated the diffraction colours are. 1 is the physical result; lower reads as a subtle sheen, higher exaggerates it."
+  },
+  {
+   "name": "_DiffHue",
+   "text": "Rotates the whole diffraction spectrum around the hue wheel, for a recoloured rainbow without supplying a palette."
+  },
+  {
+   "name": "_Em0ScanTrail",
+   "text": "Fades the band out behind itself, so it reads as something travelling rather than a bar sliding past. 0 is a symmetric band. In Star Fall this is the tail length, and a minimum tail is applied so streaks always trail."
+  },
+  {
+   "name": "_Em0ScanCount",
+   "text": "How many bands travel at once, spaced evenly through the cycle. Whole numbers only: a fractional count leaves a partial band popping in and out at the cycle seam."
+  },
+  {
+   "name": "_Em1ScanTrail",
+   "text": "Fades the band out behind itself, so it reads as something travelling rather than a bar sliding past. 0 is a symmetric band. In Star Fall this is the tail length, and a minimum tail is applied so streaks always trail."
+  },
+  {
+   "name": "_Em1ScanCount",
+   "text": "How many bands travel at once, spaced evenly through the cycle. Whole numbers only: a fractional count leaves a partial band popping in and out at the cycle seam."
+  },
+  {
+   "name": "_Em2ScanTrail",
+   "text": "Fades the band out behind itself, so it reads as something travelling rather than a bar sliding past. 0 is a symmetric band. In Star Fall this is the tail length, and a minimum tail is applied so streaks always trail."
+  },
+  {
+   "name": "_Em2ScanCount",
+   "text": "How many bands travel at once, spaced evenly through the cycle. Whole numbers only: a fractional count leaves a partial band popping in and out at the cycle seam."
+  },
+  {
+   "name": "_Em3ScanTrail",
+   "text": "Fades the band out behind itself, so it reads as something travelling rather than a bar sliding past. 0 is a symmetric band. In Star Fall this is the tail length, and a minimum tail is applied so streaks always trail."
+  },
+  {
+   "name": "_Em3ScanCount",
+   "text": "How many bands travel at once, spaced evenly through the cycle. Whole numbers only: a fractional count leaves a partial band popping in and out at the cycle seam."
+  },
+  {
+   "name": "_SFEnable",
+   "text": "Streaks of falling light with comet tails, like a meteor shower crossing the surface."
+  },
+  {
+   "name": "_SFColor",
+   "text": "Colour of the streaks. HDR, so push it past white for bloom."
+  },
+  {
+   "name": "_SFMask",
+   "text": "Where the streaks may appear. White allows, black blocks."
+  },
+  {
+   "name": "_SFDir",
+   "text": "In World Space, the direction streaks fall through the world. In World Guided UV mode, the world direction each island's flow is derived from - straight down makes everything flow toward the ground."
+  },
+  {
+   "name": "_SFDensity",
+   "text": "How closely packed the streak columns are. Higher is finer, denser rain."
+  },
+  {
+   "name": "_SFSpan",
+   "text": "World Space only: how far a streak falls before it cycles, in metres."
+  },
+  {
+   "name": "_SFThick",
+   "text": "Thickness of each streak, and the size of its rounded head."
+  },
+  {
+   "name": "_SFTail",
+   "text": "How long the tapering comet tail persists behind the head."
+  },
+  {
+   "name": "_SFSpeed",
+   "text": "How fast the streaks fall."
+  },
+  {
+   "name": "_SFSpeedVar",
+   "text": "How much each streak's speed differs from the rest. 0 falls in formation; higher scatters them."
+  },
+  {
+   "name": "_SFFill",
+   "text": "What fraction of the sky actually holds a streak. Low values give occasional lone shooting stars; high values a steady shower."
+  },
+  {
+   "name": "_SFBrightness",
+   "text": "Overall brightness of the streaks."
+  },
+  {
+   "name": "_SFALEnable",
+   "text": "Lets AudioLink brighten the streaks with the music."
+  },
+  {
+   "name": "_SFBand",
+   "text": "Which frequency band drives the boost."
+  },
+  {
+   "name": "_SFAL",
+   "text": "How strongly the band brightens the streaks."
+  },
+  {
+   "name": "_SFSpace",
+   "text": "Which space the streaks travel through. UV runs along the surface itself - wrist to fingertip on a sleeve - and is the one that behaves without adjustment. World Space is volumetric rain passing through the avatar: it syncs across materials and ignores UV seams, but cannot follow a limb and needs its direction aimed."
+  },
+  {
+   "name": "_SFAngle",
+   "text": "Direction of travel across the UV, in degrees. 180 runs down the texture, 0 up, 90 across."
+  },
+  {
+   "name": "_SFFlowMap",
+   "text": "RG direction map: red is horizontal flow, green vertical, mid-grey is no direction. Paint along each limb in the direction streaks should run."
+  },
+  {
+   "name": "_SFFixMirror",
+   "text": "Fixed Angle only: corrects true mirrored islands, whose flip the tangent records. Islands that are rotated copies of each other cannot be fixed this way - use World Guided or a Flow Map for those."
+  },
+  {
+   "name": "_SFDirMode",
+   "text": "Where the travel direction comes from in UV mode. Fixed Angle is one angle for the whole material, which cannot reconcile islands that are rotated or mirrored copies of each other. World Guided aims a world direction and projects it onto each island through its tangent frame, so one setting flows correctly everywhere - the recommended default. Flow Map reads a painted direction per pixel, for full control and curving streaks."
+  },
+  {
+   "name": "_Em0ScanCurveOn",
+   "text": "Shapes the band with a painted curve instead of the sliders. The texture is the whole profile, so double pulses and echoes are just painted in."
+  },
+  {
+   "name": "_Em0ScanRamp",
+   "text": "Edit the band's brightness profile with Unity's curve editor. Left edge is the band, right is the far end of the trail. The curve bakes to a texture automatically; a downward slope gives a comet, extra bumps give trailing echoes."
+  },
+  {
+   "name": "_Em1ScanCurveOn",
+   "text": "Shapes the band with a painted curve instead of the sliders. The texture is the whole profile, so double pulses and echoes are just painted in."
+  },
+  {
+   "name": "_Em1ScanRamp",
+   "text": "Edit the band's brightness profile with Unity's curve editor. Left edge is the band, right is the far end of the trail. The curve bakes to a texture automatically; a downward slope gives a comet, extra bumps give trailing echoes."
+  },
+  {
+   "name": "_Em2ScanCurveOn",
+   "text": "Shapes the band with a painted curve instead of the sliders. The texture is the whole profile, so double pulses and echoes are just painted in."
+  },
+  {
+   "name": "_Em2ScanRamp",
+   "text": "Edit the band's brightness profile with Unity's curve editor. Left edge is the band, right is the far end of the trail. The curve bakes to a texture automatically; a downward slope gives a comet, extra bumps give trailing echoes."
+  },
+  {
+   "name": "_Em3ScanCurveOn",
+   "text": "Shapes the band with a painted curve instead of the sliders. The texture is the whole profile, so double pulses and echoes are just painted in."
+  },
+  {
+   "name": "_Em3ScanRamp",
+   "text": "Edit the band's brightness profile with Unity's curve editor. Left edge is the band, right is the far end of the trail. The curve bakes to a texture automatically; a downward slope gives a comet, extra bumps give trailing echoes."
+  },
+  {
+   "name": "_Color",
+   "text": "Tints the whole material, and its alpha sets base opacity in Transparent mode - so an untextured material can fade without needing an alpha texture."
+  },
+  {
+   "name": "_RegionMask",
+   "text": "The RGBA region mask from your avatar base. Each channel marks one recolor zone. Black areas are untouched."
+  },
+  {
+   "name": "_RegionRColor",
+   "text": "Tint multiplied over the red-channel zone. White = no tint."
+  },
+  {
+   "name": "_RegionRStrength",
+   "text": "How strongly the red zone tint applies. Also compensates masks painted below full value."
+  },
+  {
+   "name": "_RegionRHue",
+   "text": "Rotates the hue of the red zone before tinting, preserving painted shading."
+  },
+  {
+   "name": "_RegionGColor",
+   "text": "Tint multiplied over the green-channel zone. White = no tint."
+  },
+  {
+   "name": "_RegionGStrength",
+   "text": "How strongly the green zone tint applies. Also compensates masks painted below full value."
+  },
+  {
+   "name": "_RegionGHue",
+   "text": "Rotates the hue of the green zone before tinting, preserving painted shading."
+  },
+  {
+   "name": "_RegionBColor",
+   "text": "Tint multiplied over the blue-channel zone. White = no tint."
+  },
+  {
+   "name": "_RegionBStrength",
+   "text": "How strongly the blue zone tint applies. Also compensates masks painted below full value."
+  },
+  {
+   "name": "_RegionBHue",
+   "text": "Rotates the hue of the blue zone before tinting, preserving painted shading."
+  },
+  {
+   "name": "_RegionAColor",
+   "text": "Tint multiplied over the alpha-channel zone. White = no tint."
+  },
+  {
+   "name": "_RegionAStrength",
+   "text": "Defaults to 0: masks exported without an alpha channel read alpha 1 everywhere, which would tint the whole body. Raise only if your mask has a real alpha zone."
+  },
+  {
+   "name": "_RegionAHue",
+   "text": "Rotates the hue of the alpha zone before tinting, preserving painted shading."
   }
  ],
  "lockCritical": [
@@ -4871,28 +5163,28 @@
    "name": "_Em0ScanSpace",
    "options": [
     "UV",
-    "Object Space"
+    "World Space"
    ]
   },
   {
    "name": "_Em1ScanSpace",
    "options": [
     "UV",
-    "Object Space"
+    "World Space"
    ]
   },
   {
    "name": "_Em2ScanSpace",
    "options": [
     "UV",
-    "Object Space"
+    "World Space"
    ]
   },
   {
    "name": "_Em3ScanSpace",
    "options": [
     "UV",
-    "Object Space"
+    "World Space"
    ]
   },
   {
@@ -4901,6 +5193,58 @@
     "Dots",
     "Flakes",
     "Hexagons"
+   ]
+  },
+  {
+   "name": "_Em0ScanShape",
+   "options": [
+    "Planar",
+    "Radial"
+   ]
+  },
+  {
+   "name": "_Em1ScanShape",
+   "options": [
+    "Planar",
+    "Radial"
+   ]
+  },
+  {
+   "name": "_Em2ScanShape",
+   "options": [
+    "Planar",
+    "Radial"
+   ]
+  },
+  {
+   "name": "_Em3ScanShape",
+   "options": [
+    "Planar",
+    "Radial"
+   ]
+  },
+  {
+   "name": "_SFBand",
+   "options": [
+    "Bass",
+    "Low Mids",
+    "High Mids",
+    "Treble"
+   ]
+  },
+  {
+   "name": "_SFSpace",
+   "options": [
+    "UV",
+    "World Space"
+   ]
+  },
+  {
+   "name": "_SFDirMode",
+   "options": [
+    "Fixed Angle",
+    "World Guided",
+    "Flow Map"
    ]
   }
  ]

@@ -19,7 +19,16 @@ Shader "Zetph/ZetsFancyEyeShader"
         [HideInInspector] shader_master_label ("ZetsFancyEyeShader", Float) = 0
         [ZetLockButton] _ShaderOptimizerEnabled ("Lock / Optimize", Float) = 0
         [Enum(UnityEngine.Rendering.CullMode)] _CullMode ("Culling Mode", Float) = 2
+        [ZetRenderMode] [Group(base)] _AlphaMode ("Transparency Mode", Float) = 0
+        [ToggleUI] [Group(base)] [ShowIf(_AlphaMode, 2)] _AlphaGlint ("Reflections Stay Visible (Glass)", Float) = 1
+        [Group(base)] [ShowIf(_AlphaGlint)] _AlphaGlintBoost ("Glass Reflection Strength", Range(0, 4)) = 1.5
+        [Group(base)] [ShowIf(_AlphaMode, 1)] _Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
+        [HideInInspector] _SrcBlend ("", Float) = 1
+        [HideInInspector] _DstBlend ("", Float) = 0
+        [HideInInspector] _ZWrite ("", Float) = 1
+        [HideInInspector] _AlphaToMask ("", Float) = 0
         [Group(base)] _MainTex ("Base Texture (Albedo)", 2D) = "white" {}
+        [Group(base)] _Color ("Base Color", Color) = (1, 1, 1, 1)
         [Normal] [Group(base)] _BumpMap ("Normal Map", 2D) = "bump" {}
         [Group(base)] _BumpScale ("Normal Strength", Range(0, 2)) = 1
         [Enum(Toon Ramp, 0, Realistic PBR, 1)] [Group(lighting)] _LightingModel ("Lighting Model", Float) = 0
@@ -29,8 +38,8 @@ Shader "Zetph/ZetsFancyEyeShader"
         [Group(lighting)] _ReceiveShadows ("Receive Casted Shadows", Range(0, 1)) = 1.0
             [Group(lighting_toon)] _ShadowEdge ("Shadow Edge", Range(0, 1)) = 0.5
             [Group(lighting_toon)] _ShadowSoft ("Shadow Softness", Range(0.001, 0.5)) = 0.01
-        [ToggleUI] [Group(lighting_toon)] _ProbeDirLight ("Shade From Probes", Float) = 1
-        [Group(lighting_toon)] [ShowIf(_ProbeDirLight)] _ProbeDirStrength ("Probe Shading Strength", Range(0, 2)) = 1
+        [ToggleUI] [Group(lighting)] _ProbeDirLight ("Shade From Probes", Float) = 1
+        [Group(lighting)] [ShowIf(_ProbeDirLight)] _ProbeDirStrength ("Probe Shading Strength", Range(0, 2)) = 1
             [Group(lighting_toon)] _ShadowDither ("Shadow Dithering", Range(0, 0.1)) = 0
             [Group(lighting_toon)] _ShadowTint ("Shadow Tint", Color) = (0.5, 0.5, 0.5, 1)
         [Enum(ZFS Packed, 0, Unity MetalSmooth, 1)] [Group(reflspec)] _PackMode ("Packed Map Format", Float) = 0
@@ -109,12 +118,13 @@ Shader "Zetph/ZetsFancyEyeShader"
             [Group(reflspec_emission_emblink)] [ShowIf(_EmBlink)] _EmBlinkSpeed ("Blink Speed", Range(0, 20)) = 3
             [Group(reflspec_emission_emblink)] [ShowIf(_EmBlink)] _EmBlinkMin ("Blink Floor", Range(0, 1)) = 0
             [ToggleUI] [GroupToggle(reflspec_emission_emscan)] [ShowIf(_EmissionEnable)] _EmScan ("Enable Scan / Sweep", Float) = 0
-            [Enum(UV, 0, Object Space, 1)] [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanSpace ("Sweep Space", Float) = 0
+            [Enum(UV, 0, World Space, 1)] [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanSpace ("Sweep Space", Float) = 0
             [Enum(Linear, 0, Radial, 1, Angular, 2)] [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 0)] _EmScanStyle ("Sweep Style", Float) = 0
             [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 0)] _EmScanAngle ("Sweep Angle", Range(0, 360)) = 0
             [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 0)] _EmScanCenter ("Sweep Center (UV)", Vector) = (0.5, 0.5, 0, 0)
             [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 1)] _EmScanAxis ("Sweep Direction (XYZ)", Vector) = (0, 1, 0, 0)
             [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 1)] _EmScanExtent ("Sweep Length (m)", Range(0.01, 4)) = 2
+            [ToggleUI] [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 1)] _EmScanAnchor ("Anchor To This Mesh", Float) = 0
             [Group(reflspec_emission_emscan)] [ShowIf(_EmScanSpace, 1)] _EmScanOrigin ("Sweep Start (m)", Range(-4, 4)) = -1
             [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanPhase ("Phase Offset", Range(-1, 1)) = 0
             [Enum(Loop, 0, Ping Pong, 1)] [Group(reflspec_emission_emscan)] [ShowIf(_EmScan)] _EmScanMode ("Motion", Float) = 0
@@ -206,8 +216,8 @@ Shader "Zetph/ZetsFancyEyeShader"
             float _EmMultBand; float _EmMultAmt; float _EmAddBand; float _EmAddAmt;
             float _EmLightBased; float _EmMinEmiss; float _EmMaxEmiss; float _EmMinLight; float _EmMaxLight;
             float _EmBlink; float _EmBlinkSpeed; float _EmBlinkMin;
-            float _EmScan; float _EmScanStyle; float _EmScanAngle; float4 _EmScanCenter; float _EmScanSpace; float4 _EmScanAxis; float _EmScanExtent; float _EmScanOrigin; float _EmScanPhase; float _EmScanMode; float _EmScanSpeed; float _EmScanWidth; float _EmScanSoft; float _EmScanFloor;
-            float _EmissionEnable; float4 _EmissionMap_ST; float4 _EmissionColor; float _EmissionStrength; float _EmissionAlbedoTint;
+            float _EmScan; float _EmScanStyle; float _EmScanAngle; float4 _EmScanCenter; float _EmScanSpace; float4 _EmScanAxis; float _EmScanExtent; float _EmScanOrigin; float _EmScanAnchor; float _EmScanPhase; float _EmScanMode; float _EmScanSpeed; float _EmScanWidth; float _EmScanSoft; float _EmScanFloor;
+            float _EmissionEnable; float4 _EmissionMap_ST; float4 _EmissionColor; float _EmissionStrength; float4 _Color; float _AlphaMode; float _AlphaGlint; float _AlphaGlintBoost; float _Cutoff; float _EmissionAlbedoTint;
             CBUFFER_END
             // --- Optional world lighting integrations ---
             // Availability is resolved in C# by ZetIntegrationGenerator and written
@@ -293,10 +303,7 @@ Shader "Zetph/ZetsFancyEyeShader"
                     }
                 }
             }
-            // Physically based specular, matching the main shader. Blinn-Phong has no
-            // Fresnel and no shadowing term, so it gives a highlight and a lambert
-            // gradient and nothing toward the silhouette, which reads flat on a curved
-            // surface. GGX adds the Fresnel that carries edge shape.
+
             // --- AudioLink ---------------------------------------------------------
             // Read straight from the global the world publishes, so nothing needs
             // installing and the shader costs nothing in worlds without it.
@@ -315,9 +322,7 @@ Shader "Zetph/ZetsFancyEyeShader"
             bool AudioLinkIsAvailable()
             {
                 // Master switch. Every AudioLink read passes through here, so turning
-                // this off silences the lot at once. A plain float, so it animates from
-                // a menu and can kill a material's reactivity without touching each
-                // effect's own toggle.
+                // this off silences the lot at once.
                 if (_ALMasterEnable < 0.5) return false;
                 #ifndef ZET_AL_STDIDX
                     int width, height;
@@ -327,6 +332,7 @@ Shader "Zetph/ZetsFancyEyeShader"
                     return _AudioTexture_TexelSize.z > 16;
                 #endif
             }
+
             // Matches the main shader's envelope exactly: fast attack, with a tail whose
             // length follows the AudioLink Response settings. Without it an eye set to the
             // same band as bodywork reacts more sharply and drops away faster, so the two
@@ -341,46 +347,11 @@ Shader "Zetph/ZetsFancyEyeShader"
                 return env;
             }
 
-            // Same signal chain as the main shader, so an eye set to a band reacts
-            // identically to bodywork set to the same one.
-            float ZetALSignal(float enable, float band, float multBand, float multAmt,
-                              float addBand, float addAmt, float volBoost, float volAmt)
-            {
-                if (enable < 0.5 || !AudioLinkIsAvailable()) return 0.0;
-                float sig = ALEnv((uint)band);
-                sig *= (1.0 + ALEnv((uint)multBand) * multAmt);
-                sig += ALEnv((uint)addBand) * addAmt;
-                if (volBoost > 0.5) {
-                    float vol = (ALEnv(0) + ALEnv(1) + ALEnv(2) + ALEnv(3)) * 0.25;
-                    sig *= (1.0 + vol * volAmt);
-                }
-                return max(sig, 0.0);
-            }
-
             half3 ZetEyeHueShift(half3 c, float a)
             {
                 const half3 k = half3(0.57735, 0.57735, 0.57735);
                 half co = cos(a);
                 return c * co + cross(k, c) * sin(a) + k * dot(k, c) * (1.0 - co);
-            }
-
-            half3 ZetGGXSpecular(float3 n, float3 viewDir, float3 lightDir, float smoothness, half3 F0)
-            {
-                float3 H = normalize(viewDir + lightDir);
-                float nl = saturate(dot(n, lightDir));
-                float nv = saturate(dot(n, viewDir));
-                float nh = saturate(dot(n, H));
-                float vh = saturate(dot(viewDir, H));
-                float rough = max(1.0 - smoothness, 0.045);
-                float a = rough * rough;
-                float a2 = a * a;
-                float d = (nh * nh) * (a2 - 1.0) + 1.0;
-                float D = a2 / max(UNITY_PI * d * d, 1e-7);
-                float lv = nl * (nv * (1.0 - a) + a);
-                float ll = nv * (nl * (1.0 - a) + a);
-                float V = 0.5 / max(lv + ll, 1e-5);
-                half3 F = F0 + (1.0 - F0) * pow(1.0 - vh, 5.0);
-                return D * V * F * nl;
             }
 
             float3 EvalEmission(float2 baseUV, float3 albedo, float litFactor, float3 wPos) {
@@ -433,13 +404,24 @@ Shader "Zetph/ZetsFancyEyeShader"
                     // sweep running across the body.
                     float axis;
                     if (_EmScanSpace > 0.5) {
-                        float3 op = mul(unity_WorldToObject, float4(wPos, 1.0)).xyz;
                         float3 ax = _EmScanAxis.xyz;
                         if (dot(ax, ax) < 1e-6) ax = float3(0, 1, 0);
                         // Same ruler as the main shader: metres from the avatar's origin,
                         // so an eye set to the same axis, start and length joins the same
                         // wave instead of sweeping its own tiny space.
-                        axis = (dot(op, normalize(ax)) - _EmScanOrigin) / max(_EmScanExtent, 0.001);
+                        // World space, matching the main shader: pushing a skinned position
+                        // back through the renderer's transform made separate renderers
+                        // disagree about direction and origin.
+                        float3 origin = float3(unity_ObjectToWorld._m03,
+                                               unity_ObjectToWorld._m13,
+                                               unity_ObjectToWorld._m23);
+                        // Pure world space by default, so every material shares one ruler and syncs
+                        // automatically at a given speed with no offsets to tune. Anchoring instead
+                        // subtracts each renderer's own origin, and renderers on an avatar do not
+                        // share one - a body at the root and an outfit from its own prefab measure
+                        // from different points and drift apart. Anchor only for a single mesh.
+                        float3 p = (_EmScanAnchor > 0.5) ? (wPos - origin) : wPos;
+                        axis = (dot(p, normalize(ax)) - _EmScanOrigin) / max(_EmScanExtent, 0.001);
                     } else {
                         // UV sweep. Linear travels along a freely chosen angle rather than
                         // only the two texture axes. Radial rings outward from a point,
@@ -462,6 +444,13 @@ Shader "Zetph/ZetsFancyEyeShader"
                         }
                     }
                     float tt = _Time.y * _EmScanSpeed;
+                    // The cyclic distance below only holds when the coordinate lies inside
+                    // 0..1. In UV space it always does; in world space it is metres over a
+                    // span, so it runs negative and past 1 and the wrap produced a second,
+                    // spurious band - the jump seen before the sweep faded. Loop wraps the
+                    // coordinate so the band simply repeats every Sweep Length; Ping Pong
+                    // clamps, since it is meant to traverse once and turn around.
+                    axis = (_EmScanMode > 0.5) ? saturate(axis) : frac(axis);
                     float pos = (_EmScanMode > 0.5) ? abs(frac(tt * 0.5) * 2.0 - 1.0) : frac(tt);
                     pos = frac(pos + _EmScanPhase);
                     // Loop wraps, so the distance has to wrap with it: without this the
@@ -559,6 +548,12 @@ Shader "Zetph/ZetsFancyEyeShader"
         Pass
         {
             Tags { "LightMode" = "ForwardBase" }
+            // Driven by the Transparency Mode dropdown, exactly as on the main
+            // shader, so a cornea shell can be a second ZFES material instead of
+            // mixing shader families on one eye.
+            Blend [_SrcBlend] [_DstBlend]
+            ZWrite [_ZWrite]
+            AlphaToMask [_AlphaToMask]
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment fragBase
@@ -577,6 +572,10 @@ Shader "Zetph/ZetsFancyEyeShader"
                 // by near-constant ambient. The probes still carry a direction in their
                 // first-order coefficients, so it is recovered and used to shape the eye.
                 half3 zProbeCol = 0; float zProbeAmt = 0;
+                // Kept separate from lightDir. Reassigning that redirected the eye's
+                // parallax, its anisotropic streak and its highlight as well, none of
+                // which should follow the probe.
+                float3 zProbeDir = float3(0, 1, 0);
                 if (_ProbeDirLight > 0.5) {
                     float3 shDir = unity_SHAr.xyz * 0.3 + unity_SHAg.xyz * 0.59 + unity_SHAb.xyz * 0.11;
                     float shLen = length(shDir);
@@ -585,8 +584,8 @@ Shader "Zetph/ZetsFancyEyeShader"
                         float realtime = saturate(dot(_LightColor0.rgb, half3(0.3, 0.59, 0.11)) * 4.0);
                         zProbeAmt = (1.0 - realtime) * _ProbeDirStrength;
                         if (zProbeAmt > 0.001) {
-                            lightDir = (realtime > 0.001) ? normalize(lerp(pDir, lightDir, realtime)) : pDir;
                             zProbeCol = max(ShadeSH9(half4(pDir, 1)), 0.0);
+                            zProbeDir = pDir;
                         }
                     }
                 }
@@ -596,6 +595,29 @@ Shader "Zetph/ZetsFancyEyeShader"
                 float3 tn = UnpackScaleNormal(_BumpMap.Sample(sampler_MainTex, i.uv), _BumpScale);
                 float3 n = normalize(T * tn.x + B * tn.y + N * tn.z);
                 fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uv);
+                // Base tint, rgb and alpha. Same fix the main shader needed: without
+                // this, an opaque-alpha texture pinned zOp at 1 and Transparent mode
+                // blended correctly but always at full opacity - no lever to fade.
+                albedo *= _Color;
+                half zOp = 1.0;
+                // Glass = Transparent + glints. Hoisted out of the alpha block because
+                // the premultiply at the end of the pass needs it too: glass renders
+                // with Blend One OneMinusSrcAlpha (set by ZetRenderModeDrawer), the
+                // shaded base is multiplied by alpha in-shader, and reflections are
+                // added on top unmultiplied so they survive alpha 0 - same scheme as
+                // Standard's Transparent mode, and why glass there is just
+                // "transparency on, smoothness up".
+                bool zGlass = (_AlphaMode > 1.5) && (_AlphaMode < 2.5) && (_AlphaGlint > 0.5);
+                if (_AlphaMode > 0.5) {
+                    zOp = albedo.a;
+                    // Cutout clips at the cutoff. The transparent family only discards
+                    // fully invisible pixels - EXCEPT when glass glints are on: glass at
+                    // base alpha 0 is pure reflection, and the discard here runs before
+                    // the glint code exists to save it, so a fully clear cornea shell
+                    // rendered as nothing at all. With glints on, the blend handles
+                    // invisibility and the rim stays free to light up.
+                    if (!zGlass) clip(zOp - ((_AlphaMode > 1.5) ? 0.001 : _Cutoff));
+                }
                 half4 packed = _PackedMap.Sample(sampler_MainTex, i.uv);
                 // Channel layout depends on _PackMode. Unity MetallicSmoothness maps carry
                 // metallic in R and smoothness in A, with NO AO channel (G/B are unused),
@@ -605,7 +627,14 @@ Shader "Zetph/ZetsFancyEyeShader"
                 half smoothness = (_InvSmooth > 0.5 ? 1.0 - rawSmooth : rawSmooth) * _EyeSmoothness;
                 half ao = (_PackMode > 0.5) ? 1.0 : lerp(1.0, packed.g, _OcclusionStrength);
                 half3 specCol = lerp(half3(0.04, 0.04, 0.04), albedo.rgb, metallic);
-                #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN) && !defined(LIGHTMAP_ON)
+                // Under shadowmask without screen shadows, Unity's SHADOW_COORDS macro
+                // declares nothing while the attenuation macros still reference
+                // _ShadowCoord, which fails to compile. That holds whether or not a
+                // lightmap is present: excluding LIGHTMAP_ON left the lightmapped case
+                // unguarded, so it broke in lightmapped worlds. Attenuation falls back to
+                // 1 here, which is correct - shadowmask data comes from lightmap UVs an
+                // avatar does not carry.
+                #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN)
                     float atten = 1.0;
                 #else
                     UNITY_LIGHT_ATTENUATION(atten, i, i.wPos);
@@ -624,7 +653,7 @@ Shader "Zetph/ZetsFancyEyeShader"
                 half3 ambient = ShadeSH9(half4(n, 1)) * ao;
                 // Probe light adds on top of ambient, so world brightness is kept
                 // and only the shaping changes.
-                ambient += zProbeCol * saturate(dot(n, lightDir)) * zProbeAmt;
+                ambient += zProbeCol * saturate(dot(n, zProbeDir)) * zProbeAmt;
                 half3 lvSpecAdd = 0;
                 #if defined(ZET_LV_OK)
                     float3 lvL0, lvL1r, lvL1g, lvL1b;
@@ -683,17 +712,20 @@ Shader "Zetph/ZetsFancyEyeShader"
                 float3 H = normalize(lightDir + viewDir);
                 // PBR direct specular (Realistic mode only): gives a plain eye a catchlight
                 if (_LightingModel > 0.5) {
-                    // GGX rather than Blinn-Phong: atten not ramp, since the BRDF carries
-                    // its own N.L and multiplying by the lambert ramp would square it.
-                    col.rgb += specCol * lightCol
-                             * ZetGGXSpecular(n, viewDir, lightDir, smoothness, half3(1, 1, 1))
-                             * _SpecStrength * atten;
-                    // The probe light gets a matching lobe, or a smooth eye in an
-                    // ambient-only world has shaped diffuse but no catchlight.
-                    if (zProbeAmt > 0.001)
-                        col.rgb += specCol * zProbeCol
-                                 * ZetGGXSpecular(n, viewDir, lightDir, smoothness, specCol)
-                                 * _SpecStrength * zProbeAmt;
+                    // Deliberately not GGX. An eye is a stylised highlight, not a physical
+                    // surface: energy-conserving specular at an eye's smoothness gives a
+                    // lobe so tight it disappears, which kills the catchlight the eye
+                    // depends on. This lobe is tuned to stay visible at default smoothness.
+                    half specPow = exp2(lerp(4.0, 10.0, smoothness));
+                    half specTerm = pow(saturate(dot(n, H)), specPow) * (specPow + 8.0) * 0.03;
+                    col.rgb += specCol * lightCol * specTerm * _SpecStrength * ramp;
+                    // The probe light gets the same lobe, so an eye in a world with no
+                    // realtime light still catches a highlight.
+                    if (zProbeAmt > 0.001) {
+                        half3 pH = normalize(viewDir + zProbeDir);
+                        half pTerm = pow(saturate(dot(n, pH)), specPow) * (specPow + 8.0) * 0.03;
+                        col.rgb += specCol * zProbeCol * pTerm * _SpecStrength * zProbeAmt;
+                    }
                 }
                 if (_AnisoEnable > 0.5) {
                     float3 anisoDir = normalize((_AnisoDir > 0.5 ? B : T) + n * _AnisoShift);
@@ -739,8 +771,21 @@ Shader "Zetph/ZetsFancyEyeShader"
                         refl = lerp(refl1, refl, unity_SpecCube0_BoxMin.w);
                     }
                     half fill = saturate(1.0 - dot(refl, half3(0.299, 0.587, 0.114)) * 3.0);
-                    dbgRefl = (refl + (_BakedCubemap.SampleLevel(sampler_LinearClamp, reflDir, (1.0 - smoothness) * 6.0).rgb * _FallbackCubemapStrength * fill * _HasBakedCubemap)) * specCol * ao * _ReflStrength;
-                    col.rgb += dbgRefl;
+                    // Fresnel-weighted, matching the main shader. Flat specCol scaled
+                    // the environment by a dielectric's 4% everywhere, so at any
+                    // smoothness the reflection arrived as a dim uniform film - cloud,
+                    // never a mirror. Fresnel keeps 4% facing the viewer and rises to
+                    // full reflectivity at grazing angles, which on a curved cornea is
+                    // the bright mirrored rim glass actually shows.
+                    float zNoV = saturate(dot(n, viewDir));
+                    half3 zRough = half3(1, 1, 1) * (1.0 - smoothness);
+                    half3 zFr = max(half3(1, 1, 1) - zRough, specCol) - specCol;
+                    half3 zF = specCol + zFr * pow(1.0 - zNoV, 5.0);
+                    dbgRefl = (refl + (_BakedCubemap.SampleLevel(sampler_LinearClamp, reflDir, (1.0 - smoothness) * 6.0).rgb * _FallbackCubemapStrength * fill * _HasBakedCubemap)) * zF * ao * _ReflStrength;
+                    // Glass adds this after the premultiply at the end of the pass,
+                    // so the reflection is not scaled by alpha. Adding it here too
+                    // would double it.
+                    if (!zGlass) col.rgb += dbgRefl;
                 }
                 if (_WetnessEnable > 0.5) {
                     col.rgb += _WetnessColor.rgb * _WetnessMask.Sample(sampler_LinearClamp, i.uv).r * _WetnessStrength * max(ramp, 0.2);
@@ -787,6 +832,27 @@ Shader "Zetph/ZetsFancyEyeShader"
                 }
 //endex
                 UNITY_APPLY_FOG(i.fogCoord, col);
+                if (_AlphaMode > 1.5) {
+                    col.a = saturate(zOp);
+                    // Transparent eye renders PREMULTIPLIED: ZetRenderModeDrawer sets
+                    // Blend One OneMinusSrcAlpha for any material carrying _AlphaGlint
+                    // (i.e. this shader), so alpha is applied here instead of by the
+                    // blender. For the shaded base this is bit-identical to straight
+                    // SrcAlpha blending - keying the blend off the property rather
+                    // than the glint toggle means flipping glints never has to touch
+                    // material blend state.
+                    col.rgb *= col.a;
+                    // What premultiply buys: glass adds its reflections AFTER the
+                    // multiply, unmultiplied, so they survive alpha 0 - the shell
+                    // becomes pure reflection, real glass. Same scheme as Standard's
+                    // Transparent mode (vs Fade, which fades reflections too). This
+                    // replaces the old alpha-boost hack, which raised opacity where
+                    // the reflection was bright and dragged the lit albedo up with
+                    // it - that lit-white film over the glints was the "cloudy
+                    // glass". _AlphaGlintBoost now scales the reflection itself,
+                    // making "Glass Reflection Strength" do what the label says.
+                    if (zGlass) col.rgb += dbgRefl * _AlphaGlintBoost;
+                }
                 return col;
             }
             ENDCG
@@ -825,6 +891,10 @@ Shader "Zetph/ZetsFancyEyeShader"
                 // by near-constant ambient. The probes still carry a direction in their
                 // first-order coefficients, so it is recovered and used to shape the eye.
                 half3 zProbeCol = 0; float zProbeAmt = 0;
+                // Kept separate from lightDir. Reassigning that redirected the eye's
+                // parallax, its anisotropic streak and its highlight as well, none of
+                // which should follow the probe.
+                float3 zProbeDir = float3(0, 1, 0);
                 if (_ProbeDirLight > 0.5) {
                     float3 shDir = unity_SHAr.xyz * 0.3 + unity_SHAg.xyz * 0.59 + unity_SHAb.xyz * 0.11;
                     float shLen = length(shDir);
@@ -833,8 +903,8 @@ Shader "Zetph/ZetsFancyEyeShader"
                         float realtime = saturate(dot(_LightColor0.rgb, half3(0.3, 0.59, 0.11)) * 4.0);
                         zProbeAmt = (1.0 - realtime) * _ProbeDirStrength;
                         if (zProbeAmt > 0.001) {
-                            lightDir = (realtime > 0.001) ? normalize(lerp(pDir, lightDir, realtime)) : pDir;
                             zProbeCol = max(ShadeSH9(half4(pDir, 1)), 0.0);
+                            zProbeDir = pDir;
                         }
                     }
                 }
@@ -844,12 +914,27 @@ Shader "Zetph/ZetsFancyEyeShader"
                 float3 tn = UnpackScaleNormal(_BumpMap.Sample(sampler_MainTex, i.uv), _BumpScale);
                 float3 n = normalize(T * tn.x + B * tn.y + N * tn.z);
                 fixed4 albedo = _MainTex.Sample(sampler_MainTex, i.uv);
+                // Base tint, rgb and alpha. Same fix the main shader needed: without
+                // this, an opaque-alpha texture pinned zOp at 1 and Transparent mode
+                // blended correctly but always at full opacity - no lever to fade.
+                albedo *= _Color;
+                half zOp = 1.0;
+                // Same glass rule as the base pass: a fully clear shell must not be
+                // discarded, and only its diffuse fades with alpha - point/spot
+                // speculars stay at full strength so glass catches realtime lights.
+                bool zGlass = (_AlphaMode > 1.5) && (_AlphaMode < 2.5) && (_AlphaGlint > 0.5);
+                if (_AlphaMode > 0.5) {
+                    zOp = albedo.a;
+                    // Cutout clips at the cutoff; the transparent family only discards
+                    // fully invisible pixels.
+                    if (!zGlass) clip(zOp - ((_AlphaMode > 1.5) ? 0.001 : _Cutoff));
+                }
                 half4 packed = _PackedMap.Sample(sampler_MainTex, i.uv);
                 half rawSmooth = (_PackMode > 0.5) ? packed.a : packed.b;
                 half metallic  = packed.r * _Metallic;
                 half smoothness = (_InvSmooth > 0.5 ? 1.0 - rawSmooth : rawSmooth) * _EyeSmoothness;
                 half3 specCol = lerp(half3(0.04, 0.04, 0.04), albedo.rgb, metallic);
-                #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN) && !defined(LIGHTMAP_ON)
+                #if defined(SHADOWS_SHADOWMASK) && !defined(SHADOWS_SCREEN)
                     float atten = 1.0;
                 #else
                     UNITY_LIGHT_ATTENUATION(atten, i, i.wPos);
@@ -860,20 +945,23 @@ Shader "Zetph/ZetsFancyEyeShader"
                 half litRaw = (_EyeWrapLight > 0.5) ? (ndl * 0.5 + 0.5) : saturate(ndl);   // half-lambert survives wrong-facing eye normals
                 half ramp = (_LightingModel < 0.5) ? smoothstep(_ShadowEdge - _ShadowSoft, _ShadowEdge + _ShadowSoft, (ndl * 0.5 + 0.5) + dither) * atten : litRaw * atten;
                 float3 lightCol = clamp(_LightColor0.rgb, _MinBrightness, _MaxBrightness);
-                fixed4 col = fixed4(albedo.rgb * (1.0 - metallic) * lightCol * ramp, 1.0);
+                fixed4 col = fixed4(albedo.rgb * (1.0 - metallic) * lightCol * ramp * (zGlass ? saturate(zOp) : 1.0), 1.0);
                 float3 H = normalize(lightDir + viewDir);
                 if (_LightingModel > 0.5) {
-                    // GGX rather than Blinn-Phong: atten not ramp, since the BRDF carries
-                    // its own N.L and multiplying by the lambert ramp would square it.
-                    col.rgb += specCol * lightCol
-                             * ZetGGXSpecular(n, viewDir, lightDir, smoothness, half3(1, 1, 1))
-                             * _SpecStrength * atten;
-                    // The probe light gets a matching lobe, or a smooth eye in an
-                    // ambient-only world has shaped diffuse but no catchlight.
-                    if (zProbeAmt > 0.001)
-                        col.rgb += specCol * zProbeCol
-                                 * ZetGGXSpecular(n, viewDir, lightDir, smoothness, specCol)
-                                 * _SpecStrength * zProbeAmt;
+                    // Deliberately not GGX. An eye is a stylised highlight, not a physical
+                    // surface: energy-conserving specular at an eye's smoothness gives a
+                    // lobe so tight it disappears, which kills the catchlight the eye
+                    // depends on. This lobe is tuned to stay visible at default smoothness.
+                    half specPow = exp2(lerp(4.0, 10.0, smoothness));
+                    half specTerm = pow(saturate(dot(n, H)), specPow) * (specPow + 8.0) * 0.03;
+                    col.rgb += specCol * lightCol * specTerm * _SpecStrength * ramp;
+                    // The probe light gets the same lobe, so an eye in a world with no
+                    // realtime light still catches a highlight.
+                    if (zProbeAmt > 0.001) {
+                        half3 pH = normalize(viewDir + zProbeDir);
+                        half pTerm = pow(saturate(dot(n, pH)), specPow) * (specPow + 8.0) * 0.03;
+                        col.rgb += specCol * zProbeCol * pTerm * _SpecStrength * zProbeAmt;
+                    }
                 }
                 if (_AnisoEnable > 0.5) {
                     float3 anisoDir = normalize((_AnisoDir > 0.5 ? B : T) + n * _AnisoShift);
@@ -891,6 +979,9 @@ Shader "Zetph/ZetsFancyEyeShader"
                 if (_WetnessEnable > 0.5) {
                     col.rgb += _WetnessColor.rgb * _WetnessMask.Sample(sampler_LinearClamp, i.uv).r * _WetnessStrength * ramp;
                 }
+                // Glass already scaled its diffuse at construction and keeps its
+                // speculars; only non-glass transparency fades the whole result.
+                if (_AlphaMode > 1.5 && !zGlass) col.rgb *= saturate(zOp);
                 UNITY_APPLY_FOG_COLOR(i.fogCoord, col, fixed4(0, 0, 0, 0));
                 return col;
             }

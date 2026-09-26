@@ -113,7 +113,12 @@ namespace Zetph.FancyShader.EditorUI
 
         // Cached lock preview - see DrawLockButton.
         private ZetShaderLocker.Plan _plan;
-        private int _planFor = -1;
+        // The material itself, not its instance ID. Instance IDs are only a cache key
+        // here, and Unity is changing their type and semantics in 6.x and later - so
+        // holding the reference sidesteps that entirely and is the more direct test
+        // anyway: it asks "is this the same material" rather than "is this the same
+        // number", which an ID can reuse after an object is destroyed.
+        private Material _planFor;
 
         private static GUIStyle _infoStyle;
         private static GUIStyle _headerLabelStyle;
@@ -137,6 +142,7 @@ namespace Zetph.FancyShader.EditorUI
                 // A locked material points at a generated copy, so structure and
                 // prose come from whichever shader the source actually is.
                 _shader = ZetShaderLocker.ResolveSourceShader(material) ?? material.shader;
+                _drawerCache.Clear();   // attributes belong to the previous shader
                 _data = ZetUIData.Load(_shader);
                 Rebuild();
 
@@ -1126,6 +1132,38 @@ namespace Zetph.FancyShader.EditorUI
         /// section are filled?" into a scan down the right margin.
         /// Tiling/offset only appears when the property declares it.
         /// </summary>
+        // Cached per property name: the shader does not change while this inspector
+        // instance is alive (a shader swap rebuilds it), and GetPropertyAttributes
+        // walks the shader's serialized data, which is not free per repaint.
+        private readonly Dictionary<string, bool> _drawerCache = new Dictionary<string, bool>();
+
+        private bool HasCustomDrawer(MaterialProperty property)
+        {
+            bool has;
+            if (_drawerCache.TryGetValue(property.name, out has)) return has;
+
+            has = false;
+            if (_shader != null)
+            {
+                int idx = _shader.FindPropertyIndex(property.name);
+                if (idx >= 0)
+                {
+                    string[] attrs = _shader.GetPropertyAttributes(idx);
+                    for (int i = 0; i < attrs.Length; i++)
+                    {
+                        // Any attribute Unity resolves to a MaterialPropertyDrawer
+                        // subclass would qualify; in this package only the curve
+                        // drawer marks textures, so the check stays narrow rather
+                        // than reflecting over every attribute name.
+                        if (attrs[i] == "ZetCurve" || attrs[i].StartsWith("ZetCurve(", StringComparison.Ordinal))
+                        { has = true; break; }
+                    }
+                }
+            }
+            _drawerCache[property.name] = has;
+            return has;
+        }
+
         private static void DrawTextureRow(MaterialProperty property, GUIContent label, MaterialEditor editor)
         {
             editor.TexturePropertySingleLine(label, property);
@@ -1219,7 +1257,17 @@ namespace Zetph.FancyShader.EditorUI
                 string[] options = _data != null ? _data.EnumOptions(property.name) : null;
 
                 if (property.type == MaterialProperty.PropType.Texture)
-                    DrawTextureRow(property, content, editor);
+                {
+                    // Texture rows are normally drawn with TexturePropertySingleLine,
+                    // which bypasses MaterialPropertyDrawer attributes entirely - so a
+                    // texture carrying a custom drawer (the [ZetCurve] curve editor)
+                    // would silently render as a plain texture slot. Those route
+                    // through ShaderProperty, which is what invokes drawers.
+                    if (HasCustomDrawer(property))
+                        editor.ShaderProperty(property, content);
+                    else
+                        DrawTextureRow(property, content, editor);
+                }
                 else if (options != null &&
                          (property.type == MaterialProperty.PropType.Float ||
                           property.type == MaterialProperty.PropType.Range))
@@ -1421,10 +1469,10 @@ namespace Zetph.FancyShader.EditorUI
             // shader this was a file read plus a full parse per frame, for the
             // entire time a material was selected. Cached per material, and
             // invalidated on any GUI change so the preview still tracks edits.
-            if (_plan == null || _planFor != material.GetInstanceID())
+            if (_plan == null || _planFor != material)
             {
                 _plan = ZetShaderLocker.Build(material);
-                _planFor = material.GetInstanceID();
+                _planFor = material;
             }
             ZetShaderLocker.Plan plan = _plan;
 
