@@ -1,4 +1,4 @@
-// ZetsFancyShader inspector - revision 30 (locked-view marker fix)
+// ZetsFancyShader inspector - revision 36 (neutral grey info box)
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -41,6 +41,7 @@ namespace Zetph.FancyShader.EditorUI
         private const float ArrowWidth = 13f;
         private const float GutterWidth = 18f;
         private const float BannerHeight = 42f;
+        private const float ShortcutWidth = 30f;   // header shortcut: box + short label
 
         private const string AnimationModeKey = "Zetph.FancyShader.UI.AnimationMode";
         private const string ShowInactiveKey = "Zetph.FancyShader.UI.ShowInactiveWhenLocked";
@@ -113,18 +114,15 @@ namespace Zetph.FancyShader.EditorUI
 
         // Cached lock preview - see DrawLockButton.
         private ZetShaderLocker.Plan _plan;
-        // The material itself, not its instance ID. Instance IDs are only a cache key
-        // here, and Unity is changing their type and semantics in 6.x and later - so
-        // holding the reference sidesteps that entirely and is the more direct test
-        // anyway: it asks "is this the same material" rather than "is this the same
-        // number", which an ID can reuse after an object is destroyed.
-        private Material _planFor;
+        private int _planFor = -1;
 
         private static GUIStyle _infoStyle;
+        private static GUIStyle _infoBoxText;
         private static GUIStyle _headerLabelStyle;
         private static GUIStyle _animBadgeStyle;
         private static GUIStyle _bannerTitleStyle;
         private static GUIStyle _bannerVersionStyle;
+        private static GUIStyle _shortcutLabelStyle;
 
         // ---------------------------------------------------------------- GUI
 
@@ -142,7 +140,6 @@ namespace Zetph.FancyShader.EditorUI
                 // A locked material points at a generated copy, so structure and
                 // prose come from whichever shader the source actually is.
                 _shader = ZetShaderLocker.ResolveSourceShader(material) ?? material.shader;
-                _drawerCache.Clear();   // attributes belong to the previous shader
                 _data = ZetUIData.Load(_shader);
                 Rebuild();
 
@@ -150,6 +147,19 @@ namespace Zetph.FancyShader.EditorUI
                 // value but not the keyword. Reconcile once on load so they light up
                 // without the user having to toggle each one off and on again.
                 SyncAllToggleKeywords(properties);
+            }
+
+            // Older settings onto their replacements (2nd Specular into Clear Coat,
+            // ...). Every Layout and every selected material, so multi-editing
+            // migrates them all; a material with nothing to migrate costs a couple
+            // of property reads. The arrays Unity handed in this frame still hold
+            // the old values, so repaint to draw the migrated ones.
+            if (Event.current.type == EventType.Layout)
+            {
+                bool migrated = false;
+                foreach (UnityEngine.Object o in materialEditor.targets)
+                    migrated |= ZetMigrations.Apply(o as Material);
+                if (migrated) materialEditor.Repaint();
             }
 
             // Unity rebuilds this array every frame; the tree stores names only.
@@ -234,6 +244,19 @@ namespace Zetph.FancyShader.EditorUI
                     : new Color(0.35f, 0.35f, 0.35f);
             }
 
+            if (_infoBoxText == null)
+            {
+                // Same tone as _infoStyle, without its padding: the box supplies it.
+                _infoBoxText = new GUIStyle(_infoStyle) { padding = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0) };
+                // Its own text colour on every state, so hover and focus never
+                // flip it back to the skin default.
+                Color ink = ZetUITheme.InfoText();
+                _infoBoxText.normal.textColor = ink;
+                _infoBoxText.hover.textColor = ink;
+                _infoBoxText.active.textColor = ink;
+                _infoBoxText.focused.textColor = ink;
+            }
+
             if (_bannerTitleStyle == null)
             {
                 _bannerTitleStyle = new GUIStyle(EditorStyles.boldLabel)
@@ -263,6 +286,14 @@ namespace Zetph.FancyShader.EditorUI
                 _animBadgeStyle = new GUIStyle(EditorStyles.miniBoldLabel)
                 {
                     alignment = TextAnchor.MiddleRight
+                };
+            }
+
+            if (_shortcutLabelStyle == null)
+            {
+                _shortcutLabelStyle = new GUIStyle(EditorStyles.miniLabel)
+                {
+                    alignment = TextAnchor.MiddleLeft
                 };
             }
 
@@ -794,7 +825,7 @@ namespace Zetph.FancyShader.EditorUI
                         DrawMissingPackageNote(group.Def.requires);
 
                     if (group.Def != null && !string.IsNullOrEmpty(group.Def.info))
-                        DrawInfo(group.Def.info);
+                        DrawInfo(group.Path, group.Def.summary, group.Def.info);
 
                     DrawNodeChildren(group, editor, depth + 1);
 
@@ -884,14 +915,33 @@ namespace Zetph.FancyShader.EditorUI
             // when something inside becomes animated.
             var badgeRect = new Rect(row.xMax - 26f, row.y, 22f, HeaderHeight);
 
+            // Shortcut tick boxes for sub-sections, right-aligned before the badge
+            // column - Emission's four slots, so a slot can be switched without
+            // opening the section. Each is the same enable property its
+            // sub-section's own header switches. Listed per group in the UI JSON.
+            string[] shortcuts = group.Def != null ? group.Def.headerToggles : null;
+            int shortcutCount = shortcuts != null ? shortcuts.Length : 0;
+            float shortcutsLeft = badgeRect.x - shortcutCount * ShortcutWidth;
+
             var labelRect = new Rect(toggleRect.xMax + 6f, row.y,
-                                     Mathf.Max(badgeRect.x - toggleRect.xMax - 10f, 10f), HeaderHeight);
+                                     Mathf.Max(shortcutsLeft - toggleRect.xMax - 10f, 10f), HeaderHeight);
 
             Event e = Event.current;
 
+            int shortcutHit = -1;
+            if (e.type == EventType.MouseDown && e.button == 0)
+                for (int s = 0; s < shortcutCount; s++)
+                    if (ShortcutRect(row, shortcutsLeft, s).Contains(e.mousePosition)) { shortcutHit = s; break; }
+
             if (e.type == EventType.MouseDown && e.button == 0 && row.Contains(e.mousePosition))
             {
-                if (toggle != null && !_lockedView && toggleHit.Contains(e.mousePosition))
+                if (shortcutHit >= 0)
+                {
+                    // A shortcut never expands the bar. On a locked material the
+                    // value is baked, so the click does nothing at all.
+                    if (!_lockedView) FlipShortcut(shortcuts[shortcutHit], editor);
+                }
+                else if (toggle != null && !_lockedView && toggleHit.Contains(e.mousePosition))
                 {
                     bool now = !(toggle.floatValue > 0.5f);
 
@@ -935,6 +985,25 @@ namespace Zetph.FancyShader.EditorUI
                     label += "  (mixed)";
 
                 _headerLabelStyle.Draw(labelRect, label, false, false, false, false);
+
+                for (int s = 0; s < shortcutCount; s++)
+                {
+                    MaterialProperty sp;
+                    if (!_lookup.TryGetValue(shortcuts[s], out sp)) continue;
+
+                    Rect hit = ShortcutRect(row, shortcutsLeft, s);
+                    var box = new Rect(hit.x + 2f, row.y + (HeaderHeight - ToggleSize) * 0.5f,
+                                       ToggleSize, ToggleSize);
+                    var text = new Rect(box.xMax + 2f, row.y, hit.xMax - box.xMax - 2f, HeaderHeight);
+
+                    EditorStyles.toggle.Draw(box, false, false, sp.floatValue > 0.5f, false);
+
+                    string full;
+                    _shortcutLabelStyle.Draw(text, ShortcutLabel(sp.name, s, out full), false, false, false, false);
+
+                    // Hover text, so the digit is never the only clue to what it switches.
+                    GUI.Label(hit, new GUIContent(string.Empty, full + (sp.hasMixedValue ? " (mixed)" : string.Empty)));
+                }
 
                 // Green tick plus A, matching what ThryEditor showed, so a
                 // collapsed section still tells you something inside is animated.
@@ -998,6 +1067,45 @@ namespace Zetph.FancyShader.EditorUI
             }
         }
 
+        private static Rect ShortcutRect(Rect row, float left, int index)
+        {
+            return new Rect(left + index * ShortcutWidth, row.y, ShortcutWidth, row.height);
+        }
+
+        /// <summary>
+        /// Short label for a header shortcut: the last word of the sub-section it
+        /// switches ("Emission 2" gives "2"), with the full name as hover text.
+        /// </summary>
+        private string ShortcutLabel(string propertyName, int index, out string full)
+        {
+            full = propertyName;
+            if (_data != null && _data.groups != null)
+            {
+                foreach (GroupDef g in _data.groups)
+                {
+                    if (g.toggle != propertyName || string.IsNullOrEmpty(g.label)) continue;
+                    full = g.label;
+                    int space = g.label.LastIndexOf(' ');
+                    return space >= 0 ? g.label.Substring(space + 1) : g.label;
+                }
+            }
+            return index.ToString();
+        }
+
+        /// <summary>Switches a sub-section from its parent's header shortcut.</summary>
+        private void FlipShortcut(string propertyName, MaterialEditor editor)
+        {
+            MaterialProperty p;
+            if (!_lookup.TryGetValue(propertyName, out p)) return;
+
+            editor.RegisterPropertyChangeUndo(propertyName);
+            p.floatValue = p.floatValue > 0.5f ? 0f : 1f;
+
+            // Emission slots are keyword features; the keyword has to follow the
+            // value or the slot reads as on while its code is compiled out.
+            SyncToggleKeyword(p);
+        }
+
         private MaterialProperty FindToggle(Node group)
         {
             string name = group.Def != null ? group.Def.toggle : null;
@@ -1007,36 +1115,109 @@ namespace Zetph.FancyShader.EditorUI
             return _lookup.TryGetValue(name, out p) ? p : null;
         }
 
-        // Column width per indent level, captured on the last repaint. The height
+        // Box width per indent level, captured on the last repaint. The height
         // has to be reserved during Layout, before any rect exists, so on the first
         // frame there is nothing else to measure against.
         private static readonly Dictionary<int, float> _infoWidths = new Dictionary<int, float>();
 
-        private static void DrawInfo(string text)
+        // Sections whose info box has been clicked open. Per editor session: an
+        // expanded description is a one-off read, not a setting worth saving.
+        private static readonly HashSet<string> _infoOpen = new HashSet<string>();
+
+        private static GUIContent _infoIcon;
+
+        /// <summary>
+        /// A section's description as a compact callout: a lightly tinted, padded
+        /// box with a 20px info icon and a one-line summary. When the section has a longer description, hovering
+        /// the box shows it as a tooltip and clicking the box expands it in place
+        /// (a fold arrow on the right says which state it is in).
+        ///
+        /// Measured and drawn at the SAME width. The old version measured against
+        /// the indented column, then drew with EditorGUI.LabelField, which indents
+        /// its rect a second time - so the text wrapped narrower than it was
+        /// measured for, and the last line spilled into the property below. Worse
+        /// the deeper the section, which is why nested sections overlapped. Every
+        /// draw call here is a GUI.* call, which never indents.
+        /// </summary>
+        private static void DrawInfo(string key, string summary, string full)
         {
-            var content = new GUIContent(text);
+            if (_infoIcon == null)
+            {
+                // The full-size icon, drawn at InfoIcon px: the .sml variant is a
+                // 16px bitmap and goes soft when scaled up.
+                _infoIcon = EditorGUIUtility.IconContent("console.infoicon");
+                if (_infoIcon == null || _infoIcon.image == null)
+                    _infoIcon = EditorGUIUtility.IconContent("console.infoicon.sml");
+            }
+
+            bool hasSummary = !string.IsNullOrEmpty(summary);
+            bool hasMore = hasSummary && !string.Equals(summary.Trim(), full.Trim(), StringComparison.Ordinal);
+            bool open = hasMore && _infoOpen.Contains(key);
+            string shown = (hasSummary && !open) ? summary : full;
+
+            const float padX = 8f, padY = 6f, gap = 7f, icon = 20f, arrow = 12f;
             int indent = EditorGUI.indentLevel;
 
-            // GetRect(content, style) is wrong for a wordWrap style: it measures
-            // height against the style's PREFERRED (unwrapped, single-line) width,
-            // then layout clamps the rect to the column and IndentedRect narrows it
-            // again - so the text wraps to n lines inside a rect sized for one, and
-            // the tail gets clipped. Measure by hand against the real width.
-            // The first-frame fallback is deliberately narrow: over-reserving costs
-            // a few pixels of whitespace, under-reserving eats the last line.
+            // Over-reserving on the first frame costs a few pixels of whitespace;
+            // under-reserving clips the last line, so the fallback errs narrow.
             float width;
             if (!_infoWidths.TryGetValue(indent, out width) || width < 1f)
                 width = EditorGUIUtility.currentViewWidth - 40f - indent * 15f;
 
-            float height = _infoStyle.CalcHeight(content, Mathf.Max(60f, width));
+            float textW = Mathf.Max(60f, width - padX * 2f - icon - gap - (hasMore ? arrow + gap : 0f));
+            var content = new GUIContent(shown);
+            float textH = _infoBoxText.CalcHeight(content, textW);
+            float inner = Mathf.Max(icon, textH);
+            float height = inner + padY * 2f;
 
-            Rect r = EditorGUI.IndentedRect(
+            // A little air above and below, so the box sits between the header
+            // and the first property instead of touching both.
+            GUILayoutUtility.GetRect(0f, 2f, GUILayout.ExpandWidth(true));
+            Rect box = EditorGUI.IndentedRect(
                 GUILayoutUtility.GetRect(0f, height, GUILayout.ExpandWidth(true)));
+            GUILayoutUtility.GetRect(0f, 4f, GUILayout.ExpandWidth(true));
 
-            if (Event.current.type == EventType.Repaint)
-                _infoWidths[indent] = r.width;
+            Event e = Event.current;
+            bool enabled = GUI.enabled;
+            if (e.type == EventType.Repaint)
+            {
+                _infoWidths[indent] = box.width;
+                ZetUITheme.Fill(box, ZetUITheme.InfoFill(enabled), ZetUITheme.AllCorners(ZetUITheme.Radius));
+                ZetUITheme.Border(box, ZetUITheme.InfoBorder(enabled), ZetUITheme.AllCorners(ZetUITheme.Radius), 1f);
+            }
 
-            EditorGUI.LabelField(r, content, _infoStyle);
+            // One line: icon and text centred on each other. Several lines: the
+            // icon stays beside the first line, the way a callout reads.
+            float top = box.y + padY;
+            var iconRect = new Rect(box.x + padX,
+                                    textH <= icon ? top : top + (_infoBoxText.lineHeight - icon) * 0.5f,
+                                    icon, icon);
+            var textRect = new Rect(iconRect.xMax + gap,
+                                    textH < icon ? top + (icon - textH) * 0.5f : top,
+                                    textW, textH);
+
+            // Collapsed, hovering anywhere on the box shows the full description.
+            if (hasMore && !open)
+                GUI.Label(box, new GUIContent(string.Empty, full + "\n\nClick to expand."));
+            if (e.type == EventType.Repaint && _infoIcon != null && _infoIcon.image != null)
+                GUI.DrawTexture(iconRect, _infoIcon.image, ScaleMode.ScaleToFit);
+            GUI.Label(textRect, content, _infoBoxText);
+
+            if (!hasMore) return;
+
+            var arrowRect = new Rect(box.xMax - padX - arrow, iconRect.y + (icon - arrow) * 0.5f, arrow, arrow);
+            if (e.type == EventType.Repaint)
+                EditorStyles.foldout.Draw(arrowRect, false, false, open, false);
+
+            // Whole box is the click target. Checked by hand rather than with a
+            // button so it still works inside a switched-off (greyed) section,
+            // where reading what the section does matters most.
+            EditorGUIUtility.AddCursorRect(box, MouseCursor.Link);
+            if (e.type == EventType.MouseDown && e.button == 0 && box.Contains(e.mousePosition))
+            {
+                if (open) _infoOpen.Remove(key); else _infoOpen.Add(key);
+                e.Use();
+            }
         }
 
         /// <summary>
@@ -1132,38 +1313,6 @@ namespace Zetph.FancyShader.EditorUI
         /// section are filled?" into a scan down the right margin.
         /// Tiling/offset only appears when the property declares it.
         /// </summary>
-        // Cached per property name: the shader does not change while this inspector
-        // instance is alive (a shader swap rebuilds it), and GetPropertyAttributes
-        // walks the shader's serialized data, which is not free per repaint.
-        private readonly Dictionary<string, bool> _drawerCache = new Dictionary<string, bool>();
-
-        private bool HasCustomDrawer(MaterialProperty property)
-        {
-            bool has;
-            if (_drawerCache.TryGetValue(property.name, out has)) return has;
-
-            has = false;
-            if (_shader != null)
-            {
-                int idx = _shader.FindPropertyIndex(property.name);
-                if (idx >= 0)
-                {
-                    string[] attrs = _shader.GetPropertyAttributes(idx);
-                    for (int i = 0; i < attrs.Length; i++)
-                    {
-                        // Any attribute Unity resolves to a MaterialPropertyDrawer
-                        // subclass would qualify; in this package only the curve
-                        // drawer marks textures, so the check stays narrow rather
-                        // than reflecting over every attribute name.
-                        if (attrs[i] == "ZetCurve" || attrs[i].StartsWith("ZetCurve(", StringComparison.Ordinal))
-                        { has = true; break; }
-                    }
-                }
-            }
-            _drawerCache[property.name] = has;
-            return has;
-        }
-
         private static void DrawTextureRow(MaterialProperty property, GUIContent label, MaterialEditor editor)
         {
             editor.TexturePropertySingleLine(label, property);
@@ -1257,17 +1406,7 @@ namespace Zetph.FancyShader.EditorUI
                 string[] options = _data != null ? _data.EnumOptions(property.name) : null;
 
                 if (property.type == MaterialProperty.PropType.Texture)
-                {
-                    // Texture rows are normally drawn with TexturePropertySingleLine,
-                    // which bypasses MaterialPropertyDrawer attributes entirely - so a
-                    // texture carrying a custom drawer (the [ZetCurve] curve editor)
-                    // would silently render as a plain texture slot. Those route
-                    // through ShaderProperty, which is what invokes drawers.
-                    if (HasCustomDrawer(property))
-                        editor.ShaderProperty(property, content);
-                    else
-                        DrawTextureRow(property, content, editor);
-                }
+                    DrawTextureRow(property, content, editor);
                 else if (options != null &&
                          (property.type == MaterialProperty.PropType.Float ||
                           property.type == MaterialProperty.PropType.Range))
@@ -1469,10 +1608,10 @@ namespace Zetph.FancyShader.EditorUI
             // shader this was a file read plus a full parse per frame, for the
             // entire time a material was selected. Cached per material, and
             // invalidated on any GUI change so the preview still tracks edits.
-            if (_plan == null || _planFor != material)
+            if (_plan == null || _planFor != material.GetInstanceID())
             {
                 _plan = ZetShaderLocker.Build(material);
-                _planFor = material;
+                _planFor = material.GetInstanceID();
             }
             ZetShaderLocker.Plan plan = _plan;
 

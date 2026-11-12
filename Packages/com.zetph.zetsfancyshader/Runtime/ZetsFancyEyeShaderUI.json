@@ -1,6 +1,6 @@
 {
  "title": "ZetsFancyEyeShader",
- "version": "v0.7.0",
+ "version": "v0.8.0",
  "groups": [
   {
    "path": "base",
@@ -13,6 +13,7 @@
    "path": "alenv",
    "label": "AudioLink Response",
    "info": "Master switch for AudioLink on this material, and how sharply reactions decay. Matches the main shader, so an eye and the bodywork set to the same band respond identically.",
+   "summary": "AudioLink master switch and decay, matched to the main shader.",
    "toggle": "",
    "showIf": []
   },
@@ -85,6 +86,7 @@
    "path": "reflspec_emission_emal",
    "label": "AudioLink Settings",
    "info": "Makes the eye's glow react to AudioLink, using the same bands and chain as the main shader so an eye can be matched to bodywork.",
+   "summary": "The eye's glow reacts to AudioLink, like the bodywork.",
    "toggle": "_EmALEnable",
    "showIf": [
     "_EmissionEnable"
@@ -103,6 +105,7 @@
    "path": "reflspec_emission_emlb",
    "label": "Light Based",
    "info": "Dims or lifts the glow by how lit the eye is, so it can fade in daylight or only show in the dark.",
+   "summary": "Fades the glow with how lit the eye is.",
    "toggle": "_EmLightBased",
    "showIf": [
     "_EmissionEnable"
@@ -121,6 +124,7 @@
    "path": "reflspec_emission_emscan",
    "label": "Scan / Sweep",
    "info": "A bright band that sweeps across the glow, matching the main shader's sweep so an eye can be synced to bodywork.",
+   "summary": "A band sweeping across the glow, syncable with the body.",
    "toggle": "_EmScan",
    "showIf": [
     "_EmissionEnable"
@@ -130,6 +134,7 @@
    "path": "ltcgi",
    "label": "LTCGI",
    "info": "Enables LTCGI area light support, so the avatar picks up coloured light from LTCGI world screens and emitters.",
+   "summary": "Coloured light from LTCGI world screens and emitters.",
    "toggle": "_LTCGI",
    "showIf": [],
    "requires": "ZET_LTCGI"
@@ -146,6 +151,7 @@
    "path": "vrslgi",
    "label": "VRSL GI",
    "info": "Lighting from VRSL GI stage rigs - club and event rig fixtures light the eyes, cones respected. No package to install: the world publishes the data as a global, so it switches itself on in VRSL GI worlds and costs nothing elsewhere. Cannot be previewed in the editor.",
+   "summary": "Lighting from VRSL stage rigs. Switches on in VRSL worlds.",
    "toggle": "_VRSLGI",
    "showIf": []
   },
@@ -153,6 +159,7 @@
    "path": "debug",
    "label": "Debug Views",
    "info": "Renders one isolated term instead of the finished eye. Set back to Off before locking: it drives an //ifex, so Off strips the feature from the locked shader and anything else ships the debug view to everyone.",
+   "summary": "Shows one lighting term in isolation. Set to Off before locking.",
    "toggle": "",
    "showIf": []
   }

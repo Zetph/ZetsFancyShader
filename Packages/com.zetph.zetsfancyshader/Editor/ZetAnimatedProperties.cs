@@ -1,4 +1,5 @@
-// ZetsFancyShader inspector - revision 31 (Thry-compatible animated tags)
+// ZetsFancyShader inspector - revision 34 (renamed animated properties)
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -14,12 +15,44 @@ namespace Zetph.FancyShader.EditorUI
     /// emission colour, another does not, and both use the same shader. This is
     /// the same type of storage system ThryEditor used in the original test build.
     ///
-    /// Records intent so the information exists when the locker lands, and so the 
+    /// Records intent so the information exists when the locker lands, and so the
     /// inspector can warn about choices.
     /// </summary>
     public static class ZetAnimatedProperties
     {
         private const string TagPrefix = "ZetAnimated_";
+
+        // UV Tile Discard's sixteen tile toggles exist to be animated - outfit
+        // toggles are the whole feature - so while UV Tile Discard is on they
+        // count as animated without being marked. Otherwise locking bakes each tile
+        // to its current state and every outfit toggle silently stops working.
+        // Unmarking any of them (right-click > Animated on the grid) records an
+        // explicit "0", which is the only thing that turns the default off.
+        //
+        // Tiles use Poi's names, _UDIMDiscardRow<v>_<u>, which VRCFury's "Poiyomi
+        // UV Tile" action animates. The pre-0.8 names _UVTileRow<v>_<u> are still
+        // read by the shader for older clips, so they are covered by the same rule.
+        private const string TilePrefix = "_UDIMDiscardRow";
+        private const string LegacyTilePrefix = "_UVTileRow";
+        private const string TileEnable = "_UVTileDiscardEnable";
+
+        private static readonly string[] TileNames = BuildTileNames();
+
+        private static string[] BuildTileNames()
+        {
+            var names = new List<string>();
+            foreach (string prefix in new[] { TilePrefix, LegacyTilePrefix })
+                for (int v = 0; v < 4; v++)
+                    for (int u = 0; u < 4; u++)
+                        names.Add(prefix + v + "_" + u);
+            return names.ToArray();
+        }
+
+        private static bool IsTile(string propertyName)
+        {
+            return propertyName.StartsWith(TilePrefix, StringComparison.Ordinal)
+                || propertyName.StartsWith(LegacyTilePrefix, StringComparison.Ordinal);
+        }
 
         /// <summary>
         /// ThryEditor's convention was preseved: a tag named "&lt;property&gt;Animated".
@@ -38,10 +71,74 @@ namespace Zetph.FancyShader.EditorUI
         {
             if (material == null || string.IsNullOrEmpty(propertyName)) return false;
 
+            string ours = material.GetTag(TagPrefix + propertyName, false, string.Empty);
+
+            if (IsTile(propertyName))
+            {
+                if (ours == "0") return false;   // explicitly unmarked
+                if (material.HasProperty(TileEnable) && material.GetFloat(TileEnable) > 0.5f) return true;
+            }
+
             // Either tag counts, so a material flagged by Thry-based tooling is
-            // honoured without being re-marked here.
-            return material.GetTag(TagPrefix + propertyName, false, string.Empty) == "1"
-                || material.GetTag(ThryTag(propertyName), false, string.Empty) == "1";
+            // honoured without being re-marked here. "2" is Thry's "animated and
+            // renamed", which is animated too.
+            string thry = material.GetTag(ThryTag(propertyName), false, string.Empty);
+            return ours == "1" || ours == "2" || thry == "1" || thry == "2";
+        }
+
+        // ------------------------------------------------------- renamed
+
+        // Thry's own tag for a custom suffix; without it the suffix is the
+        // material's name. Same rule as Poi, so the name typed into VRCFury's
+        // "Renamed Material" field for a Poi material works for ZFS too.
+        public const string RenameSuffixTag = "thry_rename_suffix";
+
+        /// <summary>
+        /// True when the property is animated AND renamed in the locked shader to
+        /// &lt;name&gt;_&lt;suffix&gt;, so a toggle can single out this material on a
+        /// renderer that carries several. Same "2" tag Thry uses.
+        /// </summary>
+        public static bool IsRenamed(Material material, string propertyName)
+        {
+            if (material == null || string.IsNullOrEmpty(propertyName)) return false;
+            return material.GetTag(TagPrefix + propertyName, false, string.Empty) == "2"
+                || material.GetTag(ThryTag(propertyName), false, string.Empty) == "2";
+        }
+
+        /// <summary>
+        /// The suffix renamed properties get: the custom tag if set, else the
+        /// material's name, cleaned exactly the way Thry cleans it (spaces and
+        /// anything but letters, digits and underscore removed).
+        /// </summary>
+        public static string RenameSuffix(Material material)
+        {
+            if (material == null) return string.Empty;
+            return CleanSuffix(material.GetTag(RenameSuffixTag, false, material.name));
+        }
+
+        public static string CleanSuffix(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return string.Empty;
+            var sb = new System.Text.StringBuilder();
+            foreach (char c in s.Trim())
+            {
+                bool letter = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+                bool digit = c >= '0' && c <= '9';
+                if (letter || digit || c == '_') sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Marks one property renamed (or back to plain animated). Per property,
+        /// never grouped: renaming follows what animations actually target.
+        /// </summary>
+        public static void SetRenamed(Material m, string propertyName, bool renamed)
+        {
+            if (m == null || string.IsNullOrEmpty(propertyName)) return;
+            m.SetOverrideTag(TagPrefix + propertyName, renamed ? "2" : "1");
+            m.SetOverrideTag(ThryTag(propertyName), renamed ? "2" : "1");
+            EditorUtility.SetDirty(m);
         }
 
         /// <summary>True when every target agrees the property is animated.</summary>
@@ -62,6 +159,10 @@ namespace Zetph.FancyShader.EditorUI
         {
             if (targets == null) return;
 
+            // The tile grid is one control, so its toggles move together (old names too):
+            // a mix of live and baked tiles is never what anyone means.
+            string[] names = IsTile(propertyName) ? TileNames : new[] { propertyName };
+
             foreach (UnityEngine.Object o in targets)
             {
                 var m = o as Material;
@@ -69,12 +170,52 @@ namespace Zetph.FancyShader.EditorUI
 
                 Undo.RecordObject(m, animated ? "Mark Property Animated" : "Unmark Property Animated");
 
-                // An empty value removes the tag rather than leaving "0" behind,
-                // material carries tags only for properties actually marked.
-                m.SetOverrideTag(TagPrefix + propertyName, animated ? "1" : string.Empty);
-                m.SetOverrideTag(ThryTag(propertyName), animated ? "1" : string.Empty);
+                foreach (string name in names)
+                {
+                    // An empty value removes the tag rather than leaving "0" behind,
+                    // material carries tags only for properties actually marked. Tiles
+                    // are the exception: for them "0" is the record of an opt-out from
+                    // the animated-by-default rule above.
+                    string off = IsTile(name) ? "0" : string.Empty;
+                    m.SetOverrideTag(TagPrefix + name, animated ? "1" : off);
+                    m.SetOverrideTag(ThryTag(name), animated ? "1" : string.Empty);
+                }
                 EditorUtility.SetDirty(m);
             }
+        }
+
+        /// <summary>
+        /// Writes the tags for tiles that are animated by default but not yet tagged,
+        /// so tools that read the tags directly (VRCFury) see them as animated too.
+        /// Only writes on change, never on a locked material, and never over an
+        /// opt-out. Returns true if anything was written.
+        /// </summary>
+        public static bool ApplyTileDefault(Material m)
+        {
+            if (m == null || !m.HasProperty(TileEnable) || m.GetFloat(TileEnable) < 0.5f) return false;
+            if (ZetShaderLocker.IsLocked(m)) return false;
+
+            // Opted out: leave every tile alone. Checked up front so an opt-out can
+            // never end up half overwritten.
+            foreach (string name in TileNames)
+                if (m.GetTag(TagPrefix + name, false, string.Empty) == "0") return false;
+
+            bool changed = false;
+            foreach (string name in TileNames)
+            {
+                // "2" is animated-and-renamed: already animated, and must not be
+                // knocked back to plain "1".
+                if (IsRenamed(m, name)) continue;
+                if (m.GetTag(TagPrefix + name, false, string.Empty) == "1" &&
+                    m.GetTag(ThryTag(name), false, string.Empty) == "1") continue;
+
+                m.SetOverrideTag(TagPrefix + name, "1");
+                m.SetOverrideTag(ThryTag(name), "1");
+                changed = true;
+            }
+
+            if (changed) EditorUtility.SetDirty(m);
+            return changed;
         }
 
         /// <summary>Every property currently marked animated on a material.</summary>

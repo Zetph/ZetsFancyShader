@@ -1,4 +1,4 @@
-// ZetContextMenu.cs
+// ZetContextMenu.cs - revision 2 (converter: emission into slot 0, keyword sync)
 // Poiyomi-style right-click menu for the Project window: an "Assets/Zetph"
 // submenu operating on the current selection.
 //
@@ -124,11 +124,16 @@ namespace Zetph.FancyShader.EditorUI
                 var engineDefaults = new Dictionary<string, float>();
                 foreach (string ep in EngineStateProps)
                     if (mat.HasProperty(ep)) engineDefaults[ep] = mat.GetFloat(ep);
+                var colourDefaults = new Dictionary<string, Color>();
+                foreach (string cp in QuarantinedColours)
+                    if (mat.HasProperty(cp)) colourDefaults[cp] = mat.GetColor(cp);
 
                 mat.CopyPropertiesFromMaterial(src);          // same-name/type properties
                 mat.shaderKeywords = new string[0];           // foreign keywords are noise here
                 foreach (var kv in engineDefaults) mat.SetFloat(kv.Key, kv.Value);
+                foreach (var kv in colourDefaults) mat.SetColor(kv.Key, kv.Value);
                 Translate(src, mat, notes);
+                SyncToggleKeywords(mat);
                 AssetDatabase.CreateAsset(mat, dstPath);
                 last = mat; done++;
             }
@@ -160,6 +165,37 @@ namespace Zetph.FancyShader.EditorUI
             "_StencilComp", "_StencilPass", "_StencilFail", "_StencilZFail",
             "_ShaderOptimizerEnabled", "_AlphaToMask"
         };
+
+        // Same name, different meaning. ZFS's _EmissionColor is Geometry Break's
+        // glow colour, so a Standard or Poi emission colour copied onto it lands
+        // in an unrelated feature. Translate() moves the real emission across
+        // into Emission 0 instead.
+        static readonly string[] QuarantinedColours = { "_EmissionColor" };
+
+        /// <summary>
+        /// Sets each [Toggle(KEYWORD)] property's keyword from its value. The bulk
+        /// copy brings over same-name enables (_GlitterEnable and friends) after
+        /// the keyword list was cleared, and the inspector only reconciles that
+        /// when the material is opened - a converted material that went straight
+        /// to Lock On Upload would bake those features out.
+        /// </summary>
+        static void SyncToggleKeywords(Material m)
+        {
+            Shader sh = m.shader;
+            int count = sh.GetPropertyCount();
+            for (int i = 0; i < count; i++)
+            {
+                foreach (string a in sh.GetPropertyAttributes(i))
+                {
+                    if (!a.StartsWith("Toggle(")) continue;
+                    int close = a.IndexOf(')');
+                    if (close <= 7) continue;
+                    string kw = a.Substring(7, close - 7).Trim();
+                    if (m.GetFloat(sh.GetPropertyName(i)) > 0.5f) m.EnableKeyword(kw);
+                    else m.DisableKeyword(kw);
+                }
+            }
+        }
 
         static void Translate(Material src, Material dst, List<string> notes)
         {
@@ -236,7 +272,33 @@ namespace Zetph.FancyShader.EditorUI
                 Color e = src.GetColor("_EmissionColor");
                 emissive = (e.r + e.g + e.b) > 0.001f && src.GetTexture("_EmissionMap") != null;
             }
-            if (dst.HasProperty("_EmissionEnable")) dst.SetFloat("_EmissionEnable", emissive ? 1f : 0f);
+            // ZFS has no single emission slot: the source's glow becomes Emission 0,
+            // set to glow steadily like the original - AudioLink off (the slot
+            // defaults it on), Base Brightness 1 rather than the 0.15 resting
+            // glow, and the source's colour, texture and strength.
+            if (emissive && dst.HasProperty("_Em0Enable"))
+            {
+                dst.SetFloat("_Em0Enable", 1f);
+                if (src.HasProperty("_EmissionColor") && dst.HasProperty("_Em0Color"))
+                    dst.SetColor("_Em0Color", src.GetColor("_EmissionColor"));
+
+                Texture map = src.HasProperty("_EmissionMap") ? src.GetTexture("_EmissionMap") : null;
+                if (map != null && dst.HasProperty("_Em0Map"))
+                {
+                    dst.SetTexture("_Em0Map", map);
+                    dst.SetTextureScale("_Em0Map", src.GetTextureScale("_EmissionMap"));
+                    dst.SetTextureOffset("_Em0Map", src.GetTextureOffset("_EmissionMap"));
+                    // The shader only reads the map when told one is assigned; the
+                    // inspector keeps this in sync, but only once it is opened.
+                    if (dst.HasProperty("_HasEm0Map")) dst.SetFloat("_HasEm0Map", 1f);
+                }
+
+                if (dst.HasProperty("_Em0Base")) dst.SetFloat("_Em0Base", 1f);
+                if (dst.HasProperty("_Em0ALEnable")) dst.SetFloat("_Em0ALEnable", 0f);
+                // Poi's emission strength multiplies the colour the same way.
+                if (src.HasProperty("_EmissionStrength") && dst.HasProperty("_Em0Intensity"))
+                    dst.SetFloat("_Em0Intensity", Mathf.Clamp(src.GetFloat("_EmissionStrength"), 0f, 30f));
+            }
 
             // Transparency intent from the source's queue / RenderType tag, then
             // stamp blend state + RenderType / VRCFallback tags for that mode.

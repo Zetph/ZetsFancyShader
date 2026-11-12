@@ -1,11 +1,12 @@
 {
  "title": "ZetsFancyShader",
- "version": "v0.7.0",
+ "version": "v0.8.0",
  "groups": [
   {
    "path": "engine",
    "label": "Global / Engine",
    "info": "Core render settings for the whole material: culling, stencil masking, proximity fade, and ColorChord. Most avatars can leave these at default.",
+   "summary": "Core render settings. Most avatars can leave these at default.",
    "toggle": "",
    "showIf": []
   },
@@ -13,6 +14,7 @@
    "path": "engine_stencil",
    "label": "Stencil & Sorting",
    "info": "Stencil masking, used to hide the body under clothing or order overlapping transparent parts. Leave at default unless you are setting up a clothing mask.",
+   "summary": "Stencil masking, e.g. hiding the body under clothing.",
    "toggle": "",
    "showIf": []
   },
@@ -20,6 +22,7 @@
    "path": "engine_renderstate",
    "label": "Advanced Render State",
    "info": "Raw render state. These are power-user overrides - wrong values can make the material invisible or z-fight. Leave at defaults unless you know why you are changing them.",
+   "summary": "Raw render-state overrides. Power users only.",
    "toggle": "",
    "showIf": []
   },
@@ -27,6 +30,7 @@
    "path": "engine_prox",
    "label": "Camera Proximity Fade",
    "info": "Fades the avatar out as the viewer's camera gets close, so you do not block their view. Tune the near and far distances.",
+   "summary": "Fades the avatar out when a camera gets close.",
    "toggle": "_ProximityFade",
    "showIf": []
   },
@@ -34,6 +38,7 @@
    "path": "engine_alenv",
    "label": "AudioLink Response",
    "info": "Smooths how every AudioLink effect reacts: a fast punch on the beat with a tunable tail, so reactions feel musical instead of twitchy. Affects break, glitch, speaker, emission, rim, and the rest.",
+   "summary": "How every AudioLink effect attacks and decays on the beat.",
    "toggle": "_ALEnvEnable",
    "showIf": []
   },
@@ -41,6 +46,7 @@
    "path": "engine_cc",
    "label": "AudioLink ColorChord",
    "info": "Drives emission colour from AudioLink ColorChord, so your glow shifts hue with the music's notes instead of a fixed colour.",
+   "summary": "Emission colour driven by AudioLink ColorChord.",
    "toggle": "_UseColorChord",
    "showIf": []
   },
@@ -48,6 +54,7 @@
    "path": "engine_vertal",
    "label": "AudioLink Vertex FX",
    "info": "Moves, rotates, and scales geometry with the music. Translation and scale lerp between Min and Max by band intensity. Speed and Accumulate modes use AudioLink Chronotensity, so motion glides and never snaps back when the music changes. Mask where it applies. Shadows and the standard outline follow the motion.",
+   "summary": "Moves, rotates and scales geometry with the music.",
    "toggle": "_VertALEnable",
    "showIf": []
   },
@@ -109,6 +116,7 @@
    "path": "base",
    "label": "Base & Color",
    "info": "Your albedo texture, normal map, and colour tweaks (saturation, brightness, gamma, hue). The base look before lighting and effects.",
+   "summary": "Albedo, normal map and colour adjustments.",
    "toggle": "",
    "showIf": []
   },
@@ -116,6 +124,7 @@
    "path": "base_regiontint",
    "label": "Region Tint (RGBA Mask)",
    "info": "Recolor zones using the RGBA region mask shipped with many avatar bases: each mask channel is a zone with its own tint, strength, and hue shift, applied over the base colour without editing the albedo. The mask follows the Base Texture UV Channel.",
+   "summary": "Recolour zones of an RGBA region mask.",
    "toggle": "_RegionTintEnable",
    "showIf": []
   },
@@ -123,6 +132,7 @@
    "path": "base_decals",
    "label": "Decals",
    "info": "Up to four image decals layered over the base colour, for tattoos, logos, or markings. Each has its own placement, blend, tint, and optional glow. Use textures with transparent edges so they sit cleanly.",
+   "summary": "Up to four image decals: tattoos, logos, markings.",
    "toggle": "_DecalsEnable",
    "showIf": []
   },
@@ -155,9 +165,9 @@
    "showIf": []
   },
   {
-   "path": "base_uvtd",
+   "path": "specialfx_uvtd",
    "label": "UV Tile Discard",
-   "info": "Hides mesh parts by their UV tile in a 4x4 grid: UV outfit pieces into separate tiles, then toggle each with a single animated float - no extra materials or bones. Vertex-level, so hidden parts cost nothing and cast no shadows. Each mesh island must sit fully inside one tile; a triangle spanning two tiles disappears with the discarded one. Tile (0,0) is the standard 0-1 UV square.",
+   "info": "",
    "toggle": "_UVTileDiscardEnable",
    "showIf": []
   },
@@ -165,13 +175,23 @@
    "path": "base_detail",
    "label": "Detail Maps",
    "info": "High-tiling micro detail layered over the base: a detail albedo (grey = no change) and a detail normal for skin pores, fabric weave, or brushed metal that holds up at conversational distance. Masked, so skin detail stays off clothes. Pairs well with Subsurface Scattering.",
+   "summary": "Micro detail albedo and normal: pores, weave, brushing.",
    "toggle": "_DetailEnable",
+   "showIf": []
+  },
+  {
+   "path": "base_detail_uvmodes",
+   "label": "UV Mode Settings",
+   "info": "Settings for the UV modes above that need them: World Pos and Local Pos axes, Panosphere, Polar UV and Distorted UV. Mesh UVs, Matcap and Screen Space need none.",
+   "summary": "Settings for the World, Local, Panosphere, Polar and Distorted UV modes.",
+   "toggle": "",
    "showIf": []
   },
   {
    "path": "lighting",
    "label": "Lighting & Shadows",
    "info": "How the surface reacts to light: toon or realistic shading, shadow strength, and ambient fill.",
+   "summary": "Toon or realistic shading, shadows and ambient fill.",
    "toggle": "",
    "showIf": []
   },
@@ -179,6 +199,7 @@
    "path": "lighting_sss",
    "label": "Subsurface Scattering",
    "info": "Soft under-skin light in two parts: a warm tinted band where light rolls into shadow, and light bleeding through thin areas like ears and fingers when lit from behind. Works with both lighting models. Mask it to skin only for the most realistic result.",
+   "summary": "Soft under-skin light: warm terminator and backlit bleed.",
    "toggle": "_SSSEnable",
    "showIf": []
   },
@@ -213,6 +234,7 @@
    "path": "lighting_reflspec",
    "label": "Reflections & Specular",
    "info": "Metallic reflections, smoothness, anisotropic highlights, and clear coat. Reads the packed PBR map (R metallic, G AO, B smoothness).",
+   "summary": "Metallic, smoothness, reflections and highlights.",
    "toggle": "",
    "showIf": []
   },
@@ -220,6 +242,7 @@
    "path": "lighting_reflspec_packedcfg",
    "label": "Packed Map Settings",
    "info": "Tiling, panning, the Metallic / Smoothness / AO sliders, remapping, and reflection tinting for the packed map above. Most materials only ever touch the map slot and leave these at default.",
+   "summary": "Tiling, sliders and remapping for the packed map.",
    "toggle": "",
    "showIf": []
   },
@@ -227,6 +250,7 @@
    "path": "lighting_reflspec_packer",
    "label": "Map Packer  (R = Metallic, G = AO, B = Smoothness)",
    "info": "Packs separate Metallic, AO, and Roughness/Smoothness textures into one ZFS Packed map and assigns it to this material. The packed PNG is saved next to your source textures. Collapse this section when you are done - it is a tool, not a setting.",
+   "summary": "Packs separate maps into one ZFS Packed map. A tool, not a setting.",
    "toggle": "",
    "showIf": []
   },
@@ -234,6 +258,7 @@
    "path": "lighting_reflspec_aniso",
    "label": "Anisotropic Highlights",
    "info": "Stretched specular highlights that follow the surface grain, the look you get on brushed metal, hair, or silk.",
+   "summary": "Stretched highlights for brushed metal, hair or silk.",
    "toggle": "_AnisoEnable",
    "showIf": []
   },
@@ -241,20 +266,55 @@
    "path": "lighting_reflspec_stylespec",
    "label": "Stylized Specular (Toon)",
    "info": "Anime style stepped specular highlights that stack on top of the normal specular. Each layer is one sharp highlight: Size sets how big it is, Feather how soft the edge, Strength how bright. Turn the base specular down if you want only this look.",
+   "summary": "Stacked anime-style stepped highlights.",
    "toggle": "_StyleSpecEnable",
    "showIf": []
   },
   {
-   "path": "lighting_reflspec_spec2",
-   "label": "2nd Specular / Clear Coat",
-   "info": "A second, sharper specular layer over the base, for a wet or lacquered clear coat shine.",
-   "toggle": "_Spec2Enable",
+   "path": "lighting_reflspec_coat",
+   "label": "Clear Coat",
+   "info": "A clear lacquer layer over the whole surface, like car paint, glazed ceramic or wet latex: its own sharp highlight and reflection on top, with what is underneath showing through and dimming at glancing angles the way real varnish does.",
+   "summary": "A clear lacquer layer: car paint, glaze, wet latex.",
+   "toggle": "_CoatEnable",
+   "showIf": []
+  },
+  {
+   "path": "lighting_reflspec_coat_coatmaps",
+   "label": "Packed Maps",
+   "info": "One texture driving four things. Pick which channel feeds each - or White to ignore the map for it - and invert any of them.",
+   "summary": "One texture, four channels: mask, smoothness, reflection, specular.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "lighting_reflspec_coat_coatfb",
+   "label": "Fallback",
+   "info": "Used where the world's reflection probe is dark or missing. Without its own cubemap the coat uses the main Reflection Fallback Cubemap.",
+   "summary": "Used where the world has no usable reflection probe.",
+   "toggle": "",
+   "showIf": []
+  },
+  {
+   "path": "lighting_reflspec_coat_coatltcgi",
+   "label": "LTCGI",
+   "info": "Mirrors LTCGI video screens and area lights in the coat. Needs LTCGI switched on in the LTCGI section, and costs one more LTCGI pass per pixel, so it is off by default.",
+   "summary": "The coat mirrors LTCGI screens. Costs an extra LTCGI pass.",
+   "toggle": "",
+   "showIf": [],
+   "requires": "ZET_LTCGI"
+  },
+  {
+   "path": "lighting_reflspec_coat_coatadv",
+   "label": "Advanced",
+   "info": "",
+   "toggle": "",
    "showIf": []
   },
   {
    "path": "lighting_matcaps",
    "label": "MatCaps",
    "info": "Up to five fake lighting overlays from a sphere image. Great for metal, glass, or stylised rims without real lights.",
+   "summary": "Up to five matcap overlays: fake lighting from a sphere image.",
    "toggle": "",
    "showIf": []
   },
@@ -262,6 +322,7 @@
    "path": "lighting_matcaps_mc0",
    "label": "MatCap 0",
    "info": "A MatCap fakes lighting from a sphere image. Pick a matcap texture, choose how it blends, and mask where it shows. Great for metal, glass, or rim light with no real lights.",
+   "summary": "One matcap: texture, blend mode and mask.",
    "toggle": "_MatcapEnable",
    "showIf": []
   },
@@ -269,6 +330,7 @@
    "path": "lighting_matcaps_mc1",
    "label": "MatCap 1",
    "info": "Another MatCap layer that stacks on top of the others. Same controls as MatCap Base.",
+   "summary": "Another matcap layer, same controls as MatCap Base.",
    "toggle": "_Matcap1Enable",
    "showIf": []
   },
@@ -276,6 +338,7 @@
    "path": "lighting_matcaps_mc2",
    "label": "MatCap 2",
    "info": "Another MatCap layer that stacks on top of the others. Same controls as MatCap Base.",
+   "summary": "Another matcap layer, same controls as MatCap Base.",
    "toggle": "_Matcap2Enable",
    "showIf": []
   },
@@ -283,6 +346,7 @@
    "path": "lighting_matcaps_mc3",
    "label": "MatCap 3",
    "info": "Another MatCap layer that stacks on top of the others. Same controls as MatCap Base.",
+   "summary": "Another matcap layer, same controls as MatCap Base.",
    "toggle": "_Matcap3Enable",
    "showIf": []
   },
@@ -290,20 +354,29 @@
    "path": "lighting_matcaps_mc4",
    "label": "MatCap 4",
    "info": "Another MatCap layer that stacks on top of the others. Same controls as MatCap Base.",
+   "summary": "Another matcap layer, same controls as MatCap Base.",
    "toggle": "_Matcap4Enable",
    "showIf": []
   },
   {
    "path": "emission",
    "label": "Emission",
-   "info": "Up to four independent glow layers, each maskable and AudioLink reactive. Most neon and glow lives here.",
+   "info": "Up to four independent glow layers, each maskable and AudioLink reactive. Most neon and glow lives here. The tick boxes on this bar switch each slot on or off without opening it.",
+   "summary": "Four independent glow layers. Tick boxes on the bar switch slots.",
    "toggle": "",
-   "showIf": []
+   "showIf": [],
+   "headerToggles": [
+    "_Em0Enable",
+    "_Em1Enable",
+    "_Em2Enable",
+    "_Em3Enable"
+   ]
   },
   {
    "path": "emission_em0",
    "label": "Emission 0",
    "info": "One emission layer: a mask, HDR colour and intensity, hue shift, and an audio mode. The bars below add AudioLink reactivity, light based dimming, blinking, and an infinity mirror.",
+   "summary": "Mask, HDR colour, hue shift and audio mode for this layer.",
    "toggle": "_Em0Enable",
    "showIf": []
   },
@@ -311,6 +384,7 @@
    "path": "emission_em0_em0al",
    "label": "AudioLink Settings",
    "info": "Makes this emission layer react to AudioLink. Pick a frequency band from bass to treble and how much it boosts brightness, plus optional extra bands and volume response.",
+   "summary": "This layer reacts to AudioLink.",
    "toggle": "_Em0ALEnable",
    "showIf": []
   },
@@ -327,6 +401,7 @@
    "path": "emission_em0_em0lb",
    "label": "Light Based",
    "info": "Dims or brightens this emission based on how lit the surface is, so the glow can fade in shadow or only show in the dark. Set the lighting range and the min and max multipliers.",
+   "summary": "Fades the glow with how lit the surface is.",
    "toggle": "_Em0LightBased",
    "showIf": []
   },
@@ -334,6 +409,7 @@
    "path": "emission_em0_em0blink",
    "label": "Blinking",
    "info": "Pulses this emission on and off over time. Set the speed and how dim it goes at the bottom of each blink.",
+   "summary": "Pulses this layer on and off over time.",
    "toggle": "_Em0Blink",
    "showIf": []
   },
@@ -348,6 +424,7 @@
    "path": "emission_em1",
    "label": "Emission 1",
    "info": "Another independent emission layer with the same controls as Emission 0. Stacks with the others.",
+   "summary": "Another emission layer, same controls as Emission 0.",
    "toggle": "_Em1Enable",
    "showIf": []
   },
@@ -392,6 +469,7 @@
    "path": "emission_em2",
    "label": "Emission 2",
    "info": "Another independent emission layer with the same controls as Emission 0. Stacks with the others.",
+   "summary": "Another emission layer, same controls as Emission 0.",
    "toggle": "_Em2Enable",
    "showIf": []
   },
@@ -436,6 +514,7 @@
    "path": "emission_em3",
    "label": "Emission 3",
    "info": "Another independent emission layer with the same controls as Emission 0. Stacks with the others.",
+   "summary": "Another emission layer, same controls as Emission 0.",
    "toggle": "_Em3Enable",
    "showIf": []
   },
@@ -480,6 +559,7 @@
    "path": "specialfx",
    "label": "Special FX",
    "info": "Optional stylised and reactive effects. Each is off by default and toggled on its own bar below.",
+   "summary": "Optional effects, each off until switched on.",
    "toggle": "",
    "showIf": []
   },
@@ -494,13 +574,15 @@
    "path": "specialfx_style",
    "label": "Stylized",
    "info": "Looks and finishes: cosmic, retro, glass, glow, and other visual styles.",
+   "summary": "Visual styles and finishes.",
    "toggle": "",
    "showIf": []
   },
   {
    "path": "specialfx_geo",
    "label": "Geometry",
-   "info": "Effects that reshape or break apart the mesh itself.",
+   "info": "Effects that reshape the mesh itself: displacement, breaking apart and glitching.",
+   "summary": "Effects that reshape the mesh.",
    "toggle": "",
    "showIf": []
   },
@@ -515,6 +597,7 @@
    "path": "specialfx_style_room",
    "label": "Interior Mapping (3D Room)",
    "info": "Shows a believable 3D room behind the surface, like a window into an impossible space. Uses a room cubemap with real perspective, so it shifts correctly as you move around it. Great for chest panels, eyes, or portals.",
+   "summary": "A 3D room behind the surface, like a window.",
    "toggle": "_RoomEnable",
    "showIf": []
   },
@@ -531,6 +614,7 @@
    "path": "specialfx_style_room_roomfurn",
    "label": "Furniture Layer",
    "info": "A cut-out layer inside the room at its own distance, so it shifts against the back wall as you move.",
+   "summary": "A cut-out layer at its own depth inside the room.",
    "toggle": "",
    "showIf": [
     "_RoomEnable"
@@ -558,6 +642,7 @@
    "path": "specialfx_style_room_roomglass",
    "label": "Glass and Edge",
    "info": "How the glass in front of the interior distorts the view. Static Imperfection is fixed in the pane like real window glass; Ripple animates for water and aquarium looks.",
+   "summary": "How the window glass distorts the room behind it.",
    "toggle": "",
    "showIf": [
     "_RoomEnable"
@@ -585,6 +670,7 @@
    "path": "specialfx_style_refract",
    "label": "Refraction (Glass / Heat Haze)",
    "info": "Bends whatever is rendered behind the surface, for glass, cloaks, or energy fields, with an optional chromatic split. It uses a GrabPass that is automatically stripped when this section is locked off, so it costs nothing unless you use it. Do not mark Enable Refraction as animated, or the strip cannot happen and the cost stays.",
+   "summary": "Bends what is behind the surface: glass, cloaks, shields.",
    "toggle": "_RefractEnable",
    "showIf": []
   },
@@ -592,6 +678,7 @@
    "path": "specialfx_style_refract_refractphys",
    "label": "Physical Glass",
    "info": "Refraction from Snell's law: the ray bends by a real index of refraction, each colour bends differently for a prism fringe, and rough glass scatters.",
+   "summary": "Physical refraction: real IOR, prism fringe, rough glass.",
    "toggle": "",
    "showIf": [
     "_RefractEnable"
@@ -619,6 +706,7 @@
    "path": "specialfx_audio_screen",
    "label": "Screen Display (Live Audio)",
    "info": "Turns a masked area into a live screen driven by the actual audio: an oscilloscope of the real waveform, or EQ bars per frequency band. Optional grid, LCD subpixels, scanlines, and a crash screen. Needs AudioLink for the live signal.",
+   "summary": "A live oscilloscope or EQ screen from the real audio.",
    "toggle": "_ScreenEnable",
    "showIf": []
   },
@@ -661,7 +749,8 @@
   {
    "path": "specialfx_style_rim",
    "label": "Fresnel Rim (Edge Glow)",
-   "info": "A glow around the silhouette edges facing away from the camera, for a neon or holographic look.",
+   "info": "A glow around the silhouette edges. It can follow the world's lights (one side, or a rim from every light in its own colour), take its colour from the environment, stack a second layer, move with a pattern, or darken the edge as an inner line instead of glowing.",
+   "summary": "A glow or dark line around the silhouette.",
    "toggle": "_RimEnable",
    "showIf": []
   },
@@ -675,9 +764,265 @@
    ]
   },
   {
+   "path": "specialfx_style_rim_rimlight",
+   "label": "Light Response",
+   "info": "Makes the rim respond to the world's lighting: only on the lit or shadowed side, two colours split by the light, colour taken from the environment, or a separate rim from every light near you.",
+   "summary": "The rim follows the world's lights.",
+   "toggle": "",
+   "showIf": [
+    "_RimEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_rim_rimstyle",
+   "label": "Style",
+   "info": "How the rim is drawn: glow, painted edge, or darkened inner line; smooth or stepped; biased toward the sky, the ground, or a screen direction; and whether it follows the normal map or the smooth mesh.",
+   "summary": "How the rim is drawn, stepped and biased.",
+   "toggle": "",
+   "showIf": [
+    "_RimEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_rim_rimpattern",
+   "label": "Pattern",
+   "info": "Moves a pattern through the rim, for energy shields, flickering flame edges, or hologram crackle. Noise needs no texture; Texture uses your own tiling image.",
+   "summary": "A moving pattern through the rim: shields, flames.",
+   "toggle": "",
+   "showIf": [
+    "_RimEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_rim_rim2",
+   "label": "Second Rim",
+   "info": "A second rim layer with its own colour, width, side and blend mode - a tight bright line over a wide soft glow, or a dark inner line under the glow. Follows Rim Mode and the AL band.",
+   "summary": "A second rim layer with its own colour and width.",
+   "toggle": "_Rim2Enable",
+   "showIf": [
+    "_RimEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_rim_rimal",
+   "label": "AudioLink Settings",
+   "info": "Makes the rim react to AudioLink: brighter and optionally wider on the beat, with extra bands and volume response. On by default to match earlier versions, where the rim always had a beat boost. Audio Reactive rim mode uses this signal even when the toggle is off.",
+   "summary": "The rim reacts to AudioLink.",
+   "toggle": "_RimALEnable",
+   "showIf": [
+    "_RimEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_rim_rimal_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RimALEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_reveal",
+   "label": "Animated Reveal",
+   "info": "A moving shape - flames, smoke, energy - sweeps over the surface and uncovers a hidden layer wherever it passes. The hidden layer stays anchored, so the moving shape reveals different parts of it. The layer can be a second texture, or the base texture itself re-tiled, panned, recoloured or glowing. Confine it with the Area Mask.",
+   "summary": "A moving shape uncovers a hidden layer as it passes.",
+   "toggle": "_RevealEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_reveal_src",
+   "label": "Revealed Layer",
+   "info": "What shows through the moving shape, and how it combines with the surface.",
+   "summary": "What shows through, and how it blends.",
+   "toggle": "",
+   "showIf": [
+    "_RevealEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_reveal_shape",
+   "label": "Moving Shape",
+   "info": "The shape that sweeps across and how it moves. Procedural Noise gives licking, flame-like blobs with no texture needed. Flow Map and World Guided stream it along a direction forever without stretching.",
+   "summary": "The sweeping shape and how it moves.",
+   "toggle": "",
+   "showIf": [
+    "_RevealEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_reveal_edge",
+   "label": "Edge Glow",
+   "info": "A glowing band where the shape meets the surface - a burning edge.",
+   "toggle": "",
+   "showIf": [
+    "_RevealEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_reveal_al",
+   "label": "AudioLink Settings",
+   "info": "Makes the reveal react to AudioLink: more of the layer uncovered and a brighter glow on the beat.",
+   "summary": "The reveal reacts to AudioLink.",
+   "toggle": "_RevealALEnable",
+   "showIf": [
+    "_RevealEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_reveal_al_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_RevealALEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_comic",
+   "label": "Comic / Halftone",
+   "info": "A printed comic look: halftone dots, hatching and crosshatching layered over the shaded surface, for a Spider-Verse style without outlines. Each layer's coverage follows the shadows, the highlights, a painted mask, or the base texture's own tones. View Aligned dots keep a constant on-screen size and stay correct in VR.",
+   "summary": "Halftone dots and hatching that follow the shading.",
+   "toggle": "_ComicEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_comic_l1",
+   "label": "Layer 1",
+   "info": "Defaults to shadow dots: classic comic shading.",
+   "toggle": "_ComicL1Enable",
+   "showIf": [
+    "_ComicEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_comic_l2",
+   "label": "Layer 2",
+   "info": "Defaults to hatching lines in the deepest shadows.",
+   "toggle": "_ComicL2Enable",
+   "showIf": [
+    "_ComicEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_comic_l3",
+   "label": "Layer 3",
+   "info": "Defaults to light dots in the brightest highlights.",
+   "toggle": "_ComicL3Enable",
+   "showIf": [
+    "_ComicEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_comic_print",
+   "label": "Print Effects",
+   "info": "Imperfections of real printing and hand animation: offset colour plates and a stepped, jittering print.",
+   "summary": "Plate offsets and stepped, jittering print.",
+   "toggle": "",
+   "showIf": [
+    "_ComicEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_comic_al",
+   "label": "AudioLink Settings",
+   "info": "Makes the print react to AudioLink: denser dots and lines on the beat.",
+   "summary": "The print reacts to AudioLink.",
+   "toggle": "_ComicALEnable",
+   "showIf": [
+    "_ComicEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_comic_al_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_ComicALEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_fur",
+   "label": "Painted Fur",
+   "info": "Painted, tufted fur generated on the surface - no fur mesh needed. Brush-stroke tufts lie along a groom direction, each with its own colour dab, tip and shadow, and tilt the normal so light rolls over them. Style slides from soft painterly strokes to crisp toon facets. Optional silhouette tufts break up the outline.",
+   "summary": "Painted, tufted fur on the surface. No fur mesh needed.",
+   "toggle": "_FurEnable",
+   "showIf": []
+  },
+  {
+   "path": "specialfx_style_fur_tufts",
+   "label": "Pattern & Tufts",
+   "info": "The stroke shape and how strokes are sized and scattered. Density is per UV unit, so strokes follow your UV layout's texel density, and they are cut at UV seams. Long locks and big curls search a wider area per pixel and cost more.",
+   "summary": "Stroke shape, size and scatter.",
+   "toggle": "",
+   "showIf": [
+    "_FurEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_fur_groom",
+   "label": "Groom",
+   "info": "Which way the fur lies. Object Guided keeps it fixed to the avatar; World Guided makes it hang with gravity; a Flow Map lets you paint it.",
+   "summary": "Which way the fur lies.",
+   "toggle": "",
+   "showIf": [
+    "_FurEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_fur_shade",
+   "label": "Colour & Relief",
+   "info": "How each tuft is painted and how much it stands out from the surface.",
+   "toggle": "",
+   "showIf": [
+    "_FurEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_fur_spec",
+   "label": "Strand Highlight",
+   "info": "A hair-style highlight that runs along each tuft. Set Strand Highlight to 0 to turn it off.",
+   "summary": "A hair-style highlight along each tuft.",
+   "toggle": "",
+   "showIf": [
+    "_FurEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_fur_fins",
+   "label": "Silhouette Tufts",
+   "info": "Adds one extra shell around the mesh, cut into tufts and shown only at the silhouette, so edges look furry instead of smooth. Costs one extra draw of the mesh, like the outline. Best on Opaque or Cutout materials; edges are smoothed by MSAA.",
+   "summary": "Furry silhouette edges. Costs one extra mesh draw.",
+   "toggle": "_FurFinEnable",
+   "showIf": [
+    "_FurEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_fur_al",
+   "label": "AudioLink Settings",
+   "info": "Makes the fur react to AudioLink: tufts ruffle and highlights flare on the beat.",
+   "summary": "The fur reacts to AudioLink.",
+   "toggle": "_FurALEnable",
+   "showIf": [
+    "_FurEnable"
+   ]
+  },
+  {
+   "path": "specialfx_style_fur_al_adj",
+   "label": "AL Band Adjustment",
+   "info": "",
+   "toggle": "",
+   "showIf": [
+    "_FurALEnable"
+   ]
+  },
+  {
    "path": "specialfx_audio_speaker",
    "label": "Speaker Ripple",
    "info": "AudioLink driven ripples that pulse across the surface like a speaker cone reacting to bass.",
+   "summary": "Bass ripples across the surface like a speaker cone.",
    "toggle": "_SpeakerEnable",
    "showIf": []
   },
@@ -694,6 +1039,7 @@
    "path": "specialfx_audio_eq",
    "label": "EQ Visualizer",
    "info": "Maps AudioLink frequency bands onto the surface as a moving equaliser pattern.",
+   "summary": "AudioLink bands as a moving equaliser pattern.",
    "toggle": "_EQEnable",
    "showIf": []
   },
@@ -701,6 +1047,7 @@
    "path": "specialfx_style_diffract",
    "label": "Diffraction",
    "info": "A microscopic grating splits reflected light into spectral orders, throwing rainbow streaks that fan out from highlights. This is how holographic wraps and CD surfaces get their colour, and it behaves differently from thin film.",
+   "summary": "Rainbow streaks from a holographic grating.",
    "toggle": "_DiffEnable",
    "showIf": []
   },
@@ -708,6 +1055,7 @@
    "path": "specialfx_style_irid",
    "label": "Iridescence",
    "info": "A view dependent colour shift (oil slick / soap bubble) layered over the surface.",
+   "summary": "View-dependent oil-slick colour shift.",
    "toggle": "_IridEnable",
    "showIf": []
   },
@@ -715,6 +1063,7 @@
    "path": "specialfx_style_irid_iridfilm",
    "label": "Thin Film",
    "info": "Physically based iridescence from thin-film interference, as in a soap bubble. Hue shifts with viewing angle and film thickness.",
+   "summary": "Physical thin-film interference, like a soap bubble.",
    "toggle": "",
    "showIf": [
     "_IridEnable"
@@ -733,6 +1082,7 @@
    "path": "specialfx_style_irid_iridal",
    "label": "AudioLink Settings",
    "info": "Makes the iridescence react to AudioLink. In Thin Film the beat physically shifts the film thickness, so the interference colours move; in Gradient it drives the phase. Pick a band, plus optional extra bands and volume response.",
+   "summary": "The iridescence reacts to AudioLink.",
    "toggle": "_IridALEnable",
    "showIf": [
     "_IridEnable"
@@ -748,23 +1098,25 @@
    ]
   },
   {
-   "path": "specialfx_geo_dissolve",
+   "path": "specialfx_dissolve",
    "label": "Dissolve",
    "info": "Burns the mesh away along a noise edge with a glowing burn line. Good for spawn in and despawn moments.",
+   "summary": "Burns the mesh away along a glowing edge.",
    "toggle": "_DissolveEnable",
    "showIf": []
   },
   {
-   "path": "specialfx_geo_dissolve_dissdir",
+   "path": "specialfx_dissolve_dissdir",
    "label": "Direction",
    "info": "Sweeps the burn along an axis instead of following the pattern's brightness. The pattern still roughens the edge.",
+   "summary": "Sweeps the burn along an axis.",
    "toggle": "",
    "showIf": [
     "_DissolveEnable"
    ]
   },
   {
-   "path": "specialfx_geo_dissolve_dissadv",
+   "path": "specialfx_dissolve_dissadv",
    "label": "Dissolve Settings",
    "info": "",
    "toggle": "",
@@ -773,16 +1125,17 @@
    ]
   },
   {
-   "path": "specialfx_geo_dissolve_dissal",
+   "path": "specialfx_dissolve_dissal",
    "label": "AudioLink Settings",
    "info": "Makes the dissolve react to AudioLink. Off by default so the dissolve amount stays where you set it.",
+   "summary": "The dissolve reacts to AudioLink.",
    "toggle": "_DissolveALEnable",
    "showIf": [
     "_DissolveEnable"
    ]
   },
   {
-   "path": "specialfx_geo_dissolve_dissal_adj",
+   "path": "specialfx_dissolve_dissal_adj",
    "label": "AL Band Adjustment",
    "info": "",
    "toggle": "",
@@ -794,6 +1147,7 @@
    "path": "specialfx_style_outline",
    "label": "Glitch Outline",
    "info": "A stylised, flickering outline that jitters and breaks up, reactive to AudioLink.",
+   "summary": "A jittering, breaking stylised outline.",
    "toggle": "_OutlineEnable",
    "showIf": []
   },
@@ -810,6 +1164,7 @@
    "path": "specialfx_style_outlinestd",
    "label": "Outline (Inverted Hull)",
    "info": "The classic toon / anime outline: a back-facing shell extruded around the mesh in a flat colour. Pick a colour and width, mask where it shows, optionally tint it by the texture or let it react to light. World width is a fixed thickness in metres (thins with distance); Screen width stays a constant on-screen thickness at any distance.",
+   "summary": "Classic toon outline: a flat-colour shell around the mesh.",
    "toggle": "_OutlineStdEnable",
    "showIf": []
   },
@@ -817,6 +1172,7 @@
    "path": "specialfx_style_infinity",
    "label": "Infinity Mirror",
    "info": "Samples a pattern at increasing depth so the surface reads as a tunnel receding into the mesh.",
+   "summary": "A tunnel that recedes into the surface.",
    "toggle": "_InfEnable",
    "showIf": []
   },
@@ -842,6 +1198,7 @@
    "path": "specialfx_style_infinity_infal",
    "label": "AudioLink Settings",
    "info": "Drives the mirror from AudioLink: brighter, and optionally deeper, on the beat.",
+   "summary": "The mirror reacts to AudioLink.",
    "toggle": "_InfALEnable",
    "showIf": [
     "_InfEnable"
@@ -860,6 +1217,7 @@
    "path": "specialfx_style_starfall",
    "label": "Star Fall",
    "info": "Shooting stars: thin streaks of light with bright heads and comet tails, falling through space around the surface. Aim the direction down for meteors or neon rain; sideways for driving snow.",
+   "summary": "Shooting stars and streaks falling past the surface.",
    "toggle": "_SFEnable",
    "showIf": []
   },
@@ -867,6 +1225,7 @@
    "path": "specialfx_style_stars",
    "label": "Constellation / Nebula",
    "info": "A starfield and nebula. Leave the Constellation Mask empty to cover the whole material, or assign one (white shows, black hides) to confine it to specific areas, like a window into space.",
+   "summary": "A parallax starfield and nebula.",
    "toggle": "_StarEnable",
    "showIf": []
   },
@@ -883,6 +1242,7 @@
    "path": "specialfx_style_stars_staral",
    "label": "AudioLink Settings",
    "info": "Makes the starfield react to AudioLink. Pick a frequency band from bass to treble and how much it pops the stars, lines, and nebula, plus optional extra bands and volume response. Turn this off for a completely still, non-reactive starfield.",
+   "summary": "The starfield reacts to AudioLink.",
    "toggle": "_StarALEnable",
    "showIf": [
     "_StarEnable"
@@ -901,6 +1261,7 @@
    "path": "specialfx_style_stars_lines",
    "label": "Constellation Lines",
    "info": "Draws faint lines linking nearby stars across the parallax layers. Because the layers drift at different speeds, links stretch, dim, and reconnect on their own as stars move apart and back together.",
+   "summary": "Lines linking nearby stars.",
    "toggle": "_StarLineEnable",
    "showIf": [
     "_StarEnable"
@@ -910,6 +1271,7 @@
    "path": "specialfx_style_holo",
    "label": "Hologram",
    "info": "Makes the avatar look like a projected hologram: object-space scanlines, rim glow, a sweep bar, flicker, glitch, and a see-through look. For the True Alpha style, set the material's Transparency Mode to a transparent option; the Dither style works in any mode.",
+   "summary": "A projected-hologram look.",
    "toggle": "_HoloEnable",
    "showIf": []
   },
@@ -953,6 +1315,7 @@
    "path": "specialfx_audio_plasma",
    "label": "Plasma Hits",
    "info": "Audio-reactive sci-fi hits that pop at random spots in the avatar's own 3D space and ripple outward, bumping the surface as they pass. Hits keep landing in new places and react to the audio bands (bass, low mids, high mids, treble). Stays dark below the Audio Threshold and when no AudioLink is present.",
+   "summary": "Audio-reactive hits that ripple across the avatar.",
    "toggle": "_PlasmaEnable",
    "showIf": []
   },
@@ -960,6 +1323,7 @@
    "path": "specialfx_style_retro",
    "label": "Retro / PS1",
    "info": "Emulates the PlayStation 1 look: wobbly vertex snapping, chunky texture pixelation, colour posterisation with ordered dithering, and CRT scanlines. Applied at the very end, so it flattens the whole material including the other effects, which is how a real PS1 rendered. Aesthetically the opposite of the rest of the shader, but a fun combo.",
+   "summary": "The PlayStation 1 look, applied over everything.",
    "toggle": "_RetroEnable",
    "showIf": []
   },
@@ -967,6 +1331,7 @@
    "path": "specialfx_style_morph",
    "label": "UV Morph",
    "info": "Warps texture coordinates before anything samples them, so albedo, normals and emission distort together.",
+   "summary": "Warps the UVs so every texture distorts together.",
    "toggle": "_MorphEnable",
    "showIf": []
   },
@@ -974,6 +1339,7 @@
    "path": "specialfx_style_morph_morphal",
    "label": "AudioLink Settings",
    "info": "Makes the distortion react to AudioLink. Pick a frequency band from bass to treble and how much it deepens and quickens the warp, plus optional extra bands and volume response.",
+   "summary": "The warp reacts to AudioLink.",
    "toggle": "_MorphAudio",
    "showIf": []
   },
@@ -990,6 +1356,7 @@
    "path": "specialfx_view_viewvis",
    "label": "View Visibility",
    "info": "Controls where this material shows up: in normal view (what you and other players see directly), in mirrors, and in cameras or photos, each independently. Turn a view off to hide the material there. For example, off in Normal but on in Mirror and Camera makes the material appear only in reflections and photos. Uses VRChat's mirror and camera globals, so it only takes effect in VRChat.",
+   "summary": "Show or hide the material in normal view, mirrors and cameras.",
    "toggle": "_ViewVisEnable",
    "showIf": []
   },
@@ -997,6 +1364,7 @@
    "path": "specialfx_style_stars_nebula",
    "label": "Nebula",
    "info": "A volumetric nebula that adds real depth inside the constellation areas. PC only and noticeably heavier.",
+   "summary": "Volumetric nebula depth. PC only, heavier.",
    "toggle": "",
    "showIf": [
     "_StarEnable"
@@ -1005,7 +1373,8 @@
   {
    "path": "specialfx_geo_displace",
    "label": "Displacement",
-   "info": "Subdivides the mesh and pushes vertices along their normals using the Height Map, so the silhouette changes for real. Subdivision falls off with distance.",
+   "info": "Subdivides the mesh and pushes vertices along their normals using the Height Map (set under Base & Color > Height & Parallax), so the silhouette changes for real. Subdivision falls off with distance.",
+   "summary": "Subdivides and pushes the mesh with the Height Map.",
    "toggle": "_DispEnable",
    "showIf": []
   },
@@ -1013,6 +1382,7 @@
    "path": "specialfx_geo_break",
    "label": "Geometry Break",
    "info": "Shatters or floats the mesh into pieces, driven by an audio beat or a slow drift, with glow and fade options.",
+   "summary": "Shatters or floats the mesh into pieces.",
    "toggle": "_BreakEnable",
    "showIf": []
   },
@@ -1029,6 +1399,7 @@
    "path": "specialfx_style_glitter",
    "label": "Glitter / Sparkle",
    "info": "Procedural sparkle flakes scattered over the surface that twinkle and glint as you move. Tune density, size, viewable angle, and speed, mask where they show, and optionally react to AudioLink or be lit by the world.",
+   "summary": "Procedural sparkle flakes that glint as you move.",
    "toggle": "_GlitterEnable",
    "showIf": []
   },
@@ -1036,6 +1407,7 @@
    "path": "specialfx_geo_glitch",
    "label": "Mesh Glitch",
    "info": "Randomly displaces chunks of the mesh for a datamosh or digital glitch effect.",
+   "summary": "Randomly displaces chunks of the mesh.",
    "toggle": "_GlitchEnable",
    "showIf": []
   },
@@ -1049,9 +1421,10 @@
    ]
   },
   {
-   "path": "specialfx_style_height",
+   "path": "base_height",
    "label": "Height & Parallax",
    "info": "Adds fake surface depth from a height map, so detail appears to sit below the surface as you move.",
+   "summary": "Fake surface depth from a height map.",
    "toggle": "",
    "showIf": []
   },
@@ -1059,6 +1432,7 @@
    "path": "ltcgi",
    "label": "LTCGI",
    "info": "Enables LTCGI area light support, so the avatar picks up coloured light from LTCGI world screens and emitters.",
+   "summary": "Coloured light from LTCGI world screens and emitters.",
    "toggle": "_LTCGI",
    "showIf": [],
    "requires": "ZET_LTCGI"
@@ -1067,6 +1441,7 @@
    "path": "lightvolumes",
    "label": "VRC Light Volumes",
    "info": "Support for VRC Light Volumes, the voxel-based light probe replacement modern worlds use. The avatar picks up per-pixel baked lighting and moving point, spot, and area Light Volume lights - far more detailed than Unity's blended probes. Falls back to normal probes automatically in worlds without it. Requires the free VRC Light Volumes package (red.sim.lightvolumes), version 2.1.3 or newer - installed automatically alongside the shader via VCC.",
+   "summary": "Per-pixel lighting from VRC Light Volumes.",
    "toggle": "_LightVolumes",
    "showIf": [],
    "requires": "ZET_LV_OK"
@@ -1075,6 +1450,7 @@
    "path": "debug",
    "label": "Debug Views",
    "info": "Renders one isolated term instead of the finished surface - albedo, normals, AO, ambient, and so on. Use it to find which input is wrong when a material looks black or blown out, rather than guessing from the composited result. Set it back to Off before locking: it drives an //ifex, so Off strips the whole feature from the locked shader, and anything else ships the debug view to everyone who sees you.",
+   "summary": "Shows one lighting term in isolation. Set to Off before locking.",
    "toggle": "",
    "showIf": []
   },
@@ -1082,6 +1458,7 @@
    "path": "vrslgi",
    "label": "VRSL GI",
    "info": "Lighting from VRSL GI stage rigs - the moving heads, pars and spots in club and event worlds actually illuminate the avatar, with cone shapes respected. No package to install: the world publishes the light data as a global, so this simply switches itself on in worlds running VRSL GI and costs nothing everywhere else. It cannot be previewed in the editor, only in-world.",
+   "summary": "Lighting from VRSL stage rigs. Switches on in VRSL worlds.",
    "toggle": "_VRSLGI",
    "showIf": []
   }
@@ -1213,7 +1590,7 @@
   },
   {
    "name": "_AlphaMode",
-   "text": "How the material meets what is behind it. Opaque covers it; Cutout hard-clips by alpha; Transparent blends by alpha. Additive brightens the scene behind (black is invisible), Soft Additive adds without blowing out bright areas, Multiplicative darkens (white is invisible), 2x Multiplicative darkens or brightens around mid-grey."
+   "text": "How the material meets what is behind it. Opaque covers it; Cutout hard-clips by alpha; Transparent blends by alpha."
   },
   {
    "name": "_Cutoff",
@@ -1245,15 +1622,43 @@
   },
   {
    "name": "_BaseHueShift",
-   "text": "Rotates every hue by a fixed amount."
+   "text": "Hue Rotate: turns every colour around the wheel; 0 and 1 are the same (a full turn). It can only move colour that is already there, so whites and pale tones barely change - use Colourise for those. In Colourise it offsets the chosen colour's hue instead."
   },
   {
    "name": "_BaseHueShiftAL",
-   "text": "Extra hue rotation driven by AudioLink."
+   "text": "Extra hue rotation driven by AudioLink (in either Hue Mode)."
   },
   {
    "name": "_BaseHueBand",
    "text": "Which AudioLink band drives the hue shift."
+  },
+  {
+   "name": "_HueMode",
+   "text": "Hue Rotate turns the existing colours around the wheel. Colourise recolours to a chosen colour at each pixel's own brightness: whites become the full colour, darks stay dark, and the painted shading is kept."
+  },
+  {
+   "name": "_RecolorSource",
+   "text": "Colour uses a normal colour picker (the default). Colour Wheel uses an X/Y wheel - angle is the hue, distance from the centre the saturation - which a VRChat 2D-axis puppet can drive from your expressions menu for in-game recolouring. Mark it Animated (right-click) before locking."
+  },
+  {
+   "name": "_RecolorColor",
+   "text": "The colour to recolour to. Only its hue and saturation are used; brightness comes from the texture, so shading is kept."
+  },
+  {
+   "name": "_ColorWheel",
+   "text": "Click or drag on the wheel. X and Y are the wheel position: angle is the hue (red to the right), distance from the centre is the saturation (white in the middle). Drive X and Y from a 2D puppet for an in-game colour wheel; mark it Animated before locking."
+  },
+  {
+   "name": "_RecolorAmount",
+   "text": "How much of the Colourise colour replaces the original. Below 1 blends between them."
+  },
+  {
+   "name": "_HueMask",
+   "text": "Where Hue Rotate / Colourise applies: white recolours, black keeps the original. Saturation, brightness and gamma still apply everywhere. Follows the Base Texture UV channel."
+  },
+  {
+   "name": "_HueMaskInvert",
+   "text": "Flips the mask: black recolours and white keeps the original. Handy for reusing a mask painted for something else."
   },
   {
    "name": "_Decal0Tex",
@@ -1493,71 +1898,15 @@
   },
   {
    "name": "_UVTileDiscardChannel",
-   "text": "Which UV set holds the tile layout. UV1 lets UV0 stay purely for texturing."
+   "text": "Which UV set holds the tile layout. Usually an extra UV channel made just for tile discard, so your texturing UVs stay untouched. Same options as Poiyomi."
   },
   {
-   "name": "_UVTileRow0_0",
-   "text": "Hide the mesh in UV tile column 0, row 0. Animate this single float for an outfit toggle."
+   "name": "_UVTileDiscardMode",
+   "text": "Vertex (Faster) removes whole triangles before they are drawn - exact as long as each island sits inside one tile, and hidden parts cost nothing. Pixel (Slower) cuts per pixel, exact to the tile edge even where triangles cross it."
   },
   {
-   "name": "_UVTileRow0_1",
-   "text": "Hide the mesh in UV tile column 1, row 0. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow0_2",
-   "text": "Hide the mesh in UV tile column 2, row 0. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow0_3",
-   "text": "Hide the mesh in UV tile column 3, row 0. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow1_0",
-   "text": "Hide the mesh in UV tile column 0, row 1. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow1_1",
-   "text": "Hide the mesh in UV tile column 1, row 1. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow1_2",
-   "text": "Hide the mesh in UV tile column 2, row 1. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow1_3",
-   "text": "Hide the mesh in UV tile column 3, row 1. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow2_0",
-   "text": "Hide the mesh in UV tile column 0, row 2. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow2_1",
-   "text": "Hide the mesh in UV tile column 1, row 2. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow2_2",
-   "text": "Hide the mesh in UV tile column 2, row 2. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow2_3",
-   "text": "Hide the mesh in UV tile column 3, row 2. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow3_0",
-   "text": "Hide the mesh in UV tile column 0, row 3. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow3_1",
-   "text": "Hide the mesh in UV tile column 1, row 3. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow3_2",
-   "text": "Hide the mesh in UV tile column 2, row 3. Animate this single float for an outfit toggle."
-  },
-  {
-   "name": "_UVTileRow3_3",
-   "text": "Hide the mesh in UV tile column 3, row 3. Animate this single float for an outfit toggle."
+   "name": "_UDIMDiscardRow3_0",
+   "text": "Tick a tile to hide every part of the mesh whose UVs sit in it. Each tile is its own float, _UDIMDiscardRow<row>_<column>, the same names Poiyomi uses, so VRCFury's \"Poiyomi UV Tile\" action works as-is: give it the same Row and Column and leave Renamed Material empty."
   },
   {
    "name": "_DetailMask",
@@ -1582,6 +1931,78 @@
   {
    "name": "_DetailNormalStrength",
    "text": "Strength of the detail normal. 0 is flat."
+  },
+  {
+   "name": "_DetailAlbedoUV",
+   "text": "Which coordinates the detail albedo is laid out on, same list as Poiyomi. UV0 follows the base texture's Tiling / Offset, as before. UV1-UV3: Albedo and Normal share one extra mesh UV channel - if both pick different ones from UV1-UV3, the Normal uses the Albedo's. Panosphere, World Pos, Local Pos, Polar, Distorted, Matcap and Screen Space have no such limit."
+  },
+  {
+   "name": "_DetailAlbedoPan",
+   "text": "Scrolls the detail albedo over time, in UV units per second."
+  },
+  {
+   "name": "_DetailNormalUV",
+   "text": "Which coordinates the detail normal is laid out on, same list as Poiyomi. UV0 follows the base texture's Tiling / Offset, as before. UV1-UV3: Albedo and Normal share one extra mesh UV channel - if both pick different ones from UV1-UV3, the Normal uses the Albedo's. Panosphere, World Pos, Local Pos, Polar, Distorted, Matcap and Screen Space have no such limit."
+  },
+  {
+   "name": "_DetailNormalPan",
+   "text": "Scrolls the detail normal over time, in UV units per second."
+  },
+  {
+   "name": "_UVWorldX",
+   "text": "World Pos mode: which world axis becomes U. Default X and Z projects straight down, like a floor."
+  },
+  {
+   "name": "_UVWorldY",
+   "text": "World Pos mode: which world axis becomes V."
+  },
+  {
+   "name": "_UVLocalX",
+   "text": "Local Pos mode: which of the mesh's own axes becomes U. Moves with the avatar, unlike World Pos."
+  },
+  {
+   "name": "_UVLocalY",
+   "text": "Local Pos mode: which of the mesh's own axes becomes V."
+  },
+  {
+   "name": "_UVPanoPerEye",
+   "text": "Panosphere mode: each eye looks up the panorama from its own position, so it reads as infinitely far away in VR. Off, both eyes see the same image."
+  },
+  {
+   "name": "_UVPolarMode",
+   "text": "Polar UV: Standard measures distance from the centre; Log Polar keeps the texture's scale steady outward; Square Polar measures in squares instead of circles."
+  },
+  {
+   "name": "_UVPolarCenter",
+   "text": "Polar UV: the point on UV0 the pattern radiates from."
+  },
+  {
+   "name": "_UVPolarRadial",
+   "text": "Polar UV: how many times the texture repeats outward from the centre."
+  },
+  {
+   "name": "_UVPolarLength",
+   "text": "Polar UV: how many times the texture repeats around the centre."
+  },
+  {
+   "name": "_UVPolarSpiral",
+   "text": "Polar UV: twists the pattern into a spiral. 0 = straight spokes."
+  },
+  {
+   "name": "_UVDistortMap",
+   "text": "Distorted UV: an RG map that pushes UV0 around - mid grey is no push. Any flow or noise texture works."
+  },
+  {
+   "name": "_UVDistortStrength",
+   "text": "Distorted UV: how far the map pushes the UVs."
+  },
+  {
+   "name": "_UVDistortScale",
+   "text": "Distorted UV: tiling of the distortion map."
+  },
+  {
+   "name": "_UVDistortSpeed",
+   "text": "Distorted UV: how fast the distortion map scrolls, so the wobble moves."
   },
   {
    "name": "_LightingModel",
@@ -1629,7 +2050,11 @@
   },
   {
    "name": "_ReceiveShadows",
-   "text": "Lets shadows cast by other objects land on this surface."
+   "text": "Shadows the world's main (sun-type) light casts onto you - from buildings, props, and your own body. Off by default, as in Poiyomi: world shadows on avatars are often blocky or dithered (semi-transparent props cast hatched shadows), and most worlds have none. The shading from the light itself is unaffected."
+  },
+  {
+   "name": "_ReceiveShadowsAdd",
+   "text": "Shadows from point and spot lights (lamps, stage lights). On by default: these are rarer and usually placed on purpose."
   },
   {
    "name": "_SSSMask",
@@ -1842,18 +2267,6 @@
   {
    "name": "_SS3Strength",
    "text": "Brightness of this layer. 0 turns it off."
-  },
-  {
-   "name": "_Spec2Color",
-   "text": "Tint of the clear coat highlight."
-  },
-  {
-   "name": "_Spec2Smoothness",
-   "text": "How tight the clear coat highlight is."
-  },
-  {
-   "name": "_Spec2Mask",
-   "text": "Limits the clear coat to white areas."
   },
   {
    "name": "_MatcapTex",
@@ -2709,7 +3122,7 @@
   },
   {
    "name": "_RimState",
-   "text": "Rim behaviour mode."
+   "text": "Off hides the rim. Always On shows it constantly, with any AudioLink boost on top. Audio Reactive shows it only on the beat - this mode always uses the AudioLink signal, even with its toggle off."
   },
   {
    "name": "_RimColor",
@@ -2718,6 +3131,162 @@
   {
    "name": "_RimHueShift",
    "text": "Shifts the rim hue with AudioLink."
+  },
+  {
+   "name": "_RimMask",
+   "text": "Where the rim is allowed to glow. White shows the rim, black removes it - paint the face black to keep the glow off it, or limit it to hair and clothing edges. Empty means rim everywhere, as before."
+  },
+  {
+   "name": "_RimMaskCh",
+   "text": "Which channel of the Rim Mask this layer reads. Use different channels for the two layers to place them independently from one RGBA mask."
+  },
+  {
+   "name": "_RimALWidth",
+   "text": "Makes the rim grow wider on the beat, not just brighter. 0 keeps the width fixed."
+  },
+  {
+   "name": "_RimALEnable",
+   "text": "Turns AudioLink reactivity on for the rim. On by default, matching earlier versions."
+  },
+  {
+   "name": "_RimVolBoost",
+   "text": "Scales the reaction by overall volume across all bands, so quiet passages react less."
+  },
+  {
+   "name": "_RimVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_RimMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_RimMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_RimAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_RimAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_RimLightMode",
+   "text": "Everywhere is the classic rim. Lit Side keeps it on edges facing the light; Shadow Side keeps it on the far side for a backlit-edge look. Uses the probe-recovered light direction, so it works in worlds with no realtime light; with no light at all it falls back to Everywhere."
+  },
+  {
+   "name": "_RimTwoTone",
+   "text": "Uses Rim Color on the lit side and the Shadow Side Colour on the shadow side, blending across the light terminator."
+  },
+  {
+   "name": "_RimShadowColor",
+   "text": "Rim colour on the side facing away from the light, when Two-Tone is on."
+  },
+  {
+   "name": "_RimWorldColor",
+   "text": "Blends the rim colour toward the light coming from behind the edge, so the silhouette glows with the world's colours like a real backlight. Darker worlds give a dimmer rim - raise the intensity to compensate."
+  },
+  {
+   "name": "_RimPerLight",
+   "text": "Every light draws its own rim on the side facing it, in its own colour: the main light, probe lighting, per-vertex lights, and each extra realtime point or spot light. Club lights catch your edges as they sweep past. Adds on top of the layer settings above."
+  },
+  {
+   "name": "_RimPerLightStrength",
+   "text": "Brightness of the per-light rims."
+  },
+  {
+   "name": "_RimPerLightTint",
+   "text": "Multiplies every per-light rim. White keeps each light's own colour."
+  },
+  {
+   "name": "_RimBlend",
+   "text": "Add glows (the classic rim). Replace paints a solid edge colour. Multiply darkens the edge for an inner outline without extra geometry - pick a dark colour."
+  },
+  {
+   "name": "_RimSteps",
+   "text": "Bands the rim falloff into hard steps for an anime look. 0 is smooth; 1 is a single hard edge."
+  },
+  {
+   "name": "_RimNormalSrc",
+   "text": "Normal Map lets the rim catch surface detail like scales and fur. Mesh Shape follows the smooth geometry for a clean silhouette."
+  },
+  {
+   "name": "_RimBiasAmt",
+   "text": "Pushes the rim toward the Bias Direction - a sky glow along the top edges, or ground bounce along the bottom. 0 is off."
+  },
+  {
+   "name": "_RimBiasDir",
+   "text": "Direction the rim favours. In World space, 0,1,0 is the sky and 0,-1,0 the ground. In Screen space, 0,1,0 is the top of your view and 1,0,0 its right side."
+  },
+  {
+   "name": "_RimBiasSpace",
+   "text": "World biases toward a fixed direction in the world. Screen biases toward a direction on screen, so it stays put as you turn."
+  },
+  {
+   "name": "_RimPatternMode",
+   "text": "Moves a pattern through the rim. Noise is procedural energy or crackle with no texture needed; Texture uses your own tiling image."
+  },
+  {
+   "name": "_RimPatternTex",
+   "text": "Tiling grayscale pattern for the Texture mode. White shows the rim, black cuts it."
+  },
+  {
+   "name": "_RimPatternScale",
+   "text": "Size of the pattern. Higher is finer."
+  },
+  {
+   "name": "_RimPatternScroll",
+   "text": "Direction and speed the pattern moves, in UV units per second."
+  },
+  {
+   "name": "_RimPatternStrength",
+   "text": "How much the pattern breaks up the rim. 0 ignores it."
+  },
+  {
+   "name": "_RimPatternContrast",
+   "text": "Sharpens the pattern. High values turn soft noise into crackling streaks."
+  },
+  {
+   "name": "_Rim2Enable",
+   "text": "Adds a second rim layer with its own colour, width, side and blend."
+  },
+  {
+   "name": "_Rim2Color",
+   "text": "Colour of the second rim."
+  },
+  {
+   "name": "_Rim2Width",
+   "text": "How far the second rim reaches in from the silhouette."
+  },
+  {
+   "name": "_Rim2Soft",
+   "text": "How soft the second rim falloff is."
+  },
+  {
+   "name": "_Rim2Intensity",
+   "text": "Brightness of the second rim (or opacity, in Replace and Multiply modes)."
+  },
+  {
+   "name": "_Rim2AL",
+   "text": "How much the AL band boosts the second rim. Shares the Rim AL Band."
+  },
+  {
+   "name": "_Rim2Blend",
+   "text": "Add glows, Replace paints a solid edge, Multiply darkens it as an inner line."
+  },
+  {
+   "name": "_Rim2LightMode",
+   "text": "Which side the second rim appears on, independent of the first."
+  },
+  {
+   "name": "_Rim2Steps",
+   "text": "Bands the second rim into hard steps. 0 is smooth."
+  },
+  {
+   "name": "_Rim2MaskCh",
+   "text": "Which channel of the Rim Mask the second rim reads."
   },
   {
    "name": "_RimWidth",
@@ -2733,11 +3302,11 @@
   },
   {
    "name": "_RimBand",
-   "text": "AudioLink band that drives the rim."
+   "text": "Primary AudioLink band that drives the rim."
   },
   {
    "name": "_RimAL",
-   "text": "How much the band boosts the rim."
+   "text": "How much the beat brightens the rim on top of its always-on intensity."
   },
   {
    "name": "_SpeakerMask",
@@ -4140,16 +4709,64 @@
    "text": "Colours the glow per pixel, carrying its own shading and gradients, so the pattern reads as painted rather than as a flat stencil. It multiplies the emission colour, so a mostly-dark map dims the layer: raise Emission Intensity to compensate. The mask still decides where the layer emits at all."
   },
   {
+   "name": "_Em0Matcap",
+   "text": "Colours this glow from a matcap sphere image, so the emission shifts with the viewing angle like glowing chrome, glass, or an iridescent sheen. The mask still decides where the layer glows."
+  },
+  {
+   "name": "_Em0MatcapMode",
+   "text": "Multiply tints the glow with the matcap. Replace uses the matcap's own colours at the Emission Color's strength. Add layers the matcap's highlights on top of the glow."
+  },
+  {
+   "name": "_Em0MatcapAmt",
+   "text": "How much of the matcap effect is applied. 0 ignores it."
+  },
+  {
    "name": "_Em1Map",
    "text": "Colours the glow per pixel, carrying its own shading and gradients, so the pattern reads as painted rather than as a flat stencil. It multiplies the emission colour, so a mostly-dark map dims the layer: raise Emission Intensity to compensate. The mask still decides where the layer emits at all."
+  },
+  {
+   "name": "_Em1Matcap",
+   "text": "Colours this glow from a matcap sphere image, so the emission shifts with the viewing angle like glowing chrome, glass, or an iridescent sheen. The mask still decides where the layer glows."
+  },
+  {
+   "name": "_Em1MatcapMode",
+   "text": "Multiply tints the glow with the matcap. Replace uses the matcap's own colours at the Emission Color's strength. Add layers the matcap's highlights on top of the glow."
+  },
+  {
+   "name": "_Em1MatcapAmt",
+   "text": "How much of the matcap effect is applied. 0 ignores it."
   },
   {
    "name": "_Em2Map",
    "text": "Colours the glow per pixel, carrying its own shading and gradients, so the pattern reads as painted rather than as a flat stencil. It multiplies the emission colour, so a mostly-dark map dims the layer: raise Emission Intensity to compensate. The mask still decides where the layer emits at all."
   },
   {
+   "name": "_Em2Matcap",
+   "text": "Colours this glow from a matcap sphere image, so the emission shifts with the viewing angle like glowing chrome, glass, or an iridescent sheen. The mask still decides where the layer glows."
+  },
+  {
+   "name": "_Em2MatcapMode",
+   "text": "Multiply tints the glow with the matcap. Replace uses the matcap's own colours at the Emission Color's strength. Add layers the matcap's highlights on top of the glow."
+  },
+  {
+   "name": "_Em2MatcapAmt",
+   "text": "How much of the matcap effect is applied. 0 ignores it."
+  },
+  {
    "name": "_Em3Map",
    "text": "Colours the glow per pixel, carrying its own shading and gradients, so the pattern reads as painted rather than as a flat stencil. It multiplies the emission colour, so a mostly-dark map dims the layer: raise Emission Intensity to compensate. The mask still decides where the layer emits at all."
+  },
+  {
+   "name": "_Em3Matcap",
+   "text": "Colours this glow from a matcap sphere image, so the emission shifts with the viewing angle like glowing chrome, glass, or an iridescent sheen. The mask still decides where the layer glows."
+  },
+  {
+   "name": "_Em3MatcapMode",
+   "text": "Multiply tints the glow with the matcap. Replace uses the matcap's own colours at the Emission Color's strength. Add layers the matcap's highlights on top of the glow."
+  },
+  {
+   "name": "_Em3MatcapAmt",
+   "text": "How much of the matcap effect is applied. 0 ignores it."
   },
   {
    "name": "_InfEnable",
@@ -4850,6 +5467,890 @@
   {
    "name": "_RegionAHue",
    "text": "Rotates the hue of the alpha zone before tinting, preserving painted shading."
+  },
+  {
+   "name": "_RevealEnable",
+   "text": "Turns on the animated reveal: a moving shape that uncovers a hidden layer as it passes."
+  },
+  {
+   "name": "_RevealIntensity",
+   "text": "Master fade for the whole effect. 1 is full, 0 is off - ideal for a menu radial."
+  },
+  {
+   "name": "_RevealArea",
+   "text": "Where the effect may appear. White allows, black blocks - paint the arm white to keep flames on it."
+  },
+  {
+   "name": "_RevealSource",
+   "text": "Second Texture reveals your own image. Base Texture reveals the material's own albedo, which you can re-tile, pan, tint, hue-shift or make glow - no extra texture needed."
+  },
+  {
+   "name": "_RevealTex",
+   "text": "The hidden image the moving shape uncovers."
+  },
+  {
+   "name": "_RevealTexTiling",
+   "text": "Tiling (X,Y) and offset (Z,W) of the revealed layer. With Base Texture, 1,1,0,0 lines up exactly with the surface."
+  },
+  {
+   "name": "_RevealTexPan",
+   "text": "Scrolls the revealed layer itself over time. Leave at 0 for the classic look: the shape moves, the hidden layer stays put."
+  },
+  {
+   "name": "_RevealTint",
+   "text": "Multiplies the revealed layer. HDR, so it can push the layer bright for bloom."
+  },
+  {
+   "name": "_RevealHue",
+   "text": "Rotates the revealed layer's hue - with Base Texture this recolours the surface inside the shape."
+  },
+  {
+   "name": "_RevealBlend",
+   "text": "Replace shows the layer as-is, Multiply tints the surface, Add brightens it. Glow Only leaves the surface alone and only adds light (set Glow above 0)."
+  },
+  {
+   "name": "_RevealGlow",
+   "text": "Makes the revealed layer emit light, unaffected by world lighting. 0 keeps it a lit surface."
+  },
+  {
+   "name": "_RevealShape",
+   "text": "Procedural Noise is flame-like and needs no texture. Texture uses your own grayscale shape: white is revealed first."
+  },
+  {
+   "name": "_RevealMask",
+   "text": "Grayscale shape that sweeps across. Bright areas reveal first as Coverage rises; it should tile seamlessly."
+  },
+  {
+   "name": "_RevealMaskTiling",
+   "text": "Size (X,Y) and offset (Z,W) of the moving shape. Higher tiling gives smaller, busier shapes."
+  },
+  {
+   "name": "_RevealCoverage",
+   "text": "How much of the hidden layer is uncovered at once. 0 shows nothing, 1 everything. Animate it for a reveal that grows."
+  },
+  {
+   "name": "_RevealSoft",
+   "text": "How soft the shape's edge is. Low is a crisp cut-out, high a smoky blend."
+  },
+  {
+   "name": "_RevealInvert",
+   "text": "Flips the shape, so dark areas reveal instead of bright."
+  },
+  {
+   "name": "_RevealMotion",
+   "text": "How the shape moves. Scroll slides it, Swirl spins it into a vortex, Flow Map streams it along a direction you paint, and World Guided streams it along a world direction - flames always rising, however the mesh is unwrapped."
+  },
+  {
+   "name": "_RevealScroll",
+   "text": "Scroll direction and speed in shape tiles per second."
+  },
+  {
+   "name": "_RevealSwirlCenter",
+   "text": "Point the vortex spins around, in UV space (0.5, 0.5 is the centre of the texture)."
+  },
+  {
+   "name": "_RevealSwirlSpeed",
+   "text": "How fast the vortex turns. Negative reverses it."
+  },
+  {
+   "name": "_RevealTwist",
+   "text": "How much the swirl winds up toward the outside. 0 is a rigid spin."
+  },
+  {
+   "name": "_RevealFlowMap",
+   "text": "RG direction map: red is horizontal flow, green vertical, mid grey is still. Paint the direction the shape should stream."
+  },
+  {
+   "name": "_RevealWorldDir",
+   "text": "World direction the shape streams toward. 0,1,0 rises; 0,-1,0 falls; 1,0,0 sweeps sideways."
+  },
+  {
+   "name": "_RevealFlowSpeed",
+   "text": "Streaming speed for the Flow Map and World Guided motions."
+  },
+  {
+   "name": "_RevealTurb",
+   "text": "Wobbles the shape with moving noise so its edges lick and boil like fire. 0 keeps the motion clean."
+  },
+  {
+   "name": "_RevealTurbScale",
+   "text": "Size of the turbulence. Higher is finer flicker."
+  },
+  {
+   "name": "_RevealEdgeColor",
+   "text": "Colour of the glowing band where the shape meets the surface."
+  },
+  {
+   "name": "_RevealEdgeWidth",
+   "text": "Width of the edge glow. 0 turns it off."
+  },
+  {
+   "name": "_RevealALEnable",
+   "text": "Turns AudioLink reactivity on for the reveal."
+  },
+  {
+   "name": "_RevealBand",
+   "text": "Primary AudioLink band that drives the reveal."
+  },
+  {
+   "name": "_RevealALCoverage",
+   "text": "How much the beat uncovers extra layer on top of Coverage."
+  },
+  {
+   "name": "_RevealALGlow",
+   "text": "How much the beat brightens the reveal glow and edge."
+  },
+  {
+   "name": "_RevealVolBoost",
+   "text": "Scales the reaction by overall volume across all bands, so quiet passages react less."
+  },
+  {
+   "name": "_RevealVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_RevealMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_RevealMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_RevealAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_RevealAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_ComicEnable",
+   "text": "Turns on the comic print look: halftone dots and hatching over the shaded surface."
+  },
+  {
+   "name": "_ComicIntensity",
+   "text": "Master fade for every layer. 1 is full, 0 is off - good for a menu radial."
+  },
+  {
+   "name": "_ComicMask",
+   "text": "Where the print may appear. Each layer reads its own channel, so one RGBA texture can place all three layers - or paint grey levels and use the Mask driver to set dot size directly."
+  },
+  {
+   "name": "_ComicL1Enable",
+   "text": "Turns on print layer 1."
+  },
+  {
+   "name": "_ComicL1Pattern",
+   "text": "Dots are the classic halftone. Lines are hatching. Crosshatch adds a second, crossing set of lines as coverage deepens. Texture uses your own threshold map (a grayscale screen where dark pixels ink first)."
+  },
+  {
+   "name": "_ComicL1Tex",
+   "text": "Grayscale threshold map, tiling. Each pixel inks once coverage passes its value, so gradients become growing shapes - make your own halftone screens, scribbles or stipple."
+  },
+  {
+   "name": "_ComicL1Driver",
+   "text": "What decides coverage. Shadow follows the surface's shading, so dots sit in the shadows (comic shading). Light puts them in the highlights. Constant is an even pattern everywhere. Mask uses the painted grey level of this layer's mask channel. Base Tone halftones the base texture itself - dark areas get bigger dots, like a printed panel."
+  },
+  {
+   "name": "_ComicL1Amount",
+   "text": "How much coverage the driver can reach. At 1, the darkest areas fill with solid ink."
+  },
+  {
+   "name": "_ComicL1Bias",
+   "text": "Shifts where coverage starts. Negative keeps the layer to the deepest shadows (or brightest highlights); positive spreads it further."
+  },
+  {
+   "name": "_ComicL1Space",
+   "text": "View Aligned keeps dots a constant size on screen and facing the camera, like true comic print - and, unlike plain screen space, stays correct in VR because both eyes see the same dots. Object follows the avatar's position and rotation with no seams. UV sticks to the skin through animation but can show seams."
+  },
+  {
+   "name": "_ComicL1SizeLock",
+   "text": "View Aligned only. 1 keeps the dots one size on screen at any distance, like printed comic dots - so they cover more of the body as you step back. 0 keeps them a fixed size on the body, shrinking on screen with distance like a texture. In between blends the two. Both match at 1 metre, so Scale stays meaningful."
+  },
+  {
+   "name": "_ComicL1Scale",
+   "text": "Density of the pattern. Higher means smaller, more numerous dots or lines."
+  },
+  {
+   "name": "_ComicL1Angle",
+   "text": "Rotation of the pattern, in degrees. Print screens are traditionally angled - 45 for dots, other angles per layer so layers do not moire."
+  },
+  {
+   "name": "_ComicL1Fill",
+   "text": "Pattern Only inks the dots or lines themselves. Negative Space inks the area around them, so the shapes become windows showing the surface underneath - white ink with Replace gives the base texture printed as dots on paper. Coverage still means how much ink in both."
+  },
+  {
+   "name": "_ComicL1ShapeOn",
+   "text": "Negative Space only. Gives the shapes - the dot or line windows between the ink - their own colour instead of showing the surface, for a two-tone print. The colour only appears where the layer is active, so a Shadow-driven layer leaves the lit side untouched."
+  },
+  {
+   "name": "_ComicL1ShapeColor",
+   "text": "Colour of the shapes. Uses the layer's Blend Mode: Replace gives solid two-tone print, Add makes glowing shapes, and Multiply tints the surface (white does nothing in Multiply)."
+  },
+  {
+   "name": "_ComicL1ShapeOpacity",
+   "text": "Strength of the shape colour, independent of the ink's opacity."
+  },
+  {
+   "name": "_ComicL1ColorMode",
+   "text": "Where the ink colour comes from. Flat Colour uses Ink Colour. Base Texture uses the surface's own colour (times Source Tint) - with Multiply, shading dots in the skin's own darker hue instead of black. Matcap reads a sphere image that shifts with the view. Gradient reads a colour ramp with its own driver."
+  },
+  {
+   "name": "_ComicL1Color",
+   "text": "Ink colour for the Flat Colour source, and the start colour of a texture-less Gradient. Black with Multiply is classic print. White with Negative Space and Replace prints the surface as dots on white paper."
+  },
+  {
+   "name": "_ComicL1Tint",
+   "text": "Multiplies the Base Texture, Matcap and Gradient sources. HDR, so it can brighten as well as tint. Not used by Flat Colour."
+  },
+  {
+   "name": "_ComicL1Matcap",
+   "text": "Sphere image the ink colour is read from, using the surface normal as seen from the camera - chrome, holographic or painted-sheen ink."
+  },
+  {
+   "name": "_ComicL1Grad",
+   "text": "Optional horizontal colour ramp, read left to right by Gradient Driven By. Leave empty to blend from Ink Colour to Gradient End Colour."
+  },
+  {
+   "name": "_ComicL1GradEnd",
+   "text": "End colour of the built-in gradient, used when no gradient texture is assigned."
+  },
+  {
+   "name": "_ComicL1GradBy",
+   "text": "What picks the position along the gradient, independently of what drives coverage. Coverage colours dots by how dense they are, Light by how lit the surface is, View Angle toward the silhouette, UV U or V across the texture layout, and Time cycles the whole layer through the gradient."
+  },
+  {
+   "name": "_ComicL1GradSpeed",
+   "text": "Scrolls the gradient over time, so colours flow through the pattern. Negative reverses it. Required to animate the Time option."
+  },
+  {
+   "name": "_ComicL1Blend",
+   "text": "Multiply prints ink that darkens the surface. Add makes the pattern glow. Replace paints flat ink. Screen lightens, for white highlight dots."
+  },
+  {
+   "name": "_ComicL1Opacity",
+   "text": "Strength of this layer's ink."
+  },
+  {
+   "name": "_ComicL1Soft",
+   "text": "Softness of the dot and line edges. 0 is razor sharp; higher is a softer, inkier edge."
+  },
+  {
+   "name": "_ComicL1MaskCh",
+   "text": "Which channel of the Comic Mask confines this layer (or, with the Mask driver, sets its coverage)."
+  },
+  {
+   "name": "_ComicL1Depth",
+   "text": "Pushes the pattern beneath the surface so it shifts with your viewpoint, like dots printed on a layer under glossy skin."
+  },
+  {
+   "name": "_ComicL2Enable",
+   "text": "Turns on print layer 2."
+  },
+  {
+   "name": "_ComicL2Pattern",
+   "text": "Dots are the classic halftone. Lines are hatching. Crosshatch adds a second, crossing set of lines as coverage deepens. Texture uses your own threshold map (a grayscale screen where dark pixels ink first)."
+  },
+  {
+   "name": "_ComicL2Tex",
+   "text": "Grayscale threshold map, tiling. Each pixel inks once coverage passes its value, so gradients become growing shapes - make your own halftone screens, scribbles or stipple."
+  },
+  {
+   "name": "_ComicL2Driver",
+   "text": "What decides coverage. Shadow follows the surface's shading, so dots sit in the shadows (comic shading). Light puts them in the highlights. Constant is an even pattern everywhere. Mask uses the painted grey level of this layer's mask channel. Base Tone halftones the base texture itself - dark areas get bigger dots, like a printed panel."
+  },
+  {
+   "name": "_ComicL2Amount",
+   "text": "How much coverage the driver can reach. At 1, the darkest areas fill with solid ink."
+  },
+  {
+   "name": "_ComicL2Bias",
+   "text": "Shifts where coverage starts. Negative keeps the layer to the deepest shadows (or brightest highlights); positive spreads it further."
+  },
+  {
+   "name": "_ComicL2Space",
+   "text": "View Aligned keeps dots a constant size on screen and facing the camera, like true comic print - and, unlike plain screen space, stays correct in VR because both eyes see the same dots. Object follows the avatar's position and rotation with no seams. UV sticks to the skin through animation but can show seams."
+  },
+  {
+   "name": "_ComicL2SizeLock",
+   "text": "View Aligned only. 1 keeps the dots one size on screen at any distance, like printed comic dots - so they cover more of the body as you step back. 0 keeps them a fixed size on the body, shrinking on screen with distance like a texture. In between blends the two. Both match at 1 metre, so Scale stays meaningful."
+  },
+  {
+   "name": "_ComicL2Scale",
+   "text": "Density of the pattern. Higher means smaller, more numerous dots or lines."
+  },
+  {
+   "name": "_ComicL2Angle",
+   "text": "Rotation of the pattern, in degrees. Print screens are traditionally angled - 45 for dots, other angles per layer so layers do not moire."
+  },
+  {
+   "name": "_ComicL2Fill",
+   "text": "Pattern Only inks the dots or lines themselves. Negative Space inks the area around them, so the shapes become windows showing the surface underneath - white ink with Replace gives the base texture printed as dots on paper. Coverage still means how much ink in both."
+  },
+  {
+   "name": "_ComicL2ShapeOn",
+   "text": "Negative Space only. Gives the shapes - the dot or line windows between the ink - their own colour instead of showing the surface, for a two-tone print. The colour only appears where the layer is active, so a Shadow-driven layer leaves the lit side untouched."
+  },
+  {
+   "name": "_ComicL2ShapeColor",
+   "text": "Colour of the shapes. Uses the layer's Blend Mode: Replace gives solid two-tone print, Add makes glowing shapes, and Multiply tints the surface (white does nothing in Multiply)."
+  },
+  {
+   "name": "_ComicL2ShapeOpacity",
+   "text": "Strength of the shape colour, independent of the ink's opacity."
+  },
+  {
+   "name": "_ComicL2ColorMode",
+   "text": "Where the ink colour comes from. Flat Colour uses Ink Colour. Base Texture uses the surface's own colour (times Source Tint) - with Multiply, shading dots in the skin's own darker hue instead of black. Matcap reads a sphere image that shifts with the view. Gradient reads a colour ramp with its own driver."
+  },
+  {
+   "name": "_ComicL2Color",
+   "text": "Ink colour for the Flat Colour source, and the start colour of a texture-less Gradient. Black with Multiply is classic print. White with Negative Space and Replace prints the surface as dots on white paper."
+  },
+  {
+   "name": "_ComicL2Tint",
+   "text": "Multiplies the Base Texture, Matcap and Gradient sources. HDR, so it can brighten as well as tint. Not used by Flat Colour."
+  },
+  {
+   "name": "_ComicL2Matcap",
+   "text": "Sphere image the ink colour is read from, using the surface normal as seen from the camera - chrome, holographic or painted-sheen ink."
+  },
+  {
+   "name": "_ComicL2Grad",
+   "text": "Optional horizontal colour ramp, read left to right by Gradient Driven By. Leave empty to blend from Ink Colour to Gradient End Colour."
+  },
+  {
+   "name": "_ComicL2GradEnd",
+   "text": "End colour of the built-in gradient, used when no gradient texture is assigned."
+  },
+  {
+   "name": "_ComicL2GradBy",
+   "text": "What picks the position along the gradient, independently of what drives coverage. Coverage colours dots by how dense they are, Light by how lit the surface is, View Angle toward the silhouette, UV U or V across the texture layout, and Time cycles the whole layer through the gradient."
+  },
+  {
+   "name": "_ComicL2GradSpeed",
+   "text": "Scrolls the gradient over time, so colours flow through the pattern. Negative reverses it. Required to animate the Time option."
+  },
+  {
+   "name": "_ComicL2Blend",
+   "text": "Multiply prints ink that darkens the surface. Add makes the pattern glow. Replace paints flat ink. Screen lightens, for white highlight dots."
+  },
+  {
+   "name": "_ComicL2Opacity",
+   "text": "Strength of this layer's ink."
+  },
+  {
+   "name": "_ComicL2Soft",
+   "text": "Softness of the dot and line edges. 0 is razor sharp; higher is a softer, inkier edge."
+  },
+  {
+   "name": "_ComicL2MaskCh",
+   "text": "Which channel of the Comic Mask confines this layer (or, with the Mask driver, sets its coverage)."
+  },
+  {
+   "name": "_ComicL2Depth",
+   "text": "Pushes the pattern beneath the surface so it shifts with your viewpoint, like dots printed on a layer under glossy skin."
+  },
+  {
+   "name": "_ComicL3Enable",
+   "text": "Turns on print layer 3."
+  },
+  {
+   "name": "_ComicL3Pattern",
+   "text": "Dots are the classic halftone. Lines are hatching. Crosshatch adds a second, crossing set of lines as coverage deepens. Texture uses your own threshold map (a grayscale screen where dark pixels ink first)."
+  },
+  {
+   "name": "_ComicL3Tex",
+   "text": "Grayscale threshold map, tiling. Each pixel inks once coverage passes its value, so gradients become growing shapes - make your own halftone screens, scribbles or stipple."
+  },
+  {
+   "name": "_ComicL3Driver",
+   "text": "What decides coverage. Shadow follows the surface's shading, so dots sit in the shadows (comic shading). Light puts them in the highlights. Constant is an even pattern everywhere. Mask uses the painted grey level of this layer's mask channel. Base Tone halftones the base texture itself - dark areas get bigger dots, like a printed panel."
+  },
+  {
+   "name": "_ComicL3Amount",
+   "text": "How much coverage the driver can reach. At 1, the darkest areas fill with solid ink."
+  },
+  {
+   "name": "_ComicL3Bias",
+   "text": "Shifts where coverage starts. Negative keeps the layer to the deepest shadows (or brightest highlights); positive spreads it further."
+  },
+  {
+   "name": "_ComicL3Space",
+   "text": "View Aligned keeps dots a constant size on screen and facing the camera, like true comic print - and, unlike plain screen space, stays correct in VR because both eyes see the same dots. Object follows the avatar's position and rotation with no seams. UV sticks to the skin through animation but can show seams."
+  },
+  {
+   "name": "_ComicL3SizeLock",
+   "text": "View Aligned only. 1 keeps the dots one size on screen at any distance, like printed comic dots - so they cover more of the body as you step back. 0 keeps them a fixed size on the body, shrinking on screen with distance like a texture. In between blends the two. Both match at 1 metre, so Scale stays meaningful."
+  },
+  {
+   "name": "_ComicL3Scale",
+   "text": "Density of the pattern. Higher means smaller, more numerous dots or lines."
+  },
+  {
+   "name": "_ComicL3Angle",
+   "text": "Rotation of the pattern, in degrees. Print screens are traditionally angled - 45 for dots, other angles per layer so layers do not moire."
+  },
+  {
+   "name": "_ComicL3Fill",
+   "text": "Pattern Only inks the dots or lines themselves. Negative Space inks the area around them, so the shapes become windows showing the surface underneath - white ink with Replace gives the base texture printed as dots on paper. Coverage still means how much ink in both."
+  },
+  {
+   "name": "_ComicL3ShapeOn",
+   "text": "Negative Space only. Gives the shapes - the dot or line windows between the ink - their own colour instead of showing the surface, for a two-tone print. The colour only appears where the layer is active, so a Shadow-driven layer leaves the lit side untouched."
+  },
+  {
+   "name": "_ComicL3ShapeColor",
+   "text": "Colour of the shapes. Uses the layer's Blend Mode: Replace gives solid two-tone print, Add makes glowing shapes, and Multiply tints the surface (white does nothing in Multiply)."
+  },
+  {
+   "name": "_ComicL3ShapeOpacity",
+   "text": "Strength of the shape colour, independent of the ink's opacity."
+  },
+  {
+   "name": "_ComicL3ColorMode",
+   "text": "Where the ink colour comes from. Flat Colour uses Ink Colour. Base Texture uses the surface's own colour (times Source Tint) - with Multiply, shading dots in the skin's own darker hue instead of black. Matcap reads a sphere image that shifts with the view. Gradient reads a colour ramp with its own driver."
+  },
+  {
+   "name": "_ComicL3Color",
+   "text": "Ink colour for the Flat Colour source, and the start colour of a texture-less Gradient. Black with Multiply is classic print. White with Negative Space and Replace prints the surface as dots on white paper."
+  },
+  {
+   "name": "_ComicL3Tint",
+   "text": "Multiplies the Base Texture, Matcap and Gradient sources. HDR, so it can brighten as well as tint. Not used by Flat Colour."
+  },
+  {
+   "name": "_ComicL3Matcap",
+   "text": "Sphere image the ink colour is read from, using the surface normal as seen from the camera - chrome, holographic or painted-sheen ink."
+  },
+  {
+   "name": "_ComicL3Grad",
+   "text": "Optional horizontal colour ramp, read left to right by Gradient Driven By. Leave empty to blend from Ink Colour to Gradient End Colour."
+  },
+  {
+   "name": "_ComicL3GradEnd",
+   "text": "End colour of the built-in gradient, used when no gradient texture is assigned."
+  },
+  {
+   "name": "_ComicL3GradBy",
+   "text": "What picks the position along the gradient, independently of what drives coverage. Coverage colours dots by how dense they are, Light by how lit the surface is, View Angle toward the silhouette, UV U or V across the texture layout, and Time cycles the whole layer through the gradient."
+  },
+  {
+   "name": "_ComicL3GradSpeed",
+   "text": "Scrolls the gradient over time, so colours flow through the pattern. Negative reverses it. Required to animate the Time option."
+  },
+  {
+   "name": "_ComicL3Blend",
+   "text": "Multiply prints ink that darkens the surface. Add makes the pattern glow. Replace paints flat ink. Screen lightens, for white highlight dots."
+  },
+  {
+   "name": "_ComicL3Opacity",
+   "text": "Strength of this layer's ink."
+  },
+  {
+   "name": "_ComicL3Soft",
+   "text": "Softness of the dot and line edges. 0 is razor sharp; higher is a softer, inkier edge."
+  },
+  {
+   "name": "_ComicL3MaskCh",
+   "text": "Which channel of the Comic Mask confines this layer (or, with the Mask driver, sets its coverage)."
+  },
+  {
+   "name": "_ComicL3Depth",
+   "text": "Pushes the pattern beneath the surface so it shifts with your viewpoint, like dots printed on a layer under glossy skin."
+  },
+  {
+   "name": "_ComicMisreg",
+   "text": "Offsets the red and blue plates of the print, like a misaligned press - coloured fringes around every dot and line. 0 is perfectly registered."
+  },
+  {
+   "name": "_ComicBoil",
+   "text": "Jitters the whole print to a new position each step, the hand-drawn boil of animation drawn frame by frame. 0 keeps the print steady."
+  },
+  {
+   "name": "_ComicFPS",
+   "text": "How many times per second the boil steps. 12 is animating on twos, the Spider-Verse rhythm; 24 is on ones."
+  },
+  {
+   "name": "_ComicALEnable",
+   "text": "Turns AudioLink reactivity on for the print."
+  },
+  {
+   "name": "_ComicBand",
+   "text": "Primary AudioLink band that drives the print."
+  },
+  {
+   "name": "_ComicALCoverage",
+   "text": "How much the beat adds to every layer's coverage."
+  },
+  {
+   "name": "_ComicVolBoost",
+   "text": "Scales the reaction by overall volume across all bands, so quiet passages react less."
+  },
+  {
+   "name": "_ComicVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_ComicMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_ComicMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_ComicAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_ComicAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_FurEnable",
+   "text": "Turns on painted fur: brush-stroke tufts generated over the surface."
+  },
+  {
+   "name": "_FurIntensity",
+   "text": "Master fade for the whole effect. 1 is full, 0 is off - ideal for a menu radial."
+  },
+  {
+   "name": "_FurStyle",
+   "text": "0 is painterly: soft, feathered strokes with rounded relief. 1 is toon: crisp strokes, flat two-tone facets and a hard painted highlight."
+  },
+  {
+   "name": "_FurMask",
+   "text": "Where fur grows. White is full fur, black none - keep it off faces, pads and claws."
+  },
+  {
+   "name": "_FurPattern",
+   "text": "Tufts: tapered brush strokes. Flowing Locks: long S-curved blades with deep crevices between them (raise Gap Amount and Overlap Shadow). Curls: coiled spirals, like lamb's wool. Fluff: short, wide tufts whose tips split into wisps - chest and cheek fluff. Feathers: a centre shaft with angled barbs."
+  },
+  {
+   "name": "_FurDensity",
+   "text": "Tufts per UV unit. Higher gives smaller, finer tufts. Islands with more texel density get smaller tufts."
+  },
+  {
+   "name": "_FurLength",
+   "text": "Stroke length in tuft-cell units; for Curls, the coil's diameter. Very long strokes are clamped so they always fit the area searched."
+  },
+  {
+   "name": "_FurWidth",
+   "text": "How wide each stroke is. Wider strokes close the gaps between tufts."
+  },
+  {
+   "name": "_FurTaper",
+   "text": "Shape of each tuft toward its tip. Below 1 the sides bow out into a soft leaf or flame clump; 1 is straight-sided and spear-like; above 1 is a fine, thin point."
+  },
+  {
+   "name": "_FurCurl",
+   "text": "Bends strokes sideways toward their tips. Negative curls the other way. (For coiled fur, use the Curls pattern.)"
+  },
+  {
+   "name": "_FurWave",
+   "text": "S-bends along each stroke, growing from the root so roots stay planted. Flowing Locks already wave a little; this adds more."
+  },
+  {
+   "name": "_FurCurlTurns",
+   "text": "How many times each coil winds in toward its centre."
+  },
+  {
+   "name": "_FurSpin",
+   "text": "Which way the coils wind. Mixed alternates at random."
+  },
+  {
+   "name": "_FurJitter",
+   "text": "How irregularly tufts are placed. 0 is a neat grid, 1 fully scattered."
+  },
+  {
+   "name": "_FurLengthJitter",
+   "text": "Random shortening per tuft, so the coat is not uniform."
+  },
+  {
+   "name": "_FurDirJitter",
+   "text": "Random angle per tuft around the groom direction, and how much curl varies between tufts."
+  },
+  {
+   "name": "_FurLayers",
+   "text": "Single runs one grid of tufts; Double adds a second, offset grid for a closed, fuller coat at about twice the cost of the tuft field."
+  },
+  {
+   "name": "_FurLayering",
+   "text": "How tufts stack where they overlap. High lays each tuft's tip over the next one's root, like real fur or shingles; 0 stacks them at random."
+  },
+  {
+   "name": "_FurGroomMode",
+   "text": "Object Guided: a direction fixed to the avatar (default down). World Guided: a world direction, so fur hangs with gravity as you move. Flow Map: paint the direction. UV Angle: one angle in texture space."
+  },
+  {
+   "name": "_FurGroomDir",
+   "text": "Direction the fur lies for Object and World Guided. 0,-1,0 lies downward. Where this points straight into the surface the tufts fan out randomly, like a natural whorl."
+  },
+  {
+   "name": "_FurFlowMap",
+   "text": "RG direction map: red is horizontal, green vertical, mid grey has no direction (tufts scatter). Import it with sRGB off."
+  },
+  {
+   "name": "_FurGroomAngle",
+   "text": "Angle the fur lies in texture space. 270 points down the texture, 0 to the right."
+  },
+  {
+   "name": "_FurWind",
+   "text": "Gently sways each tuft back and forth over time. 0 keeps the fur still."
+  },
+  {
+   "name": "_FurWindSpeed",
+   "text": "How fast the sway moves."
+  },
+  {
+   "name": "_FurColorPick",
+   "text": "Paints each tuft as one flat dab of the colour at its root - the strongest part of the painted look. 0 keeps the texture's own detail inside tufts."
+  },
+  {
+   "name": "_FurValueJitter",
+   "text": "Random lighter and darker tufts, like varied brush loads."
+  },
+  {
+   "name": "_FurHueJitter",
+   "text": "Random hue shift per tuft, for a broken-colour painterly coat."
+  },
+  {
+   "name": "_FurTipColor",
+   "text": "Multiplies the tuft tips (mid grey is neutral). Lighter than grey lifts each coat's own colour for sunlit tips; darker gives ticked, dark-tipped fur. Because it multiplies, it suits every coat colour at once."
+  },
+  {
+   "name": "_FurTipAmt",
+   "text": "How strongly the tip colour shows."
+  },
+  {
+   "name": "_FurTipLength",
+   "text": "How far down the tuft the tip colour reaches."
+  },
+  {
+   "name": "_FurRootShade",
+   "text": "Darkens each tuft near its root, so tufts read as layered on top of each other."
+  },
+  {
+   "name": "_FurUndercoat",
+   "text": "Multiplies the base colour in the gaps between tufts. Darker gives deeper, more separated tufts."
+  },
+  {
+   "name": "_FurGapShade",
+   "text": "How much the undercoat shows in the gaps. 0 hides the gaps."
+  },
+  {
+   "name": "_FurEdgeDark",
+   "text": "Darkens the edge of each stroke like a painted outline. Strongest along the sides, fading toward the tip."
+  },
+  {
+   "name": "_FurEdgeWidth",
+   "text": "Width of the stroke edge darkening."
+  },
+  {
+   "name": "_FurOcclusion",
+   "text": "Darkens the fur just under each stroke's edge where it overlaps a lower one - the crevice that gives layered depth. Strongest on Flowing Locks."
+  },
+  {
+   "name": "_FurNormal",
+   "text": "How strongly tufts bend the lighting. Keep it low for a painted look; the colour does most of the work. Rounded at the painterly end of Style, faceted at the toon end."
+  },
+  {
+   "name": "_FurLean",
+   "text": "Shades each tuft as rising off the skin at the root and lying down toward the tip."
+  },
+  {
+   "name": "_FurStrands",
+   "text": "Bristle streaks inside each stroke (barbs on Feathers), converging toward the tip like a loaded brush. Roughly how many per stroke; 0 turns them off. They fade out when too fine to see, so distant fur does not shimmer."
+  },
+  {
+   "name": "_FurStrandAmt",
+   "text": "How strongly the streaks show: darker grooves and slightly lifted ridges."
+  },
+  {
+   "name": "_FurMatte",
+   "text": "Reduces the material's gloss where there is fur, so tufts do not catch plastic-looking reflections and specular. The Strand Highlight is separate and unaffected."
+  },
+  {
+   "name": "_FurSpecAmt",
+   "text": "Strength of the hair-style highlight running along each tuft. 0 turns it off. Works in baked worlds too, using the light probe direction."
+  },
+  {
+   "name": "_FurSpecColor",
+   "text": "Colour of the strand highlight."
+  },
+  {
+   "name": "_FurSpecShift",
+   "text": "Slides the highlight along the tufts, toward the root or the tip."
+  },
+  {
+   "name": "_FurSpecPower",
+   "text": "How tight the highlight is. Higher is a thinner, sharper streak."
+  },
+  {
+   "name": "_FurFinEnable",
+   "text": "Turns on silhouette tufts: an extra shell cut into tufts that only shows at the edges of the mesh. Removed from the locked shader when off."
+  },
+  {
+   "name": "_FurFinLength",
+   "text": "How far the silhouette tufts stand off the surface, in metres. A few millimetres is usually plenty."
+  },
+  {
+   "name": "_FurFinLengthMap",
+   "text": "Scales tuft height across the surface. White is full height, black none."
+  },
+  {
+   "name": "_FurFinLean",
+   "text": "Leans the silhouette tufts along the groom direction, so they sweep the same way as the painted fur."
+  },
+  {
+   "name": "_FurFinStart",
+   "text": "How close to the edge silhouette tufts begin. Higher keeps them to the very rim; lower lets them spread further in."
+  },
+  {
+   "name": "_FurFinCutoff",
+   "text": "Thins the silhouette tufts. Higher leaves fewer, finer points."
+  },
+  {
+   "name": "_FurALEnable",
+   "text": "Turns AudioLink reactivity on for the fur."
+  },
+  {
+   "name": "_FurBand",
+   "text": "Primary AudioLink band that drives the fur."
+  },
+  {
+   "name": "_FurALRuffle",
+   "text": "How much the beat ruffles the tufts: stronger relief and extra sway."
+  },
+  {
+   "name": "_FurALSpec",
+   "text": "How much the beat brightens the strand highlight."
+  },
+  {
+   "name": "_FurVolBoost",
+   "text": "Scales the reaction by overall volume across all bands, so quiet passages react less."
+  },
+  {
+   "name": "_FurVolAmt",
+   "text": "How strongly overall volume boosts the reaction."
+  },
+  {
+   "name": "_FurMultBand",
+   "text": "A second band that scales the primary signal, so one frequency can gate another."
+  },
+  {
+   "name": "_FurMultAmt",
+   "text": "How strongly the multiplier band scales the signal. 0 disables it."
+  },
+  {
+   "name": "_FurAddBand",
+   "text": "A band added on top of the primary signal."
+  },
+  {
+   "name": "_FurAddAmt",
+   "text": "How much the additive band contributes. 0 disables it."
+  },
+  {
+   "name": "_CoatStrength",
+   "text": "How much of the coat there is overall. 0 removes it completely."
+  },
+  {
+   "name": "_CoatSmoothness",
+   "text": "How glassy the coat is. High = a sharp mirror-like lacquer; lower = a satin finish."
+  },
+  {
+   "name": "_CoatReflStrength",
+   "text": "How strongly the coat reflects its surroundings. At 0 the coat only adds its highlight and leaves the surface under it undimmed."
+  },
+  {
+   "name": "_CoatSpecStrength",
+   "text": "How bright the coat's highlight from lights is."
+  },
+  {
+   "name": "_CoatFresnel",
+   "text": "How much the coat brightens at glancing angles. Real lacquer is faint face-on and strong at the edges; lower this for a flatter, more even coat."
+  },
+  {
+   "name": "_CoatExposureOcclusion",
+   "text": "Dims the coat's reflections where the surface is in the dark, so a glossy coat does not glow in shadow."
+  },
+  {
+   "name": "_CoatReflTint",
+   "text": "Colour of the coat's reflections."
+  },
+  {
+   "name": "_CoatSpecTint",
+   "text": "Colour of the coat's highlight."
+  },
+  {
+   "name": "_CoatSpecMode",
+   "text": "Realistic: a physically based lacquer highlight that follows the lighting. Classic: the old 2nd Specular highlight, hard-edged under the Toon lighting model. Materials that used 2nd Specular were moved here set to Classic, so they look the same."
+  },
+  {
+   "name": "_CoatMaps",
+   "text": "Packed map for the coat. Tiling, Offset and Panning apply to it."
+  },
+  {
+   "name": "_CoatMapsUV",
+   "text": "Which UV set the packed map uses."
+  },
+  {
+   "name": "_CoatMapsPan",
+   "text": "Scrolls the packed map over time (UV units per second)."
+  },
+  {
+   "name": "_CoatMaskCh",
+   "text": "Channel that says where the coat is. White = everywhere."
+  },
+  {
+   "name": "_CoatSmoothCh",
+   "text": "Channel that scales the coat's smoothness. White = the slider alone."
+  },
+  {
+   "name": "_CoatReflCh",
+   "text": "Channel that masks the coat's reflections. White = everywhere."
+  },
+  {
+   "name": "_CoatSpecCh",
+   "text": "Channel that masks the coat's highlight. White = everywhere."
+  },
+  {
+   "name": "_CoatFallbackCube",
+   "text": "Cubemap the coat reflects where the world has no usable probe. Leave empty to use the main Reflection Fallback Cubemap."
+  },
+  {
+   "name": "_CoatForceFallback",
+   "text": "Always reflect the fallback cubemap, ignoring the world's probe. For previewing the look."
+  },
+  {
+   "name": "_CoatLitFallback",
+   "text": "Darkens the fallback cubemap with the room's light, so it does not shine in a dark world."
+  },
+  {
+   "name": "_CoatLTCGI",
+   "text": "The coat reflects LTCGI screens and area lights, tinted by Reflection Tint and scaled by Reflections Visibility and the LTCGI section's strength."
+  },
+  {
+   "name": "_CoatIgnoreShadows",
+   "text": "The coat's highlight from the main light ignores cast shadows. Realistic highlight style only."
+  },
+  {
+   "name": "_CoatNormalMix",
+   "text": "0 = the coat follows the mesh's smooth surface, staying glassy over bumpy paint. 1 = it follows the normal map."
+  },
+  {
+   "name": "_CoatGSAA",
+   "text": "Softens the coat's highlight where the surface curves sharply, so it shimmers less in motion and in VR."
+  },
+  {
+   "name": "_CoatGSAAVariance",
+   "text": "How much curvature softens the highlight."
+  },
+  {
+   "name": "_CoatGSAAThreshold",
+   "text": "The most it can be softened."
   }
  ],
  "lockCritical": [
@@ -4858,7 +6359,8 @@
   "_RefractEnable",
   "_OutlineStdEnable",
   "_DebugView",
-  "_VRSLGI"
+  "_VRSLGI",
+  "_FurFinEnable"
  ],
  "enums": [
   {
@@ -5012,7 +6514,9 @@
     "Packed Map RGB",
     "UV0",
     "VRSL GI",
-    "VRSL Light Count"
+    "VRSL Light Count",
+    "Painted Fur",
+    "Mesh Tangents"
    ]
   },
   {
@@ -5245,6 +6749,96 @@
     "Fixed Angle",
     "World Guided",
     "Flow Map"
+   ]
+  },
+  {
+   "name": "_UVTileDiscardMode",
+   "options": [
+    "Vertex (Faster)",
+    "Pixel (Slower)"
+   ]
+  },
+  {
+   "name": "_CoatSpecMode",
+   "options": [
+    "Realistic",
+    "Classic (2nd Specular)"
+   ]
+  },
+  {
+   "name": "_DetailAlbedoUV",
+   "options": [
+    "UV0",
+    "UV1",
+    "UV2",
+    "UV3",
+    "Panosphere",
+    "World Pos",
+    "Local Pos",
+    "Polar UV",
+    "Distorted UV",
+    "Matcap",
+    "Screen Space"
+   ]
+  },
+  {
+   "name": "_DetailNormalUV",
+   "options": [
+    "UV0",
+    "UV1",
+    "UV2",
+    "UV3",
+    "Panosphere",
+    "World Pos",
+    "Local Pos",
+    "Polar UV",
+    "Distorted UV",
+    "Matcap",
+    "Screen Space"
+   ]
+  },
+  {
+   "name": "_UVWorldX",
+   "options": [
+    "X",
+    "Y",
+    "Z",
+    "Zero"
+   ]
+  },
+  {
+   "name": "_UVWorldY",
+   "options": [
+    "X",
+    "Y",
+    "Z",
+    "Zero"
+   ]
+  },
+  {
+   "name": "_UVLocalX",
+   "options": [
+    "X",
+    "Y",
+    "Z",
+    "Zero"
+   ]
+  },
+  {
+   "name": "_UVLocalY",
+   "options": [
+    "X",
+    "Y",
+    "Z",
+    "Zero"
+   ]
+  },
+  {
+   "name": "_UVPolarMode",
+   "options": [
+    "Standard",
+    "Log Polar",
+    "Square Polar"
    ]
   }
  ]

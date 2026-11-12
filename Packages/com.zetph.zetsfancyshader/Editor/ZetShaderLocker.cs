@@ -1,4 +1,4 @@
-// ZetsFancyShader inspector - revision 24 (comment-safe inlining, keyword restore)
+// ZetsFancyShader locker - revision 26 (runs material migrations before baking)
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -103,6 +103,13 @@ namespace Zetph.FancyShader.EditorUI
             public int LinesRemoved;
             public int Inlined;
             public List<string> AnimatedKept = new List<string>();
+
+            // Animated properties renamed in the locked shader, original -> new name.
+            // Poi's "rename animated properties": an animation targets a renderer and
+            // a property name, and Unity applies it to every material slot on that
+            // renderer with that name. Renaming to <name>_<suffix> per material lets
+            // one toggle single out one material - VRCFury's "Renamed Material" field.
+            public Dictionary<string, string> Renames = new Dictionary<string, string>();
             public string Key;
             public string Error;
         }
@@ -244,6 +251,8 @@ namespace Zetph.FancyShader.EditorUI
                 if (plan.Strip[b.Property])
                     plan.LinesRemoved += b.End - b.Start + 1;
 
+            CollectRenames(plan, material);
+
             plan.Key = BuildKey(plan, material);
 
             var probe = new Dictionary<string, string>();
@@ -251,6 +260,40 @@ namespace Zetph.FancyShader.EditorUI
             plan.Inlined = probe.Count;
 
             return plan;
+        }
+
+        /// <summary>
+        /// Animated properties marked for renaming (Thry's "2" tag, written by Lock
+        /// On Upload when an animation targets the renamed name). Textures are left
+        /// alone: renaming one would also need its _ST, _TexelSize and sampler
+        /// renamed in step, and tile toggles and other switches are all floats.
+        /// </summary>
+        private static void CollectRenames(Plan plan, Material material)
+        {
+            plan.Renames.Clear();
+            Shader shader = plan.Source;
+            string suffix = ZetAnimatedProperties.RenameSuffix(material);
+            if (string.IsNullOrEmpty(suffix)) return;
+
+            int count = shader.GetPropertyCount();
+            for (int i = 0; i < count; i++)
+            {
+                if (shader.GetPropertyType(i) == ShaderPropertyType.Texture) continue;
+
+                string name = shader.GetPropertyName(i);
+                if (name == "_ShaderOptimizerEnabled") continue;
+                if (!ZetAnimatedProperties.IsRenamed(material, name)) continue;
+
+                plan.Renames[name] = name + "_" + suffix;
+            }
+        }
+
+        /// <summary>The renames segment of a lock key, or empty when it has none.</summary>
+        public static string RenamesPart(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return string.Empty;
+            string[] parts = key.Split('-');
+            return parts.Length > 5 ? parts[5] : string.Empty;
         }
 
         private static string BuildKey(Plan plan, Material material)
@@ -288,6 +331,18 @@ namespace Zetph.FancyShader.EditorUI
             keywords.Sort(StringComparer.Ordinal);
             sb.Append('-');
             sb.Append(Hash(string.Join(",", keywords.ToArray())));
+
+            // Renamed properties change the generated source, so they are part of the
+            // key too. Appended only when there are any, so every existing key - and
+            // every existing locked shader - stays exactly as it was.
+            if (plan.Renames.Count > 0)
+            {
+                var pairs = new List<string>();
+                foreach (KeyValuePair<string, string> r in plan.Renames) pairs.Add(r.Key + ">" + r.Value);
+                pairs.Sort(StringComparer.Ordinal);
+                sb.Append('-');
+                sb.Append(Hash(string.Join(",", pairs.ToArray())));
+            }
 
             return sb.ToString();
         }
@@ -455,7 +510,7 @@ namespace Zetph.FancyShader.EditorUI
             // One sweep for the batch. DeleteIfOrphaned walks every material in
             // the project, so calling it per material made locking an avatar
             // quadratic in project size.
-            DeleteOrphanedBatch(orphans);
+            foreach (Shader orphan in orphans) DeleteIfOrphaned(orphan);
 
             // Flush to disk. SetDirty alone leaves the shader assignment in memory
             // only, so the next domain reload - entering play mode, recompiling a
@@ -541,6 +596,12 @@ namespace Zetph.FancyShader.EditorUI
                 }
             }
 
+            // Settings from an older ZFS move onto their replacements before
+            // anything is baked. Here rather than only in the inspector so Lock On
+            // Upload and relocking an old locked material - neither of which has
+            // to open the inspector - bake the migrated values too.
+            ZetMigrations.Apply(material);
+
             Plan plan = Build(material);
             if (plan.Error != null)
             {
@@ -606,9 +667,39 @@ namespace Zetph.FancyShader.EditorUI
             // drop keywords the new shader does not appear to declare, and a
             // dependency like LTCGI gates its own internals on its keyword - so
             // losing it leaves the code compiled in and doing nothing.
+            // Renamed properties start out with the original's value. Read before
+            // the swap: afterwards the material's shader no longer declares the
+            // original names.
+            var renamed = new List<KeyValuePair<string, Vector4>>();
+            var renamedTypes = new List<ShaderPropertyType>();
+            foreach (KeyValuePair<string, string> r in entry.Plan.Renames)
+            {
+                int index = entry.Plan.Source.FindPropertyIndex(r.Key);
+                if (index < 0 || !material.HasProperty(r.Key)) continue;
+
+                ShaderPropertyType type = entry.Plan.Source.GetPropertyType(index);
+                Vector4 value = (type == ShaderPropertyType.Color || type == ShaderPropertyType.Vector)
+                    ? material.GetVector(r.Key)
+                    : new Vector4(material.GetFloat(r.Key), 0f, 0f, 0f);
+
+                renamed.Add(new KeyValuePair<string, Vector4>(r.Value, value));
+                renamedTypes.Add(type);
+            }
+
             string[] keywords = material.shaderKeywords;
             material.shader = generated;
             material.shaderKeywords = keywords;
+
+            for (int i = 0; i < renamed.Count; i++)
+            {
+                if (!material.HasProperty(renamed[i].Key)) continue;
+                if (renamedTypes[i] == ShaderPropertyType.Color)
+                    material.SetColor(renamed[i].Key, renamed[i].Value);
+                else if (renamedTypes[i] == ShaderPropertyType.Vector)
+                    material.SetVector(renamed[i].Key, renamed[i].Value);
+                else
+                    material.SetFloat(renamed[i].Key, renamed[i].Value.x);
+            }
 
             EditorUtility.SetDirty(material);
         }
@@ -657,44 +748,6 @@ namespace Zetph.FancyShader.EditorUI
         /// touches files under the generated folder, so a hand-written shader can
         /// never be deleted by this even if something goes wrong upstream.
         /// </summary>
-        /// <summary>
-        /// Batch form of DeleteIfOrphaned. The single form scans every material in
-        /// the project per call, so calling it once per orphan made relocking an
-        /// avatar quadratic: fifteen materials in a two-thousand-material project
-        /// meant thirty thousand asset loads. This walks the project once, notes
-        /// which candidates are still referenced, and deletes the rest.
-        /// </summary>
-        private static void DeleteOrphanedBatch(List<Shader> candidates)
-        {
-            var unique = new HashSet<Shader>();
-            for (int i = 0; i < candidates.Count; i++)
-                if (candidates[i] != null) unique.Add(candidates[i]);
-            if (unique.Count == 0) return;
-
-            var inUse = new HashSet<Shader>();
-            foreach (string guid in AssetDatabase.FindAssets("t:Material"))
-            {
-                var m = AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(guid));
-                if (m == null || m.shader == null) continue;
-                if (unique.Contains(m.shader))
-                {
-                    inUse.Add(m.shader);
-                    // Everything still referenced: nothing will be deleted, so the
-                    // rest of the scan is pointless.
-                    if (inUse.Count == unique.Count) return;
-                }
-            }
-
-            foreach (Shader sh in unique)
-            {
-                if (inUse.Contains(sh)) continue;
-                string path = AssetDatabase.GetAssetPath(sh);
-                if (string.IsNullOrEmpty(path)) continue;
-                if (!path.Replace('\\', '/').StartsWith(OutputFolder + "/", StringComparison.Ordinal)) continue;
-                AssetDatabase.DeleteAsset(path);
-            }
-        }
-
         public static void DeleteIfOrphaned(Shader generated)
         {
             if (generated == null) return;
@@ -862,6 +915,24 @@ namespace Zetph.FancyShader.EditorUI
 
             bool definesEmitted = false;
 
+            // Whole-token, so _UDIMDiscardRow0_0 never matches inside
+            // _UDIMDiscardRow0_0_Something. Applied to every line - Properties block,
+            // cbuffer and HLSL alike - so declaration and use stay in step.
+            Regex renamer = null;
+            if (plan.Renames.Count > 0)
+            {
+                var names = new List<string>(plan.Renames.Keys);
+                names.Sort((a, b) => b.Length.CompareTo(a.Length));
+                var alts = new StringBuilder();
+                foreach (string n in names)
+                {
+                    if (alts.Length > 0) alts.Append('|');
+                    alts.Append(Regex.Escape(n));
+                }
+                renamer = new Regex(@"(?<![\w])(" + alts + @")(?![\w])");
+                sb.AppendLine("// Renamed for animation: " + string.Join(", ", ToList(plan.Renames)));
+            }
+
             bool renamed = false;
             bool inHlsl = false;
             bool inCbuffer = false;
@@ -932,6 +1003,9 @@ namespace Zetph.FancyShader.EditorUI
                     }
                 }
 
+                if (renamer != null)
+                    line = renamer.Replace(line, hit => plan.Renames[hit.Groups[1].Value]);
+
                 sb.AppendLine(line);
 
                 // CGINCLUDE first if the shader has one - it reaches every pass.
@@ -952,6 +1026,14 @@ namespace Zetph.FancyShader.EditorUI
             }
 
             return sb.ToString();
+        }
+
+        private static List<string> ToList(Dictionary<string, string> renames)
+        {
+            var list = new List<string>();
+            foreach (KeyValuePair<string, string> r in renames) list.Add(r.Key + " -> " + r.Value);
+            list.Sort(StringComparer.Ordinal);
+            return list;
         }
 
         [ThreadStatic] private static Dictionary<string, string> _activeLiterals;

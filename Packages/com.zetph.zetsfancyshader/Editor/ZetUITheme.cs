@@ -1,4 +1,4 @@
-// ZetsFancyShader inspector - revision 15 (single teal palette, picker removed)
+// ZetsFancyShader inspector - revision 18 (neutral grey info box)
 using UnityEditor;
 using UnityEngine;
 
@@ -81,6 +81,41 @@ namespace Zetph.FancyShader.EditorUI
             Color c = AccentHue();
             c.a = enabled ? 0.85f : 0.30f;
             return c;
+        }
+
+        // Info box shade, as a hex grey per skin. One step lighter than the
+        // inspector panel (#383838 dark, #C8C8C8 light): enough to read as a box,
+        // not so much it pulls the eye off the settings. Change these two to taste.
+        private const int InfoGreyDark = 0x4A;
+        private const int InfoGreyLight = 0xD8;
+
+        /// <summary>
+        /// Section info box background: a solid neutral grey a step lighter than
+        /// the panel behind it. Dims with a switched-off section.
+        /// </summary>
+        public static Color InfoFill(bool enabled)
+        {
+            float g = (Pro ? InfoGreyDark : InfoGreyLight) / 255f;
+            var c = new Color(g, g, g, 1f);
+            if (!enabled) c.a = 0.55f;
+            return c;
+        }
+
+        /// <summary>Hairline around the info box, so its edge holds on either skin.</summary>
+        public static Color InfoBorder(bool enabled)
+        {
+            var c = Pro ? new Color(1f, 1f, 1f, 0.06f) : new Color(0f, 0f, 0f, 0.12f);
+            if (!enabled) c.a *= 0.6f;
+            return c;
+        }
+
+        /// <summary>
+        /// Text on the info box: a little brighter than the inspector's muted info
+        /// grey on the dark skin, so it holds against the lifted background.
+        /// </summary>
+        public static Color InfoText()
+        {
+            return Pro ? new Color(0.80f, 0.80f, 0.80f, 1f) : new Color(0.20f, 0.20f, 0.20f, 1f);
         }
 
         /// <summary>

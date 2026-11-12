@@ -1,4 +1,4 @@
-// ZetsFancyShader inspector - revision 20 (banner, builtin texture fix)
+// ZetsFancyShader inspector - revision 22 (section summaries)
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,6 +17,10 @@ namespace Zetph.FancyShader.EditorUI
         public string path;      // underscore-joined, e.g. "engine_vertal_valtrans"
         public string label;
         public string info;
+        // One-line version of info, shown in the section's info box. The full
+        // info is then the box's tooltip and appears when the box is clicked.
+        // Optional: without it the box shows info in full, as before.
+        public string summary;
         public string toggle;
         public string[] showIf;  // "_Foo" or "_Foo=3"; all entries ANDed
 
@@ -25,6 +29,11 @@ namespace Zetph.FancyShader.EditorUI
         // for a feature that physically cannot run is worse than no toggle.
         // Empty or missing means always shown, so existing JSON is unaffected.
         public string requires;
+
+        // Enable properties of sub-sections to show as small tick boxes on this
+        // group's own header bar, so they can be switched without opening it
+        // (Emission's four slots). Optional; absent in older JSON.
+        public string[] headerToggles;
     }
 
     [Serializable]
